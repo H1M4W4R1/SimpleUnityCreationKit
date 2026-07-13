@@ -5,9 +5,11 @@ using Systems.SimpleCore.Identifiers;
 using Systems.SimpleCore.Storage.Lists;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.Assertions;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.Exceptions;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using Object = UnityEngine.Object;
 
 namespace Systems.SimpleCore.Storage.Databases
@@ -110,6 +112,14 @@ namespace Systems.SimpleCore.Storage.Databases
                 Assert.IsFalse(typeof(MonoBehaviour).IsAssignableFrom(typeof(TLoadType)),
                     "This won't work properly. Use GameObject as base type and cast it in OnItemLoaded");
 
+                if (!HasAddressableLocations())
+                {
+                    _isLoaded = true;
+                    _isLoading = false;
+                    _isLoadingComplete = true;
+                    return;
+                }
+
                 _loadRequest = Addressables.LoadAssetsAsync<TLoadType>(
                     new[] {AddressableLabel}, OnItemLoaded,
                     Addressables.MergeMode.Union);
@@ -125,6 +135,25 @@ namespace Systems.SimpleCore.Storage.Databases
                 _isLoading = false;
                 _isLoadingComplete = true;
             }
+        }
+
+        /// <summary>
+        ///     Determines whether the configured label resolves to at least one loadable location.
+        ///     This avoids issuing an Addressables load request for empty databases, which reports an invalid key.
+        /// </summary>
+        private bool HasAddressableLocations()
+        {
+            IEnumerable<IResourceLocator> resourceLocators = Addressables.ResourceLocators;
+            foreach (IResourceLocator resourceLocator in resourceLocators)
+            {
+                if (!resourceLocator.Locate(AddressableLabel, typeof(TLoadType),
+                        out IList<IResourceLocation> locations))
+                    continue;
+
+                if (locations.Count > 0) return true;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -63,6 +63,12 @@ namespace Systems.SimpleCore.Tests
         }
 
         [Test]
+        public void AddressableDatabase_EmptyLabelLoadsAnEmptyDatabase()
+        {
+            Assert.AreEqual(0, EmptyAddressableDatabase.Count);
+        }
+
+        [Test]
         public void RWListAccess_ToReadOnlyExposesSameCurrentItems()
         {
             RWListAccess<int> access = RWListAccess<int>.Create();
@@ -123,6 +129,11 @@ namespace Systems.SimpleCore.Tests
 
         public sealed class DatabaseOtherLeafAsset : DatabaseBaseAsset
         {
+        }
+
+        public sealed class EmptyAddressableDatabase : AddressableDatabase<EmptyAddressableDatabase, DatabaseBaseAsset>
+        {
+            protected override string AddressableLabel => "SimpleCore.Tests.EmptyAddressableDatabase";
         }
     }
 }
