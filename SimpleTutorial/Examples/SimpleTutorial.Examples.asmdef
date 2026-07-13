@@ -1,0 +1,18 @@
+{
+    "name": "SimpleTutorial.Examples",
+    "rootNamespace": "Systems.SimpleTutorial.Examples",
+    "references": [
+        "SimpleTutorial",
+        "SimpleUserInterface",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
