@@ -19,21 +19,21 @@ namespace Systems.SimpleAchievements.Examples.Platforms
         /// <inheritdoc />
         public override void Initialise()
         {
-            // TODO: Initialize EOS SDK platform handle.
+            // Initialize EOS SDK platform handle.
             //       EOS_Platform_Create with your product credentials.
         }
 
         /// <inheritdoc />
         public override void UnlockAchievement(string platformId)
         {
-            // TODO: EOS_Achievements_UnlockAchievements with the local user product ID.
+            // EOS_Achievements_UnlockAchievements with the local user product ID.
             Debug.Log($"[Epic] Unlock achievement: {platformId} (mocked)");
         }
 
         /// <inheritdoc />
         public override void Shutdown()
         {
-            // TODO: EOS_Platform_Release - release the platform handle before exit.
+            // EOS_Platform_Release - release the platform handle before exit.
         }
 
 #if UNITY_EDITOR
@@ -45,7 +45,7 @@ namespace Systems.SimpleAchievements.Examples.Platforms
                 "Requires the Epic Online Services SDK package to be imported.",
                 UnityEditor.MessageType.Info);
 
-            // TODO: Add [SerializeField] fields for Product ID, Sandbox ID, Client ID, etc.,
+            // Add [SerializeField] fields for Product ID, Sandbox ID, Client ID, etc.,
             //       then draw them here using EditorGUILayout.PropertyField.
         }
 #endif

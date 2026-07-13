@@ -19,13 +19,13 @@ namespace Systems.SimpleAchievements.Examples.Platforms
         /// <inheritdoc />
         public override void Initialise()
         {
-            // TODO: SteamAPI.Init() - ensure called before any other Steam call.
+            // SteamAPI.Init() - ensure called before any other Steam call.
         }
 
         /// <inheritdoc />
         public override void UnlockAchievement(string platformId)
         {
-            // TODO: SteamUserStats.SetAchievement(platformId);
+            // SteamUserStats.SetAchievement(platformId);
             //       SteamUserStats.StoreStats();
             Debug.Log($"[Steam] Unlock achievement: {platformId} (mocked)");
         }
@@ -33,7 +33,7 @@ namespace Systems.SimpleAchievements.Examples.Platforms
         /// <inheritdoc />
         public override void Shutdown()
         {
-            // TODO: SteamAPI.Shutdown()
+            // SteamAPI.Shutdown()
         }
 
 #if UNITY_EDITOR
@@ -45,7 +45,7 @@ namespace Systems.SimpleAchievements.Examples.Platforms
                 "Requires Steamworks.NET or Facepunch.Steamworks to be imported.",
                 UnityEditor.MessageType.Info);
 
-            // TODO: Add [SerializeField] fields for App ID and other Steam configuration,
+            // Add [SerializeField] fields for App ID and other Steam configuration,
             //       then draw them here using EditorGUILayout.PropertyField.
         }
 #endif

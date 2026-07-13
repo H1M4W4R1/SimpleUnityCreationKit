@@ -7,7 +7,7 @@ namespace Systems.SimpleCore.Storage.Lists
 {
     /// <summary>
     ///     Read-write list access structure for lists that are managed by Unity Pooling system.
-    ///     TODO: When Unity finally updates C# add IDisposable here
+    ///     When Unity finally updates C# add IDisposable here
     /// </summary>
     public ref struct RWListAccess<TListType>
     {
