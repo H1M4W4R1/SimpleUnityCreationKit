@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
+using Systems.SimpleBuilding.Data;
 using Systems.SimpleBuilding.Data.Context;
+using Systems.SimpleBuilding.Data.SaveFiles;
+using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleCore.Saving.Utility;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleCore.Utility.Enums;
@@ -16,6 +20,50 @@ namespace Systems.SimpleBuilding.Utility
     /// </summary>
     public static class BuildingAPI
     {
+        /// <summary>
+        ///     Registers an entry so saved buildings can resolve it during a later load.
+        /// </summary>
+        /// <param name="entry">Entry with a unique <see cref="BuildingEntryBase.SaveIdentifier"/>.</param>
+        public static void RegisterEntry([NotNull] BuildingEntryBase entry)
+            => BuildingRegistry.RegisterEntry(entry);
+
+        /// <summary>
+        ///     Registers entries so saved buildings can resolve them during a later load.
+        /// </summary>
+        /// <param name="entries">Entries with unique <see cref="BuildingEntryBase.SaveIdentifier"/> values.</param>
+        public static void RegisterEntries([NotNull] IReadOnlyList<BuildingEntryBase> entries)
+        {
+            if (ReferenceEquals(entries, null)) return;
+
+            for (int entryIndex = 0; entryIndex < entries.Count; entryIndex++)
+                BuildingRegistry.RegisterEntry(entries[entryIndex]);
+        }
+
+        /// <summary>
+        ///     Saves all API-placed buildings through the SimpleCore save API.
+        /// </summary>
+        /// <returns>An in-memory building save file, or <c>null</c> if serialization fails.</returns>
+        [CanBeNull]
+        public static SaveFileBase SaveToMemory()
+        {
+            BuildingSaveData saveData = new BuildingSaveData();
+            return SaveAPI.Save(saveData);
+        }
+
+        /// <summary>
+        ///     Restores API-placed buildings from a SimpleCore save file.
+        /// </summary>
+        /// <remarks>
+        ///     Register all available entries with <see cref="RegisterEntry"/> or <see cref="RegisterEntries"/>
+        ///     before loading. Active <see cref="BuildingSlot"/> components register themselves automatically.
+        /// </remarks>
+        /// <param name="saveFile">Save file previously produced by <see cref="SaveToMemory"/>.</param>
+        public static void Load([NotNull] SaveFileBase saveFile)
+        {
+            BuildingSaveData saveData = new BuildingSaveData();
+            SaveAPI.Load(saveData, saveFile);
+        }
+
         public static OperationResult CanSelect(
             [CanBeNull] BuildingEntryBase entry,
             [CanBeNull] IBuildingUser user = null,
@@ -30,6 +78,7 @@ namespace Systems.SimpleBuilding.Utility
         {
             if (ReferenceEquals(context.entry, null)) return BuildingOperations.EntryIsNull();
             if (!context.entry) return BuildingOperations.EntryIsNull();
+            BuildingRegistry.RegisterEntry(context.entry);
             return context.entry.IsAvailable(in context);
         }
 
@@ -54,6 +103,7 @@ namespace Systems.SimpleBuilding.Utility
             if (!context.entry) return BuildingOperations.EntryIsNull();
 
             BuildingEntryBase entry = context.entry;
+            BuildingRegistry.RegisterEntry(entry);
             BuildingBase prefab = entry.GetPrefab();
             if (ReferenceEquals(prefab, null) || !prefab) return BuildingOperations.PrefabMissing();
 
@@ -126,6 +176,58 @@ namespace Systems.SimpleBuilding.Utility
             entry.OnBuildingPlaced(in context, instance, placedResult);
             instance.OnBuildingPlaced(in context, placedResult);
             return placedResult;
+        }
+
+        /// <summary>
+        ///     Recreates a building from saved world state without consuming resources or invoking placement callbacks.
+        /// </summary>
+        /// <remarks>
+        ///     This is reserved for the building save adapter so loading a save cannot be treated as a new
+        ///     player placement by game-specific rules.
+        /// </remarks>
+        internal static OperationResult TryRestore(
+            in BuildingPlacementContext context,
+            [CanBeNull] out BuildingBase building)
+        {
+            building = null;
+            if (ReferenceEquals(context.entry, null)) return BuildingOperations.EntryIsNull();
+            if (!context.entry) return BuildingOperations.EntryIsNull();
+
+            BuildingEntryBase entry = context.entry;
+            BuildingBase prefab = entry.GetPrefab();
+            if (ReferenceEquals(prefab, null) || !prefab) return BuildingOperations.PrefabMissing();
+
+            OperationResult slotsResult = ValidateSlots(prefab, context.slots);
+            if (!slotsResult) return slotsResult;
+
+            BuildingBase instance = Object.Instantiate(prefab, context.position, context.rotation, context.parent);
+            instance.Initialize(entry);
+            if (!instance.TryAssignSlots(context.slots))
+            {
+                DestroyGameObject(instance.gameObject);
+                return BuildingOperations.SlotOccupied();
+            }
+
+            building = instance;
+            return BuildingOperations.Placed();
+        }
+
+        /// <summary>
+        ///     Removes a building while applying a save file without refunds or demolition callbacks.
+        /// </summary>
+        /// <remarks>
+        ///     This is reserved for the building save adapter. Its context carries
+        ///     <see cref="BuildingDemolitionContext.isSaveSystemRequest"/> to distinguish this removal from a
+        ///     gameplay demolition.
+        /// </remarks>
+        internal static void ClearForSave(in BuildingDemolitionContext context)
+        {
+            if (ReferenceEquals(context.building, null) || !context.building) return;
+
+            BuildingBase building = context.building;
+            BuildingRegistry.UnregisterBuilding(building);
+            building.ReleaseOccupiedSlots();
+            DestroyGameObject(building.gameObject);
         }
 
         public static OperationResult CanDemolish(

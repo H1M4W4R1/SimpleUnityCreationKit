@@ -71,11 +71,13 @@ namespace Systems.SimpleBuilding.Components
         protected virtual void OnDestroy()
         {
             ReleaseOccupiedSlots();
+            BuildingRegistry.UnregisterBuilding(this);
         }
 
         internal void Initialize([NotNull] BuildingEntryBase entry)
         {
             _entry = entry;
+            BuildingRegistry.RegisterBuilding(this, entry);
         }
 
         internal bool TryAssignSlots([CanBeNull] IReadOnlyList<BuildingSlot> slots)

@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Systems.SimpleBuilding.Utility;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Components
@@ -8,8 +9,25 @@ namespace Systems.SimpleBuilding.Components
     /// </summary>
     public sealed class BuildingSlot : MonoBehaviour
     {
+        [SerializeField] private string _saveIdentifier;
         [CanBeNull] private BuildingBase _occupyingBuilding;
         private Transform _cachedTransform;
+
+        /// <summary>
+        ///     Stable identifier written to building save files for slot reservations.
+        ///     Set a unique value before shipping; the GameObject name is used only as a backwards-compatible fallback.
+        /// </summary>
+        [NotNull]
+        public string SaveIdentifier => string.IsNullOrWhiteSpace(_saveIdentifier) ? gameObject.name : _saveIdentifier;
+
+        /// <summary>
+        ///     Sets the stable identifier used to resolve this slot from a building save file.
+        /// </summary>
+        /// <param name="saveIdentifier">Identifier unique among active building slots.</param>
+        public void SetSaveIdentifier([NotNull] string saveIdentifier)
+        {
+            _saveIdentifier = saveIdentifier;
+        }
 
         /// <summary>
         ///     Transform used by slot-snapping buildings for their placement position and base rotation.
@@ -39,6 +57,16 @@ namespace Systems.SimpleBuilding.Components
         }
 
         public bool IsOccupied => !ReferenceEquals(OccupyingBuilding, null);
+
+        private void OnEnable()
+        {
+            BuildingRegistry.RegisterSlot(this);
+        }
+
+        private void OnDisable()
+        {
+            BuildingRegistry.UnregisterSlot(this);
+        }
 
         internal bool TryOccupy([NotNull] BuildingBase building)
         {

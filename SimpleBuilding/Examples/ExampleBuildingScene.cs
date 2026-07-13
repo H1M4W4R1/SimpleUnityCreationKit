@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
+using Systems.SimpleBuilding.Data.SaveFiles;
+using Systems.SimpleBuilding.Utility;
 using Systems.SimpleCore.Examples;
 using Systems.SimpleCore.Operations;
 using UnityEngine;
@@ -19,6 +21,7 @@ namespace Systems.SimpleBuilding.Examples
         [SerializeField] [CanBeNull] private ExampleBuildingEntry _slotBuildingEntry;
         [SerializeField] [CanBeNull] private PointerBuildingRaycaster _raycaster;
         [CanBeNull] private ExampleRuntimePanel _panel;
+        [CanBeNull] private BuildingSaveFile _savedBuildings;
         private string _lastResult = "Ready";
 
         public void Configure(
@@ -33,6 +36,7 @@ namespace Systems.SimpleBuilding.Examples
 
         private void Start()
         {
+            RegisterExampleEntries();
             CreateRuntimeUI();
             SelectFreeBuilding();
         }
@@ -60,6 +64,13 @@ namespace Systems.SimpleBuilding.Examples
             rotateLeftButton.onClick.AddListener(RotateLeft);
             Button rotateRightButton = _panel.AddButton("Rotate Right");
             rotateRightButton.onClick.AddListener(RotateRight);
+            _panel.AddSection("Save Data");
+            Button saveButton = _panel.AddButton("Save Buildings");
+            saveButton.onClick.AddListener(SaveBuildings);
+            Button loadButton = _panel.AddButton("Load Buildings");
+            loadButton.onClick.AddListener(LoadBuildings);
+            Button clearButton = _panel.AddButton("Clear Buildings");
+            clearButton.onClick.AddListener(ClearBuildings);
             _panel.AddBodyText("The cylinder snaps to raised slot tiles. The cube uses free placement.");
             RefreshStatus();
         }
@@ -102,6 +113,52 @@ namespace Systems.SimpleBuilding.Examples
             SetResult(_raycaster.TryDemolishTarget(this));
         }
 
+        private void SaveBuildings()
+        {
+            BuildingSaveFile saveFile = BuildingAPI.SaveToMemory() as BuildingSaveFile;
+            if (ReferenceEquals(saveFile, null))
+            {
+                _lastResult = "Save failed";
+                RefreshStatus();
+                return;
+            }
+
+            _savedBuildings = saveFile;
+            _lastResult = "Saved " + saveFile.Buildings.Length + " building(s)";
+            RefreshStatus();
+        }
+
+        private void LoadBuildings()
+        {
+            if (ReferenceEquals(_savedBuildings, null))
+            {
+                _lastResult = "No saved buildings to load";
+                RefreshStatus();
+                return;
+            }
+
+            RegisterExampleEntries();
+            BuildingAPI.Load(_savedBuildings);
+            _lastResult = "Loaded " + _savedBuildings.Buildings.Length + " building(s)";
+            RefreshStatus();
+        }
+
+        private void ClearBuildings()
+        {
+            BuildingSaveFile emptySaveFile = new BuildingSaveFile();
+            BuildingAPI.Load(emptySaveFile);
+            _lastResult = "Cleared API-placed buildings";
+            RefreshStatus();
+        }
+
+        private void RegisterExampleEntries()
+        {
+            if (!ReferenceEquals(_freeBuildingEntry, null) && _freeBuildingEntry)
+                BuildingAPI.RegisterEntry(_freeBuildingEntry);
+            if (!ReferenceEquals(_slotBuildingEntry, null) && _slotBuildingEntry)
+                BuildingAPI.RegisterEntry(_slotBuildingEntry);
+        }
+
         private void SetResult(in OperationResult result)
         {
             _lastResult = ExampleRuntimePanel.FormatResult(result);
@@ -119,7 +176,9 @@ namespace Systems.SimpleBuilding.Examples
             _panel.SetStatus(
                 "Selected: " + selectedEntryName +
                 "\nRotation: " + (ReferenceEquals(_raycaster, null) || !_raycaster ? 0f : _raycaster.RotationDegrees) +
-                " degrees\nLast result: " + _lastResult);
+                " degrees\nSaved buildings: " +
+                (ReferenceEquals(_savedBuildings, null) ? 0 : _savedBuildings.Buildings.Length) +
+                "\nLast result: " + _lastResult);
         }
     }
 }

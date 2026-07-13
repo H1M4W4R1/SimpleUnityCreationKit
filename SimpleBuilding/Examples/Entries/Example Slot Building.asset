@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a974ebf543161e74fbbff81246f385b0, type: 3}
   m_Name: Example Slot Building
   m_EditorClassIdentifier: SimpleBuilding::Systems.SimpleBuilding.Examples.ExampleBuildingEntry
+  _saveIdentifier: example-slot-building
   <Prefab>k__BackingField: {fileID: 0}
   <GhostPrefab>k__BackingField: {fileID: 0}
   _examplePrefab: {fileID: 5582533596429530322, guid: 79f70c536611008418a4e9e686d1280e, type: 3}

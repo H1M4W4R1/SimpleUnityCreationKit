@@ -20,6 +20,10 @@ namespace Systems.SimpleBuilding.Data.Context
         public readonly Vector3 position;
         public readonly Quaternion rotation;
         public readonly ActionSource actionSource;
+        /// <summary>
+        ///     Whether this placement was requested while restoring a building save.
+        /// </summary>
+        public readonly bool isSaveSystemRequest;
 
         public BuildingPlacementContext(
             [CanBeNull] BuildingEntryBase entry,
@@ -29,7 +33,8 @@ namespace Systems.SimpleBuilding.Data.Context
             [CanBeNull] BuildingRaycasterBase raycaster = null,
             [CanBeNull] Transform parent = null,
             [CanBeNull] IReadOnlyList<BuildingSlot> slots = null,
-            ActionSource actionSource = ActionSource.External)
+            ActionSource actionSource = ActionSource.External,
+            bool isSaveSystemRequest = false)
         {
             this.entry = entry;
             this.position = position;
@@ -39,6 +44,7 @@ namespace Systems.SimpleBuilding.Data.Context
             this.parent = parent;
             this.slots = slots;
             this.actionSource = actionSource;
+            this.isSaveSystemRequest = isSaveSystemRequest;
         }
     }
 }

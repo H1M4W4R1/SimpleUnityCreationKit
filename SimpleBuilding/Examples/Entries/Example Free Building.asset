@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a974ebf543161e74fbbff81246f385b0, type: 3}
   m_Name: Example Free Building
   m_EditorClassIdentifier: SimpleBuilding::Systems.SimpleBuilding.Examples.ExampleBuildingEntry
+  _saveIdentifier: example-free-building
   <Prefab>k__BackingField: {fileID: 0}
   <GhostPrefab>k__BackingField: {fileID: 0}
   _examplePrefab: {fileID: 3994427090336535351, guid: e8d8b45fb6e584841a4c5245bfdd93b3, type: 3}

@@ -57,6 +57,46 @@ namespace Game.Buildings
 
 Resource consumption and refunds should be atomic. `TryRefundResources` is invoked before a building is destroyed, so a failed refund leaves the building intact. Placement failures invoke `OnBuildingPlacementFailed`; demolition failures invoke `OnBuildingDemolitionFailed` on both the entry and the existing building instance.
 
+## Saving placed buildings
+
+SimpleBuilding saves the buildings created through `BuildingAPI` with the SimpleCore save pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
+
+Before loading, register every entry that can appear in the save; active `BuildingSlot` components register themselves. Loading replaces the currently API-placed buildings without consuming resources, issuing refunds, or replaying placement callbacks. Save-driven placement and removal contexts set `isSaveSystemRequest` to `true`, so custom rules can recognize the source explicitly.
+
+```csharp
+using System.Collections.Generic;
+using Systems.SimpleBuilding.Abstract;
+using Systems.SimpleBuilding.Data.SaveFiles;
+using Systems.SimpleBuilding.Utility;
+using Systems.SimpleCore.Saving.Abstract;
+
+namespace Game.Buildings
+{
+    public sealed class BuildingSaveController
+    {
+        private readonly IReadOnlyList<BuildingEntryBase> _entries;
+
+        public BuildingSaveController(IReadOnlyList<BuildingEntryBase> entries)
+        {
+            _entries = entries;
+        }
+
+        public SaveFileBase Save()
+        {
+            return BuildingAPI.SaveToMemory();
+        }
+
+        public void Load(BuildingSaveFile saveFile)
+        {
+            BuildingAPI.RegisterEntries(_entries);
+            BuildingAPI.Load(saveFile);
+        }
+    }
+}
+```
+
+`SaveToMemory` returns a `SaveFileBase` so it can be embedded in a host game's larger save file. The host owns disk serialization and versioning, while `BuildingAPI.Load` accepts the same SimpleCore save-file base type.
+
 ## Selecting, rotating, and placing
 
 ```csharp
@@ -105,7 +145,7 @@ namespace Game.Buildings
 
 `Scene - Building Playground.unity` demonstrates free placement, slot-only placement, valid/invalid shader-ready ghosts, rotation, and demolition. Open it and enter Play mode:
 
-- Use the SimpleCore runtime panel to select the free-placement cube or the one-slot cylinder, and to rotate the selected preview.
+- Use the SimpleCore runtime panel to select the free-placement cube or the one-slot cylinder, rotate the selected preview, and save/load/clear the API-placed buildings in memory.
 - Left-click builds and right-click demolishes.
 
 The generated materials, prefabs, and entry assets are stored in the package's `Examples` folder. Use **Simple Building/Regenerate Building Playground** to recreate the complete example after changing its generator.

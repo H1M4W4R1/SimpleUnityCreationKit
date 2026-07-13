@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
 using Systems.SimpleBuilding.Data.Context;
+using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleBuilding.Utility;
 using Systems.SimpleCore.Operations;
@@ -116,6 +117,86 @@ namespace Systems.SimpleBuilding.Tests
             ISlotBuilding slotBuilding = building as ISlotBuilding;
             Assert.IsNotNull(slotBuilding);
             Assert.IsTrue(slotBuilding.SnapToSlot);
+        }
+
+        [Test]
+        public void Contexts_ExposeSaveSystemRequestMarker()
+        {
+            BuildingPlacementContext placementContext = new BuildingPlacementContext(
+                null,
+                Vector3.zero,
+                Quaternion.identity,
+                isSaveSystemRequest: true);
+            BuildingDemolitionContext demolitionContext = new BuildingDemolitionContext(
+                null,
+                isSaveSystemRequest: true);
+
+            Assert.IsTrue(placementContext.isSaveSystemRequest);
+            Assert.IsTrue(demolitionContext.isSaveSystemRequest);
+        }
+
+        [Test]
+        public void SaveToMemoryAndLoad_RestoresBuildingsWithoutReplayingPlacementTransactions()
+        {
+            TestBuildingEntry freeEntry = CreateEntry<TestBuilding>();
+            freeEntry.SetSaveIdentifier("free-building");
+            TestBuildingEntry slotEntry = CreateEntry<TestSlotBuilding>();
+            slotEntry.SetSaveIdentifier("slot-building");
+            BuildingEntryBase[] entries = new BuildingEntryBase[] {freeEntry, slotEntry};
+            BuildingAPI.RegisterEntries(entries);
+
+            GameObject slotObject = Track(new GameObject("Save Slot"));
+            BuildingSlot slot = slotObject.AddComponent<BuildingSlot>();
+            slot.SetSaveIdentifier("save-slot");
+            List<BuildingSlot> slots = new List<BuildingSlot> {slot};
+
+            Vector3 freePosition = new Vector3(2f, 3f, 4f);
+            Quaternion freeRotation = Quaternion.Euler(0f, 35f, 0f);
+            OperationResult freeBuildResult = BuildingAPI.TryBuild(
+                freeEntry, freePosition, freeRotation, out BuildingBase freeBuilding);
+            Assert.IsTrue(freeBuildResult);
+            Track(freeBuilding.gameObject);
+            freeBuilding.transform.localScale = new Vector3(1.5f, 2f, 0.5f);
+
+            OperationResult slotBuildResult = BuildingAPI.TryBuild(
+                slotEntry, Vector3.zero, Quaternion.identity, out BuildingBase slotBuilding, slots: slots);
+            Assert.IsTrue(slotBuildResult);
+            Track(slotBuilding.gameObject);
+
+            BuildingSaveFile saveFile = BuildingAPI.SaveToMemory() as BuildingSaveFile;
+
+            Assert.IsNotNull(saveFile);
+            Assert.AreEqual(2, saveFile.Buildings.Length);
+            Assert.AreEqual(1, freeEntry.ConsumeCallCount);
+            Assert.AreEqual(1, freeEntry.PlacedCallCount);
+            Assert.AreEqual(1, slotEntry.ConsumeCallCount);
+            Assert.AreEqual(1, slotEntry.PlacedCallCount);
+
+            BuildingAPI.Load(saveFile);
+
+            BuildingBase[] allBuildings = Object.FindObjectsByType<BuildingBase>();
+            BuildingBase restoredFreeBuilding = null;
+            BuildingBase restoredSlotBuilding = null;
+            for (int buildingIndex = 0; buildingIndex < allBuildings.Length; buildingIndex++)
+            {
+                BuildingBase building = allBuildings[buildingIndex];
+                if (ReferenceEquals(building.Entry, freeEntry)) restoredFreeBuilding = building;
+                if (ReferenceEquals(building.Entry, slotEntry)) restoredSlotBuilding = building;
+            }
+
+            Assert.IsNotNull(restoredFreeBuilding);
+            Assert.IsNotNull(restoredSlotBuilding);
+            Track(restoredFreeBuilding.gameObject);
+            Track(restoredSlotBuilding.gameObject);
+            Assert.AreEqual(freePosition, restoredFreeBuilding.transform.position);
+            Assert.Less(Quaternion.Angle(freeRotation, restoredFreeBuilding.transform.rotation), 0.001f);
+            Assert.AreEqual(new Vector3(1.5f, 2f, 0.5f), restoredFreeBuilding.transform.localScale);
+            Assert.IsTrue(slot.IsOccupied);
+            Assert.AreEqual(restoredSlotBuilding, slot.OccupyingBuilding);
+            Assert.AreEqual(1, freeEntry.ConsumeCallCount);
+            Assert.AreEqual(1, freeEntry.PlacedCallCount);
+            Assert.AreEqual(1, slotEntry.ConsumeCallCount);
+            Assert.AreEqual(1, slotEntry.PlacedCallCount);
         }
 
         private TestBuildingEntry CreateEntry<TBuildingType>() where TBuildingType : BuildingBase

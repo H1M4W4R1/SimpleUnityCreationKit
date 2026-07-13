@@ -39,6 +39,8 @@ namespace Systems.SimpleBuilding.Editor
                 ENTRIES_PATH + "/Example Free Building.asset", freeBuildingPrefab);
             ExampleBuildingEntry slotBuildingEntry = GetOrCreateEntry(
                 ENTRIES_PATH + "/Example Slot Building.asset", slotBuildingPrefab);
+            freeBuildingEntry.SetSaveIdentifier("example-free-building");
+            slotBuildingEntry.SetSaveIdentifier("example-slot-building");
             BuildingGhostMaterialConfiguration ghostConfiguration = GetOrCreateGhostConfiguration(
                 MATERIALS_PATH + "/Building Ghost Material Configuration.asset",
                 validGhostMaterial,
@@ -88,7 +90,8 @@ namespace Systems.SimpleBuilding.Editor
                 slotObject.name = "Building Slot " + (tileIndex + 1);
                 slotObject.transform.position = new Vector3(4f + tileIndex % 2 * 1.2f, 0.1f, tileIndex / 2 * 1.2f);
                 slotObject.transform.localScale = new Vector3(1f, 0.2f, 1f);
-                slotObject.AddComponent<BuildingSlot>();
+                BuildingSlot slot = slotObject.AddComponent<BuildingSlot>();
+                slot.SetSaveIdentifier("example-building-slot-" + (tileIndex + 1));
             }
         }
 

@@ -15,8 +15,26 @@ namespace Systems.SimpleBuilding.Abstract
     [AutoCreate("Buildings", BuildingEntryDatabase.LABEL)]
     public abstract class BuildingEntryBase : ScriptableObject
     {
+        [SerializeField] private string _saveIdentifier;
+
         [field: SerializeField] [CanBeNull] public BuildingBase Prefab { get; private set; }
         [field: SerializeField] [CanBeNull] public GameObject GhostPrefab { get; private set; }
+
+        /// <summary>
+        ///     Stable identifier written to building save files.
+        ///     Set a unique value before shipping; the asset name is used only as a backwards-compatible fallback.
+        /// </summary>
+        [NotNull]
+        public string SaveIdentifier => string.IsNullOrWhiteSpace(_saveIdentifier) ? name : _saveIdentifier;
+
+        /// <summary>
+        ///     Sets the stable identifier used to resolve this entry from a building save file.
+        /// </summary>
+        /// <param name="saveIdentifier">Identifier unique among entries registered with <c>BuildingAPI</c>.</param>
+        public void SetSaveIdentifier([NotNull] string saveIdentifier)
+        {
+            _saveIdentifier = saveIdentifier;
+        }
 
         /// <summary>
         ///     Returns the runtime prefab used for completed buildings.
