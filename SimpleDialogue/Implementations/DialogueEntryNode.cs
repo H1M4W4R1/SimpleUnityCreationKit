@@ -29,8 +29,5 @@ namespace Systems.SimpleDialogue.Implementations
             return connectedPort.node as DialogueInteractionNode;
         }
 
-        protected internal override string GetSpeakerName(in DialogueContext context) => string.Empty;
-
-        protected internal override string GetText(in DialogueContext context) => string.Empty;
     }
 }

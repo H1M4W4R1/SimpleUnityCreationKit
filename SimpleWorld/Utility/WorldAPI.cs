@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleWorld.Data;
 using Systems.SimpleWorld.Operations;
@@ -23,7 +24,7 @@ namespace Systems.SimpleWorld.Utility
 
         private static readonly List<WeatherEffect> _activeWeatherEffects = new List<WeatherEffect>();
 
-        public static WeatherEffect ActiveWeatherEffect
+        [CanBeNull] public static WeatherEffect ActiveWeatherEffect
         {
             get
             {

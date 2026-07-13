@@ -4,6 +4,7 @@ using Systems.SimpleUI.Components.Lists;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 namespace Systems.SimpleDialogue.UI
@@ -16,11 +17,13 @@ namespace Systems.SimpleDialogue.UI
     {
         [SerializeField] private TextMeshProUGUI _text;
 
+        private LocalizedString _localizedText;
+
         [field: SerializeField, HideInInspector] private Button ButtonReference { get; set; }
 
         public void OnRender(DialogueOption withContext)
         {
-            _text.text = ReferenceEquals(withContext.text, null) ? string.Empty : withContext.text;
+            SetText(withContext.text);
             ButtonReference.interactable = withContext.isAvailable;
         }
 
@@ -28,10 +31,12 @@ namespace Systems.SimpleDialogue.UI
         {
             base.AttachEvents();
             ButtonReference.onClick.AddListener(OnClick);
+            SubscribeToLocalizedText();
         }
 
         protected override void DetachEvents()
         {
+            UnsubscribeFromLocalizedText();
             ButtonReference.onClick.RemoveListener(OnClick);
             base.DetachEvents();
         }
@@ -57,5 +62,29 @@ namespace Systems.SimpleDialogue.UI
             if (!TryGetContext(out DialogueOption option)) return;
             option.Select();
         }
+
+        private void SetText(LocalizedString localizedText)
+        {
+            if (ReferenceEquals(_localizedText, localizedText)) return;
+
+            UnsubscribeFromLocalizedText();
+            _localizedText = localizedText;
+            SubscribeToLocalizedText();
+            if (ReferenceEquals(_localizedText, null) || _localizedText.IsEmpty) _text.SetText(string.Empty);
+        }
+
+        private void SubscribeToLocalizedText()
+        {
+            if (!isActiveAndEnabled || ReferenceEquals(_localizedText, null) || _localizedText.IsEmpty) return;
+            _localizedText.StringChanged += OnStringChanged;
+        }
+
+        private void UnsubscribeFromLocalizedText()
+        {
+            if (ReferenceEquals(_localizedText, null) || !_localizedText.HasChangeHandler) return;
+            _localizedText.StringChanged -= OnStringChanged;
+        }
+
+        private void OnStringChanged(string value) => _text.SetText(value);
     }
 }

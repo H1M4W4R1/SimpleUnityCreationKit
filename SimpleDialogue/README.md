@@ -9,6 +9,7 @@ SimpleDialogue depends on:
 - `com.github.siccity.xnode`
 - `SimpleCore`
 - `SimpleUI`
+- `Unity.Localization`
 - `Unity.TextMeshPro`
 - `Unity.ugui`
 
@@ -34,19 +35,23 @@ The built-in nodes are:
 
 The graph menu uses clear `Dialogue/...` paths and only shows concrete `DialogueInteractionNode` implementations, so nodes from other xNode graph types cannot be added accidentally.
 
-Custom dialogue nodes inherit from `NPCDialogueNode`, `PlayerDialogueNode`, or `DialogueInteractionNode`. Provide text through methods, not base fields:
+Custom dialogue nodes inherit from `NPCDialogueNode`, `PlayerDialogueNode`, or `DialogueInteractionNode`. Nodes opt into the content they provide with `IDialogueWithSpeakerName` and `IDialogueWithText`:
 
 ```csharp
-protected internal override string GetSpeakerName(in DialogueContext context)
+public sealed class ArchivistDialogueNode : NPCDialogueNode, IDialogueWithSpeakerName, IDialogueWithText
 {
-    return "Archivist";
-}
+    [SerializeField] private LocalizedString _speakerName = new("SimpleDialogue", "archivist.name");
+    [SerializeField] private LocalizedString _text = new("SimpleDialogue", "archivist.greeting");
 
-protected internal override string GetText(in DialogueContext context)
-{
-    return "The gate remembers every name.";
+    public LocalizedString GetSpeakerName(in DialogueContext context) => _speakerName;
+
+    public LocalizedString GetText(in DialogueContext context) => _text;
 }
 ```
+
+`BasicNPCDialogueNode` provides both contracts and `BasicPlayerDialogueNode` provides `IDialogueWithText`. Flow-only nodes do not provide either contract. This is a breaking data change: configure the new `LocalizedString` fields for existing built-in nodes after upgrading.
+
+SimpleDialogue creates the `SimpleDialogue` string table collection under `Assets/Generated/Localization/` on editor load. The collection includes Unity Localization's CSV extension, so it can be imported and exported through the Localization table UI. Add your localized entries there, then select their keys on the node fields.
 
 Use `IsVisible`, `IsAvailable`, and `CanEnter` for entry conditions. Invisible answers are not rendered; unavailable answers are rendered disabled.
 
@@ -91,7 +96,7 @@ public sealed class CustomDialogueRenderer : MonoBehaviour, IDialogueRenderer
 {
     public void RenderDialogue(DialogueViewContext context)
     {
-        // Render context.SpeakerName, context.Text, and context.Options.
+        // Render LocalizedString references from context.SpeakerName, context.Text, and context.Options.
     }
 
     public void ClearDialogue()

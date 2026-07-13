@@ -2,6 +2,7 @@ using Systems.SimpleCore.Operations;
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Data;
 using Systems.SimpleDialogue.Operations;
+using UnityEngine.Localization;
 
 namespace Systems.SimpleDialogue.Tests
 {
@@ -26,10 +27,10 @@ namespace Systems.SimpleDialogue.Tests
         protected internal override TestDialogueRoute GetSwitchValue(in DialogueContext context) => Route;
     }
 
-    public sealed class TestNpcNode : NPCDialogueNode
+    public sealed class TestNpcNode : NPCDialogueNode, IDialogueWithSpeakerName, IDialogueWithText
     {
-        public string Speaker = string.Empty;
-        public string Line = string.Empty;
+        public LocalizedString Speaker = new();
+        public LocalizedString Line = new();
         public bool Visible = true;
         public bool Available = true;
 
@@ -37,14 +38,14 @@ namespace Systems.SimpleDialogue.Tests
 
         protected internal override bool IsAvailable(in DialogueContext context) => Available;
 
-        protected internal override string GetSpeakerName(in DialogueContext context) => Speaker;
+        public LocalizedString GetSpeakerName(in DialogueContext context) => Speaker;
 
-        protected internal override string GetText(in DialogueContext context) => Line;
+        public LocalizedString GetText(in DialogueContext context) => Line;
     }
 
-    public sealed class TestPlayerNode : PlayerDialogueNode
+    public sealed class TestPlayerNode : PlayerDialogueNode, IDialogueWithText
     {
-        public string Line = string.Empty;
+        public LocalizedString Line = new();
         public bool Visible = true;
         public bool Available = true;
 
@@ -57,9 +58,7 @@ namespace Systems.SimpleDialogue.Tests
             return Available ? DialogueOperations.Permitted() : DialogueOperations.OptionUnavailable();
         }
 
-        protected internal override string GetSpeakerName(in DialogueContext context) => string.Empty;
-
-        protected internal override string GetText(in DialogueContext context) => Line;
+        public LocalizedString GetText(in DialogueContext context) => Line;
     }
 
     public sealed class TestRenderer : IDialogueRenderer

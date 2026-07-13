@@ -33,8 +33,8 @@ namespace Systems.SimpleDialogue.UI
 
         public void ClearDialogue()
         {
-            _speakerText.SetText(string.Empty);
-            _bodyText.SetText(string.Empty);
+            _speakerText.SetText(null);
+            _bodyText.SetText(null);
             _answerContainer.ClearOptions();
             if (IsVisible) Hide();
         }

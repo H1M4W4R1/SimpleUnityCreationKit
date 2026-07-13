@@ -1,6 +1,7 @@
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Data;
 using UnityEngine;
+using UnityEngine.Localization;
 using XNode;
 
 namespace Systems.SimpleDialogue.Implementations
@@ -9,12 +10,11 @@ namespace Systems.SimpleDialogue.Implementations
     ///     Built-in player answer node with inspector-authored answer text.
     /// </summary>
     [Node.CreateNodeMenu("Basic Player Dialogue")]
-    public sealed class BasicPlayerDialogueNode : PlayerDialogueNode
+    public sealed class BasicPlayerDialogueNode : PlayerDialogueNode, IDialogueWithText
     {
-        [SerializeField, TextArea(1, 4)] private string _text = string.Empty;
+        [SerializeField] private LocalizedString _localizedText = new(DialogueLocalization.TABLE_COLLECTION_NAME, string.Empty);
 
-        protected internal override string GetSpeakerName(in DialogueContext context) => string.Empty;
+        public LocalizedString GetText(in DialogueContext context) => _localizedText;
 
-        protected internal override string GetText(in DialogueContext context) => _text;
     }
 }

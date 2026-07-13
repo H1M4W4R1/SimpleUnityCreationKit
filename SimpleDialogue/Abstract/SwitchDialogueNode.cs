@@ -12,9 +12,6 @@ namespace Systems.SimpleDialogue.Abstract
     {
         [CanBeNull] internal abstract DialogueInteractionNode GetNextNode(in DialogueContext context);
 
-        protected internal sealed override string GetSpeakerName(in DialogueContext context) => string.Empty;
-
-        protected internal sealed override string GetText(in DialogueContext context) => string.Empty;
     }
 
     /// <summary>

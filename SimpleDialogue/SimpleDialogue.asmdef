@@ -5,6 +5,7 @@
         "SimpleCore",
         "SimpleUserInterface",
         "Unity.TextMeshPro",
+        "Unity.Localization",
         "Unity.ugui",
         "XNode"
     ],

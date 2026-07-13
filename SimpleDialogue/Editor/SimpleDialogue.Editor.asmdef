@@ -3,6 +3,9 @@
     "rootNamespace": "",
     "references": [
         "SimpleDialogue",
+        "SimpleCore.Editor",
+        "Unity.Localization",
+        "Unity.Localization.Editor",
         "XNode",
         "XNodeEditor"
     ],

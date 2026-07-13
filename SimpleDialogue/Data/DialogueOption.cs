@@ -1,6 +1,7 @@
 ﻿using Systems.SimpleCore.Operations;
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Components;
+using UnityEngine.Localization;
 
 namespace Systems.SimpleDialogue.Data
 {
@@ -12,7 +13,7 @@ namespace Systems.SimpleDialogue.Data
         public readonly Dialogue dialogue;
         public readonly PlayerDialogueNode node;
         public readonly int index;
-        public readonly string text;
+        public readonly LocalizedString text;
         public readonly bool isAvailable;
 
         public bool IsValid => !ReferenceEquals(dialogue, null) && !ReferenceEquals(node, null);
@@ -21,7 +22,7 @@ namespace Systems.SimpleDialogue.Data
             Dialogue dialogue,
             PlayerDialogueNode node,
             int index,
-            string text,
+            LocalizedString text,
             bool isAvailable)
         {
             this.dialogue = dialogue;

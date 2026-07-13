@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Components;
 using Systems.SimpleDialogue.Implementations;
+using UnityEngine.Localization;
 
 namespace Systems.SimpleDialogue.Data
 {
@@ -16,8 +17,8 @@ namespace Systems.SimpleDialogue.Data
         [CanBeNull] public Dialogue Dialogue { get; private set; }
         [CanBeNull] public DialogueGraph Graph { get; private set; }
         [CanBeNull] public DialogueInteractionNode CurrentNode { get; private set; }
-        [NotNull] public string SpeakerName { get; private set; } = string.Empty;
-        [NotNull] public string Text { get; private set; } = string.Empty;
+        [CanBeNull] public LocalizedString SpeakerName { get; private set; }
+        [CanBeNull] public LocalizedString Text { get; private set; }
         public bool IsRunning { get; private set; }
         /// <summary>
         ///     Whether the renderer can offer an interaction that advances to the current NPC node's next node.
@@ -36,16 +37,16 @@ namespace Systems.SimpleDialogue.Data
             [CanBeNull] Dialogue dialogue,
             [CanBeNull] DialogueGraph graph,
             [CanBeNull] DialogueInteractionNode currentNode,
-            [CanBeNull] string speakerName,
-            [CanBeNull] string text,
+            [CanBeNull] LocalizedString speakerName,
+            [CanBeNull] LocalizedString text,
             bool isRunning,
             bool canAdvance)
         {
             Dialogue = dialogue;
             Graph = graph;
             CurrentNode = currentNode;
-            SpeakerName = ReferenceEquals(speakerName, null) ? string.Empty : speakerName;
-            Text = ReferenceEquals(text, null) ? string.Empty : text;
+            SpeakerName = speakerName;
+            Text = text;
             IsRunning = isRunning;
             CanAdvance = canAdvance;
         }

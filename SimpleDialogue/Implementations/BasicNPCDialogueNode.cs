@@ -1,6 +1,7 @@
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Data;
 using UnityEngine;
+using UnityEngine.Localization;
 using XNode;
 
 namespace Systems.SimpleDialogue.Implementations
@@ -9,14 +10,15 @@ namespace Systems.SimpleDialogue.Implementations
     ///     Built-in NPC dialogue node with inspector-authored speaker and text.
     /// </summary>
     [Node.CreateNodeMenu("Basic NPC Dialogue")]
-    public sealed class BasicNPCDialogueNode : NPCDialogueNode
+    public sealed class BasicNPCDialogueNode : NPCDialogueNode, IDialogueWithSpeakerName, IDialogueWithText
     {
-        [SerializeField] private string _speakerName = string.Empty;
+        [SerializeField] private LocalizedString _localizedSpeakerName = new(DialogueLocalization.TABLE_COLLECTION_NAME, string.Empty);
 
-        [SerializeField, TextArea(2, 8)] private string _text = string.Empty;
+        [SerializeField] private LocalizedString _localizedText = new(DialogueLocalization.TABLE_COLLECTION_NAME, string.Empty);
 
-        protected internal override string GetSpeakerName(in DialogueContext context) => _speakerName;
+        public LocalizedString GetSpeakerName(in DialogueContext context) => _localizedSpeakerName;
 
-        protected internal override string GetText(in DialogueContext context) => _text;
+        public LocalizedString GetText(in DialogueContext context) => _localizedText;
+
     }
 }

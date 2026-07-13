@@ -5,6 +5,7 @@
         "SimpleCore",
         "SimpleDialogue",
         "SimpleUserInterface",
+        "Unity.Localization",
         "UnityEngine.TestRunner",
         "XNode"
     ],

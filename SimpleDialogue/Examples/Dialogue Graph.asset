@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Simple Player Dialogue
   m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
   graph: {fileID: 11400000}
-  position: {x: 136, y: -72}
+  position: {x: 136, y: -88}
   ports:
     keys:
     - next
@@ -43,7 +43,18 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: John
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.john
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-6401454082097923717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,8 +108,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: Hi John!
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.john.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.john.text
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-6058575136006248883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,8 +182,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: This is world.
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.question.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: GUID:9e3124a2d55444b4d9cd2086c5cb282f
+    m_TableEntryReference:
+      m_KeyId: 1549601464320
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-5014905649377732419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,8 +256,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: Hi Jack!
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jack.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jack.text
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-4697910633746140574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,8 +330,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: Hi Jeanette!
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jeanette.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jeanette.text
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-2297381375330275016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +424,18 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: Jeanette
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.jeanette
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-1917004769267357326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,8 +501,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: What's your name?
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.introduction.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: GUID:9e3124a2d55444b4d9cd2086c5cb282f
+    m_TableEntryReference:
+      m_KeyId: 1549622435841
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-960328948987913419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,7 +565,18 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: Jack
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.jack
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,7 +657,18 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: Bye!
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.bye.one
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &1281781259432470091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,8 +793,27 @@ MonoBehaviour:
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 0
-  _speakerName: World
-  _text: Hi Jollie!
+  _localizedSpeakerName:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jollie.speaker
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.greeting.jollie.text
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &7794921804950529968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -699,7 +857,18 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: Bye!
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.bye.two
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &7820391384711581565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -743,4 +912,15 @@ MonoBehaviour:
       _connectionType: 0
       _typeConstraint: 2
       _dynamic: 0
-  _text: Jollie
+  _localizedText:
+    m_TableReference:
+      m_TableCollectionName: SimpleDialogue
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: example.answer.jollie
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []

@@ -6,6 +6,7 @@ using Systems.SimpleDialogue.Data;
 using Systems.SimpleDialogue.Implementations;
 using Systems.SimpleDialogue.Operations;
 using UnityEngine;
+using UnityEngine.Localization;
 
 namespace Systems.SimpleDialogue.Components
 {
@@ -214,14 +215,16 @@ namespace Systems.SimpleDialogue.Components
         {
             RebuildOptions();
 
-            string speakerName = string.Empty;
-            string text = string.Empty;
+            LocalizedString speakerName = null;
+            LocalizedString text = null;
             if (!ReferenceEquals(_currentNode, null))
             {
                 DialogueOption emptyOption = default;
                 DialogueContext context = CreateContext(_currentNode, in emptyOption);
-                speakerName = _currentNode.GetSpeakerName(in context);
-                text = _currentNode.GetText(in context);
+                if (_currentNode is IDialogueWithSpeakerName withSpeakerName)
+                    speakerName = withSpeakerName.GetSpeakerName(in context);
+                if (_currentNode is IDialogueWithText withText)
+                    text = withText.GetText(in context);
             }
 
             OperationResult canAdvanceResult = CanAdvance();
@@ -245,7 +248,9 @@ namespace Systems.SimpleDialogue.Components
                 if (!answerNode.IsVisible(in context)) continue;
 
                 bool isAvailable = answerNode.IsAvailable(in context) && answerNode.CanEnterInternal(in context);
-                string text = answerNode.GetText(in context);
+                LocalizedString text = answerNode is IDialogueWithText withText
+                    ? withText.GetText(in context)
+                    : null;
                 _options.Add(new DialogueOption(this, answerNode, _options.Count, text, isAvailable));
             }
         }
@@ -280,7 +285,7 @@ namespace Systems.SimpleDialogue.Components
             _options.Clear();
             _currentNode = null;
             _currentGraph = null;
-            _viewContext.Set(this, null, null, string.Empty, string.Empty, false, false);
+            _viewContext.Set(this, null, null, null, null, false, false);
         }
 
         private bool IsAnotherDialogueRunning()

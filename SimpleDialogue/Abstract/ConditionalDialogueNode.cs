@@ -33,8 +33,5 @@ namespace Systems.SimpleDialogue.Abstract
             return connectedPort.node as DialogueInteractionNode;
         }
 
-        protected internal sealed override string GetSpeakerName(in DialogueContext context) => string.Empty;
-
-        protected internal sealed override string GetText(in DialogueContext context) => string.Empty;
     }
 }

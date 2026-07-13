@@ -7,6 +7,8 @@
     "Unity.Burst",
     "Unity.Collections",
     "Unity.Mathematics",
+    "Unity.Localization",
+    "Unity.Localization.Editor",
     "Unity.ResourceManager",
     "SimpleCore"
   ],

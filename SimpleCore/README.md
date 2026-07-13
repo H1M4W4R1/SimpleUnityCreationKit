@@ -6,6 +6,7 @@ A high-performance, lightweight foundational library for Unity projects. SimpleC
 
 - **Identifiers**: Type-safe, performant ID systems (8, 16, 32, 64, 128, 256, 512-bit variants, Snowflake128, HashIdentifier)
 - **Input System**: Wrapper layer for Unity's InputSystem with rebinding support and input device management
+- **Localization**: Startup initialization API plus editor helpers for CSV-enabled string table collections
 - **Example UI helpers**: Shared runtime Unity UI panel builder used by package example scenes
 - **Save/Load System**: Generic save file abstraction supporting multiple file formats with upgrade/downgrade transitions
 - **Asset Storage**: Addressable asset databases with lazy-loading and ID-based lookups
@@ -24,6 +25,7 @@ A high-performance, lightweight foundational library for Unity projects. SimpleC
 - **Unity.Collections** - For NativeCollections support
 - **Unity.Mathematics** - For high-performance math operations
 - **Unity.InputSystem** - For input handling
+- **Unity.Localization** - For localized string references and CSV table workflows
 - **Unity.ugui** - For shared runtime example UI helpers
 - **Unity.ResourceManager** - Dependency of Addressables
 
@@ -72,6 +74,16 @@ Debug.Log($"Jump is bound to: {displayName}");
 // Start interactive rebind (keyboard only)
 bool rebindStarted = InputAPI.Rebind(jumpActionRef, InputDeviceType.Keyboard);
 ```
+
+### Localization
+
+Start localization explicitly when a bootstrap sequence needs to await it. `LocalizationAPI` also starts Unity Localization before scenes load.
+
+```csharp
+AsyncOperationHandle<LocalizationSettings> initialization = LocalizationAPI.Initialize();
+```
+
+Editor systems can use `LocalizationEditorAPI.EnsureCsvStringTableCollection("TableName")` to create a project localization setup and a CSV-enabled string table collection under `Assets/Generated/Localization/`.
 
 ### Example Runtime UI
 
@@ -274,4 +286,3 @@ float3 rotated = MathExtensions.Rotate(vec3, new float3(0, 1, 0), math.PI / 2);
 SimpleCore includes an Editor-only test assembly at `Tests/EditMode/SimpleCore.Tests.asmdef`.
 It references Unity Test Framework and has `includePlatforms` set to `Editor`, so the tests are not compiled into player builds.
 Run them from Unity Test Runner under Edit Mode when validating package changes.
-

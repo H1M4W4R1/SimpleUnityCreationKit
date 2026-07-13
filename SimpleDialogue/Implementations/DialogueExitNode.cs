@@ -11,8 +11,5 @@ namespace Systems.SimpleDialogue.Implementations
     [NodeTint("#94605B")]
     public sealed class DialogueExitNode : DialogueInteractionNode
     {
-        protected internal override string GetSpeakerName(in DialogueContext context) => string.Empty;
-
-        protected internal override string GetText(in DialogueContext context) => string.Empty;
     }
 }

@@ -6,11 +6,14 @@ using Systems.SimpleDialogue.Data;
 using Systems.SimpleDialogue.Implementations;
 using Systems.SimpleDialogue.Operations;
 using UnityEngine;
+using UnityEngine.Localization;
 
 namespace Systems.SimpleDialogue.Tests
 {
     public sealed class DialogueRuntimeTests : SimpleDialogueTestBase
     {
+        private const string TEST_TABLE = "SimpleDialogue.Tests";
+
         [Test]
         public void BeginDialogue_WhenGraphIsMissing_ReturnsGraphIsNull()
         {
@@ -28,9 +31,9 @@ namespace Systems.SimpleDialogue.Tests
             DialogueEntryNode entry = graph.AddNode<DialogueEntryNode>();
             TestNpcNode npc = graph.AddNode<TestNpcNode>();
             TestPlayerNode answer = graph.AddNode<TestPlayerNode>();
-            npc.Speaker = "Archivist";
-            npc.Line = "The gate remembers every name.";
-            answer.Line = "Then it knows mine.";
+            npc.Speaker = CreateLocalizedString("speaker");
+            npc.Line = CreateLocalizedString("line");
+            answer.Line = CreateLocalizedString("answer");
             Connect(entry, nameof(DialogueEntryNode.next), npc);
             Connect(npc, nameof(NPCDialogueNode.answers), answer);
             TestRenderer renderer = new();
@@ -41,10 +44,10 @@ namespace Systems.SimpleDialogue.Tests
             AssertSimilar(DialogueOperations.Started(), result);
             Assert.IsTrue(dialogue.IsRunning);
             Assert.AreSame(npc, dialogue.CurrentNode);
-            Assert.AreEqual("Archivist", renderer.LastContext.SpeakerName);
-            Assert.AreEqual("The gate remembers every name.", renderer.LastContext.Text);
+            Assert.AreSame(npc.Speaker, renderer.LastContext.SpeakerName);
+            Assert.AreSame(npc.Line, renderer.LastContext.Text);
             Assert.AreEqual(1, renderer.LastContext.Options.Count);
-            Assert.AreEqual("Then it knows mine.", renderer.LastContext.Options[0].text);
+            Assert.AreSame(answer.Line, renderer.LastContext.Options[0].text);
         }
 
         [Test]
@@ -55,9 +58,9 @@ namespace Systems.SimpleDialogue.Tests
             TestNpcNode firstNpc = graph.AddNode<TestNpcNode>();
             TestPlayerNode answer = graph.AddNode<TestPlayerNode>();
             TestNpcNode nextNpc = graph.AddNode<TestNpcNode>();
-            firstNpc.Line = "Choose.";
-            answer.Line = "I choose forward.";
-            nextNpc.Line = "Forward it is.";
+            firstNpc.Line = CreateLocalizedString("choose");
+            answer.Line = CreateLocalizedString("forward");
+            nextNpc.Line = CreateLocalizedString("forward-confirmed");
             Connect(entry, nameof(DialogueEntryNode.next), firstNpc);
             Connect(firstNpc, nameof(NPCDialogueNode.answers), answer);
             Connect(answer, nameof(PlayerDialogueNode.next), nextNpc);
@@ -77,8 +80,8 @@ namespace Systems.SimpleDialogue.Tests
             DialogueEntryNode entry = graph.AddNode<DialogueEntryNode>();
             TestNpcNode firstNpc = graph.AddNode<TestNpcNode>();
             TestNpcNode secondNpc = graph.AddNode<TestNpcNode>();
-            firstNpc.Line = "First line.";
-            secondNpc.Line = "Second line.";
+            firstNpc.Line = CreateLocalizedString("first-line");
+            secondNpc.Line = CreateLocalizedString("second-line");
             Connect(entry, nameof(DialogueEntryNode.next), firstNpc);
             Connect(firstNpc, nameof(NPCDialogueNode.next), secondNpc);
             TestRenderer renderer = new();
@@ -206,9 +209,9 @@ namespace Systems.SimpleDialogue.Tests
             TestPlayerNode hidden = graph.AddNode<TestPlayerNode>();
             TestPlayerNode blocked = graph.AddNode<TestPlayerNode>();
             hidden.Visible = false;
-            hidden.Line = "Hidden";
+            hidden.Line = CreateLocalizedString("hidden");
             blocked.Available = false;
-            blocked.Line = "Blocked";
+            blocked.Line = CreateLocalizedString("blocked");
             Connect(entry, nameof(DialogueEntryNode.next), npc);
             Connect(npc, nameof(NPCDialogueNode.answers), hidden);
             Connect(npc, nameof(NPCDialogueNode.answers), blocked);
@@ -217,7 +220,7 @@ namespace Systems.SimpleDialogue.Tests
             dialogue.BeginDialogue();
 
             Assert.AreEqual(1, dialogue.Options.Count);
-            Assert.AreEqual("Blocked", dialogue.Options[0].text);
+            Assert.AreSame(blocked.Line, dialogue.Options[0].text);
             Assert.IsFalse(dialogue.Options[0].isAvailable);
         }
 
@@ -238,5 +241,8 @@ namespace Systems.SimpleDialogue.Tests
             Assert.IsFalse(dialogue.IsRunning);
             Assert.IsTrue(renderer.WasCleared);
         }
+
+        private static LocalizedString CreateLocalizedString(string entryKey) =>
+            new LocalizedString(TEST_TABLE, entryKey);
     }
 }

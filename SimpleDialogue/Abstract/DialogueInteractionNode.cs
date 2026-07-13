@@ -20,10 +20,6 @@ namespace Systems.SimpleDialogue.Abstract
 
         protected internal virtual bool IsAvailable(in DialogueContext context) => true;
 
-        protected internal abstract string GetSpeakerName(in DialogueContext context);
-
-        protected internal abstract string GetText(in DialogueContext context);
-
         protected internal virtual void OnNodeEntered(in DialogueContext context, in OperationResult result)
         {
         }
