@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
+using Systems.SimpleBuilding.Components;
 using Systems.SimpleBuilding.Data;
 using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleCore.Saving.Abstract;
 using Systems.SimpleCore.Saving.Utility;
+using Systems.SimpleCore.Storage.Lists;
 
 namespace Systems.SimpleBuilding.Utility
 {
@@ -30,6 +32,32 @@ namespace Systems.SimpleBuilding.Utility
 
             for (int entryIndex = 0; entryIndex < entries.Count; entryIndex++)
                 BuildingRegistry.RegisterEntry(entries[entryIndex]);
+        }
+
+        /// <summary>
+        ///     Gets the first currently placed building assignable to <typeparamref name="TBuilding"/>.
+        /// </summary>
+        /// <remarks>
+        ///     Only buildings created or restored through <see cref="BuildingBase"/> are registered.
+        /// </remarks>
+        [CanBeNull]
+        public static TBuilding GetFirstBuildingOfType<TBuilding>()
+            where TBuilding : BuildingBase
+            => BuildingRegistry.GetFirstBuildingOfType<TBuilding>();
+
+        /// <summary>
+        ///     Gets all currently placed buildings assignable to <typeparamref name="TBuilding"/>.
+        /// </summary>
+        /// <remarks>
+        ///     Release the returned access after reading its list. Only buildings created or restored through
+        ///     <see cref="BuildingBase"/> are registered.
+        /// </remarks>
+        public static ROListAccess<TBuilding> GetAllBuildingsOfType<TBuilding>()
+            where TBuilding : BuildingBase
+        {
+            RWListAccess<TBuilding> buildings = RWListAccess<TBuilding>.Create();
+            BuildingRegistry.CopyBuildingsOfType(buildings.List);
+            return buildings.ToReadOnly();
         }
 
         /// <summary>

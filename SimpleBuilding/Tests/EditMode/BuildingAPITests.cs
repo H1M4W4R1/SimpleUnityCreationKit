@@ -6,6 +6,7 @@ using Systems.SimpleBuilding.Data.Context;
 using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleBuilding.Utility;
+using Systems.SimpleCore.Storage.Lists;
 using Systems.SimpleCore.Operations;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -93,6 +94,36 @@ namespace Systems.SimpleBuilding.Tests
             Assert.IsFalse(slot.IsOccupied);
             Assert.AreEqual(1, entry.RefundCallCount);
             Assert.AreEqual(1, entry.DemolishedCallCount);
+        }
+
+        [Test]
+        public void BuildingQueries_ReturnOnlyRegisteredBuildingsOfTheRequestedType()
+        {
+            TestBuildingEntry plainEntry = CreateEntry<TestBuilding>();
+            TestBuildingEntry slotEntry = CreateEntry<TestSlotBuilding>();
+            GameObject slotObject = Track(new GameObject("Building Slot"));
+            BuildingSlot slot = slotObject.AddComponent<BuildingSlot>();
+            List<BuildingSlot> slots = new List<BuildingSlot> {slot};
+            BuildingPlacementContext plainContext = new BuildingPlacementContext(
+                plainEntry, Vector3.zero, Quaternion.identity);
+            BuildingPlacementContext slotContext = new BuildingPlacementContext(
+                slotEntry, Vector3.one, Quaternion.identity, slots: slots);
+
+            OperationResult plainBuildResult = BuildingBase.TryBuild(in plainContext, out BuildingBase plainBuilding);
+            OperationResult slotBuildResult = BuildingBase.TryBuild(in slotContext, out BuildingBase slotBuilding);
+            Assert.IsTrue(plainBuildResult);
+            Assert.IsTrue(slotBuildResult);
+            Track(plainBuilding.gameObject);
+            Track(slotBuilding.gameObject);
+
+            TestSlotBuilding firstSlotBuilding = BuildingAPI.GetFirstBuildingOfType<TestSlotBuilding>();
+            ROListAccess<TestBuilding> allBuildings = BuildingAPI.GetAllBuildingsOfType<TestBuilding>();
+
+            Assert.AreSame(slotBuilding, firstSlotBuilding);
+            Assert.AreEqual(2, allBuildings.List.Count);
+            Assert.IsTrue(allBuildings.List[0] is TestSlotBuilding);
+            Assert.IsTrue(allBuildings.List[1] is TestBuilding);
+            allBuildings.Release();
         }
 
         [Test]

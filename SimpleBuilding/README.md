@@ -97,6 +97,18 @@ namespace Game.Buildings
 
 `SaveToMemory` returns a `SaveFileBase` so it can be embedded in a host game's larger save file. The host owns disk serialization and versioning, while `BuildingAPI.Load` accepts the same SimpleCore save-file base type.
 
+## Finding placed buildings
+
+`BuildingAPI` can query the currently registered placed buildings by component type. These queries include only buildings created or restored through the building flow.
+
+```csharp
+TestBuilding firstBuilding = BuildingAPI.GetFirstBuildingOfType<TestBuilding>();
+ROListAccess<TestBuilding> buildings = BuildingAPI.GetAllBuildingsOfType<TestBuilding>();
+
+// Read buildings.List, then return the pooled list.
+buildings.Release();
+```
+
 ## Selecting, rotating, and placing
 
 ```csharp

@@ -85,6 +85,42 @@ namespace Systems.SimpleBuilding.Utility
             }
         }
 
+        [CanBeNull]
+        internal static TBuilding GetFirstBuildingOfType<TBuilding>()
+            where TBuilding : BuildingBase
+        {
+            for (int buildingIndex = Buildings.Count - 1; buildingIndex >= 0; buildingIndex--)
+            {
+                BuildingBase building = Buildings[buildingIndex];
+                if (!building)
+                {
+                    Buildings.RemoveAt(buildingIndex);
+                    continue;
+                }
+
+                if (building is TBuilding requestedBuilding) return requestedBuilding;
+            }
+
+            return null;
+        }
+
+        internal static void CopyBuildingsOfType<TBuilding>([NotNull] List<TBuilding> destination)
+            where TBuilding : BuildingBase
+        {
+            destination.Clear();
+            for (int buildingIndex = Buildings.Count - 1; buildingIndex >= 0; buildingIndex--)
+            {
+                BuildingBase building = Buildings[buildingIndex];
+                if (!building)
+                {
+                    Buildings.RemoveAt(buildingIndex);
+                    continue;
+                }
+
+                if (building is TBuilding requestedBuilding) destination.Add(requestedBuilding);
+            }
+        }
+
         internal static bool TryGetEntry(
             [CanBeNull] string saveIdentifier,
             [NotNull] out BuildingEntryBase entry)
