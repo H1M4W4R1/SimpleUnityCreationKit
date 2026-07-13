@@ -59,7 +59,7 @@ namespace Systems.SimpleBuilding.Components
             [CanBeNull] BuildingEntryBase entry,
             [CanBeNull] IBuildingUser user = null)
         {
-            OperationResult result = BuildingAPI.CanSelect(entry, user, this);
+            OperationResult result = CanSelect(entry, user);
             if (!result) return result;
 
             _selectedEntry = entry;
@@ -119,7 +119,7 @@ namespace Systems.SimpleBuilding.Components
                 this,
                 _buildingParent,
                 _placementSlots);
-            OperationResult result = BuildingAPI.TryBuild(in context, out building);
+            OperationResult result = BuildingBase.TryBuild(in context, out building);
             if (result && !ReferenceEquals(_ghostPreview, null) && _ghostPreview)
                 _ghostPreview.Hide();
             return result;
@@ -135,7 +135,7 @@ namespace Systems.SimpleBuilding.Components
 
             BuildingBase building = hit.collider.GetComponentInParent<BuildingBase>();
             if (ReferenceEquals(building, null)) return BuildingOperations.BuildingIsNull();
-            return BuildingAPI.TryDemolish(building, user, this);
+            return building.TryDemolish(user, this);
         }
 
         protected abstract bool TryGetRay(out Ray ray);
@@ -190,7 +190,7 @@ namespace Systems.SimpleBuilding.Components
             CollectPlacementSlots(in _lastHit, _placementSlots);
             Vector3 position = GetPlacementPosition(_lastHit.point);
             Quaternion rotation = GetPlacementRotation();
-            OperationResult result = BuildingAPI.CanBuild(
+            BuildingPlacementContext context = new BuildingPlacementContext(
                 _selectedEntry,
                 position,
                 rotation,
@@ -198,6 +198,7 @@ namespace Systems.SimpleBuilding.Components
                 this,
                 _buildingParent,
                 _placementSlots);
+            OperationResult result = BuildingBase.CanBuild(in context);
 
             if (!ReferenceEquals(_ghostPreview, null) && _ghostPreview)
                 _ghostPreview.Show(_selectedEntry, position, rotation, result);
@@ -210,6 +211,17 @@ namespace Systems.SimpleBuilding.Components
             hit = default;
             if (!TryGetRay(out Ray ray)) return false;
             return Physics.Raycast(ray, out hit, _maxRaycastDistance, _raycastMask, QueryTriggerInteraction.Ignore);
+        }
+
+        private OperationResult CanSelect(
+            [CanBeNull] BuildingEntryBase entry,
+            [CanBeNull] IBuildingUser user)
+        {
+            if (ReferenceEquals(entry, null) || !entry) return BuildingOperations.EntryIsNull();
+
+            BuildingRegistry.RegisterEntry(entry);
+            BuildingSelectionContext context = new BuildingSelectionContext(entry, user, this);
+            return entry.IsAvailable(in context);
         }
 
         private bool TryGetSlotSnapPosition(out Vector3 position)

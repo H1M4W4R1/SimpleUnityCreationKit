@@ -35,7 +35,8 @@ namespace Systems.SimpleBuilding.Tests
             Vector3 position = new Vector3(2f, 3f, 4f);
             Quaternion rotation = Quaternion.Euler(0f, 45f, 0f);
 
-            OperationResult result = BuildingAPI.TryBuild(entry, position, rotation, out BuildingBase building);
+            BuildingPlacementContext context = new BuildingPlacementContext(entry, position, rotation);
+            OperationResult result = BuildingBase.TryBuild(in context, out BuildingBase building);
 
             Assert.IsTrue(result);
             Assert.AreEqual(BuildingOperations.SUCCESS_PLACED, result.resultCode);
@@ -58,8 +59,8 @@ namespace Systems.SimpleBuilding.Tests
             TestBuildingEntry entry = CreateEntry<TestBuilding>();
             entry.AllowConsumption = false;
 
-            OperationResult result = BuildingAPI.TryBuild(
-                entry, Vector3.zero, Quaternion.identity, out BuildingBase building);
+            BuildingPlacementContext context = new BuildingPlacementContext(entry, Vector3.zero, Quaternion.identity);
+            OperationResult result = BuildingBase.TryBuild(in context, out BuildingBase building);
 
             Assert.IsFalse(result);
             Assert.AreEqual(OperationResult.ERROR_DENIED, result.resultCode);
@@ -76,15 +77,16 @@ namespace Systems.SimpleBuilding.Tests
             BuildingSlot slot = slotObject.AddComponent<BuildingSlot>();
             List<BuildingSlot> slots = new List<BuildingSlot> { slot };
 
-            OperationResult buildResult = BuildingAPI.TryBuild(
-                entry, Vector3.zero, Quaternion.identity, out BuildingBase building, slots: slots);
+            BuildingPlacementContext context = new BuildingPlacementContext(
+                entry, Vector3.zero, Quaternion.identity, slots: slots);
+            OperationResult buildResult = BuildingBase.TryBuild(in context, out BuildingBase building);
 
             Assert.IsTrue(buildResult);
             Track(building.gameObject);
             Assert.IsTrue(slot.IsOccupied);
             Assert.AreEqual(building, slot.OccupyingBuilding);
 
-            OperationResult demolishResult = BuildingAPI.TryDemolish(building);
+            OperationResult demolishResult = building.TryDemolish();
 
             Assert.IsTrue(demolishResult);
             Assert.AreEqual(BuildingOperations.SUCCESS_DEMOLISHED, demolishResult.resultCode);
@@ -152,14 +154,16 @@ namespace Systems.SimpleBuilding.Tests
 
             Vector3 freePosition = new Vector3(2f, 3f, 4f);
             Quaternion freeRotation = Quaternion.Euler(0f, 35f, 0f);
-            OperationResult freeBuildResult = BuildingAPI.TryBuild(
-                freeEntry, freePosition, freeRotation, out BuildingBase freeBuilding);
+            BuildingPlacementContext freeContext = new BuildingPlacementContext(
+                freeEntry, freePosition, freeRotation);
+            OperationResult freeBuildResult = BuildingBase.TryBuild(in freeContext, out BuildingBase freeBuilding);
             Assert.IsTrue(freeBuildResult);
             Track(freeBuilding.gameObject);
             freeBuilding.transform.localScale = new Vector3(1.5f, 2f, 0.5f);
 
-            OperationResult slotBuildResult = BuildingAPI.TryBuild(
-                slotEntry, Vector3.zero, Quaternion.identity, out BuildingBase slotBuilding, slots: slots);
+            BuildingPlacementContext slotContext = new BuildingPlacementContext(
+                slotEntry, Vector3.zero, Quaternion.identity, slots: slots);
+            OperationResult slotBuildResult = BuildingBase.TryBuild(in slotContext, out BuildingBase slotBuilding);
             Assert.IsTrue(slotBuildResult);
             Track(slotBuilding.gameObject);
 

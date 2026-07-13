@@ -1,6 +1,6 @@
 # SimpleBuilding
 
-SimpleBuilding provides an inventory-agnostic transaction for placing and demolishing world buildings. `BuildingAPI` owns the common validation, resource, instantiation, slot-reservation, refund, and callback flow. A concrete `BuildingEntryBase` owns game-specific availability, costs, permissions, and rewards.
+SimpleBuilding provides an inventory-agnostic transaction for placing and demolishing world buildings. `BuildingBase` owns the common validation, resource, instantiation, slot-reservation, refund, and callback flow. `BuildingAPI` is limited to entry registration and save-pipeline integration. A concrete `BuildingEntryBase` owns game-specific availability, costs, permissions, and rewards.
 
 ## Setup
 
@@ -59,7 +59,7 @@ Resource consumption and refunds should be atomic. `TryRefundResources` is invok
 
 ## Saving placed buildings
 
-SimpleBuilding saves the buildings created through `BuildingAPI` with the SimpleCore save pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
+SimpleBuilding saves the buildings created through `BuildingBase` with the SimpleCore save pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
 
 Before loading, register every entry that can appear in the save; active `BuildingSlot` components register themselves. Loading replaces the currently API-placed buildings without consuming resources or issuing refunds, while still invoking placement and demolition callbacks. Save-driven placement and removal contexts set `isSaveSystemRequest` to `true`, so custom rules can recognize the source explicitly.
 
@@ -167,6 +167,6 @@ namespace Game.Buildings
 }
 ```
 
-The default raycaster contributes the `BuildingSlot` on the hit object. Override `CollectPlacementSlots(in RaycastHit hit, List<BuildingSlot> slots)` in a custom raycaster to collect a grid footprint or other multi-slot layout. The API validates the exact count, rejects duplicates and occupied slots, reserves slots on placement, and releases them on demolition or destruction.
+The default raycaster contributes the `BuildingSlot` on the hit object. Override `CollectPlacementSlots(in RaycastHit hit, List<BuildingSlot> slots)` in a custom raycaster to collect a grid footprint or other multi-slot layout. `BuildingBase` validates the exact count, rejects duplicates and occupied slots, reserves slots on placement, and releases them on demolition or destruction.
 
 `ISlotBuilding.SnapToSlot` defaults to `true`: the raycaster places the building at the selected slot position, or at the average of a multi-slot footprint. It also uses the first slot's rotation as the base rotation, then applies the caller's configured yaw. Override `SnapToSlot` as `false` only when a custom building needs to derive its position independently.

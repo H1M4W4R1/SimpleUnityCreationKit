@@ -13,11 +13,11 @@ Shops are extensible `MonoBehaviour` components. Offers are `ScriptableObject` d
 5. Add offer assets to the target shop's offer list.
 6. Override the shop transaction hooks to handle project-owned resources.
 
-Offers are deliberately shop-local. `ShopAPI` and `ShopBase` reject an offer that is not present in the shop's `Offers` list.
+Offers are deliberately shop-local. `ShopBase` rejects an offer that is not present in its `Offers` list.
 
 ## Transaction Flow
 
-`ShopAPI.CanPurchase` and `ShopAPI.CanSell` validate:
+`ShopBase.CanPurchase` and `ShopBase.CanSell` validate:
 
 - the shop, offer, and customer references
 - the offer type
@@ -27,13 +27,13 @@ Offers are deliberately shop-local. `ShopAPI` and `ShopBase` reject an offer tha
 - shop-level `CanPayTransactionCosts`
 - shop-level `CanGrantTransactionReturns`
 
-`ShopAPI.TryPurchase` and `ShopAPI.TrySell` then call:
+`ShopBase.TryPurchase` and `ShopBase.TrySell` then call:
 
 1. `PayTransactionCosts`
 2. `GrantTransactionReturns`
 3. success callbacks
 
-If `GrantTransactionReturns` fails after costs were paid, the API calls `RollbackTransactionReturns` and then `RefundTransactionCosts`. If either reversion step fails, the final result is `ShopOperations.RevertFailed()`.
+If `GrantTransactionReturns` fails after costs were paid, the shop calls `RollbackTransactionReturns` and then `RefundTransactionCosts`. If either reversion step fails, the final result is `ShopOperations.RevertFailed()`.
 
 Use `ShopTransactionFlags.IgnoreTransactionConditions` only to bypass the preflight checks. It does not skip `PayTransactionCosts`, `GrantTransactionReturns`, or their reversion hooks.
 
@@ -152,7 +152,7 @@ if (!result)
 }
 ```
 
-Use `shop.TrySell(sellOffer, customer)` for sell offers. Static `ShopAPI` overloads are available when caller code does not want to go through the shop instance methods directly.
+Use `shop.TrySell(sellOffer, customer)` for sell offers. Transactions always go through the owning shop component so its local offer list and lifecycle hooks remain together.
 
 ## Examples included
 

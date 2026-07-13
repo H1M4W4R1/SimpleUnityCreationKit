@@ -124,7 +124,7 @@ namespace Systems.SimpleBuilding.Data
                     savedBuilding.Rotation,
                     slots: _resolvedSlots,
                     isSaveSystemRequest: true);
-                if (!BuildingAPI.TryRestore(in context, out BuildingBase building)) continue;
+                if (!BuildingBase.TryRestore(in context, out BuildingBase building)) continue;
 
                 building.transform.localScale = savedBuilding.LocalScale;
             }
@@ -157,7 +157,7 @@ namespace Systems.SimpleBuilding.Data
                 BuildingDemolitionContext context = new BuildingDemolitionContext(
                     building,
                     isSaveSystemRequest: true);
-                BuildingAPI.ClearForSave(in context);
+                building.ClearForSave(in context);
             }
 
             _registeredBuildings.Clear();
