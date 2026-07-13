@@ -159,6 +159,7 @@ namespace Systems.SimpleBuilding.Utility
                 BuildingDemolitionContext refundContext = new BuildingDemolitionContext(
                     instance, context.user, context.raycaster);
                 OperationResult refundResult = entry.TryRefundResources(in refundContext);
+                BuildingRegistry.UnregisterBuilding(instance);
                 DestroyGameObject(instance.gameObject);
                 OperationResult finalResult = refundResult
                     ? BuildingOperations.SlotOccupied()
@@ -175,7 +176,7 @@ namespace Systems.SimpleBuilding.Utility
         }
 
         /// <summary>
-        ///     Recreates a building from saved world state without consuming resources or invoking placement callbacks.
+        ///     Recreates a building from saved world state without consuming resources.
         /// </summary>
         /// <remarks>
         ///     This is reserved for the building save adapter so loading a save cannot be treated as a new
@@ -191,25 +192,40 @@ namespace Systems.SimpleBuilding.Utility
 
             BuildingEntryBase entry = context.entry;
             BuildingBase prefab = entry.GetPrefab();
-            if (ReferenceEquals(prefab, null) || !prefab) return BuildingOperations.PrefabMissing();
+            if (ReferenceEquals(prefab, null) || !prefab)
+            {
+                OperationResult result = BuildingOperations.PrefabMissing();
+                NotifyPlacementFailed(in context, result);
+                return result;
+            }
 
             OperationResult slotsResult = ValidateSlots(prefab, context.slots);
-            if (!slotsResult) return slotsResult;
+            if (!slotsResult)
+            {
+                NotifyPlacementFailed(in context, slotsResult);
+                return slotsResult;
+            }
 
             BuildingBase instance = Object.Instantiate(prefab, context.position, context.rotation, context.parent);
             instance.Initialize(entry);
             if (!instance.TryAssignSlots(context.slots))
             {
+                BuildingRegistry.UnregisterBuilding(instance);
                 DestroyGameObject(instance.gameObject);
-                return BuildingOperations.SlotOccupied();
+                OperationResult result = BuildingOperations.SlotOccupied();
+                NotifyPlacementFailed(in context, result);
+                return result;
             }
 
             building = instance;
-            return BuildingOperations.Placed();
+            OperationResult placedResult = BuildingOperations.Placed();
+            entry.OnBuildingPlaced(in context, instance, placedResult);
+            instance.OnBuildingPlaced(in context, placedResult);
+            return placedResult;
         }
 
         /// <summary>
-        ///     Removes a building while applying a save file without refunds or demolition callbacks.
+        ///     Removes a building while applying a save file without refunds.
         /// </summary>
         /// <remarks>
         ///     This is reserved for the building save adapter. Its context carries
@@ -221,8 +237,13 @@ namespace Systems.SimpleBuilding.Utility
             if (ReferenceEquals(context.building, null) || !context.building) return;
 
             BuildingBase building = context.building;
-            BuildingRegistry.UnregisterBuilding(building);
             building.ReleaseOccupiedSlots();
+            BuildingRegistry.UnregisterBuilding(building);
+            BuildingEntryBase entry = building.Entry;
+            OperationResult demolishedResult = BuildingOperations.Demolished();
+            if (!ReferenceEquals(entry, null) && entry)
+                entry.OnBuildingDemolished(in context, demolishedResult);
+            building.OnBuildingDemolished(in context, demolishedResult);
             DestroyGameObject(building.gameObject);
         }
 
@@ -276,6 +297,7 @@ namespace Systems.SimpleBuilding.Utility
             }
 
             building.ReleaseOccupiedSlots();
+            BuildingRegistry.UnregisterBuilding(building);
             OperationResult demolishedResult = BuildingOperations.Demolished();
             entry.OnBuildingDemolished(in context, demolishedResult);
             building.OnBuildingDemolished(in context, demolishedResult);

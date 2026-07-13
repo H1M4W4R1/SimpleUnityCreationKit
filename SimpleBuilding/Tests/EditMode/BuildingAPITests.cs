@@ -136,7 +136,7 @@ namespace Systems.SimpleBuilding.Tests
         }
 
         [Test]
-        public void SaveToMemoryAndLoad_RestoresBuildingsWithoutReplayingPlacementTransactions()
+        public void SaveToMemoryAndLoad_RestoresBuildingsAndTriggersCallbacksWithoutResourceTransactions()
         {
             TestBuildingEntry freeEntry = CreateEntry<TestBuilding>();
             freeEntry.SetSaveIdentifier("free-building");
@@ -194,9 +194,15 @@ namespace Systems.SimpleBuilding.Tests
             Assert.IsTrue(slot.IsOccupied);
             Assert.AreEqual(restoredSlotBuilding, slot.OccupyingBuilding);
             Assert.AreEqual(1, freeEntry.ConsumeCallCount);
-            Assert.AreEqual(1, freeEntry.PlacedCallCount);
+            Assert.AreEqual(2, freeEntry.PlacedCallCount);
+            Assert.AreEqual(1, freeEntry.DemolishedCallCount);
+            Assert.IsTrue(freeEntry.LastPlacementWasSaveSystemRequest);
+            Assert.IsTrue(freeEntry.LastDemolitionWasSaveSystemRequest);
             Assert.AreEqual(1, slotEntry.ConsumeCallCount);
-            Assert.AreEqual(1, slotEntry.PlacedCallCount);
+            Assert.AreEqual(2, slotEntry.PlacedCallCount);
+            Assert.AreEqual(1, slotEntry.DemolishedCallCount);
+            Assert.IsTrue(slotEntry.LastPlacementWasSaveSystemRequest);
+            Assert.IsTrue(slotEntry.LastDemolitionWasSaveSystemRequest);
         }
 
         private TestBuildingEntry CreateEntry<TBuildingType>() where TBuildingType : BuildingBase
@@ -224,6 +230,8 @@ namespace Systems.SimpleBuilding.Tests
         public int PlacedCallCount;
         public int PlacementFailedCallCount;
         public int DemolishedCallCount;
+        public bool LastPlacementWasSaveSystemRequest;
+        public bool LastDemolitionWasSaveSystemRequest;
         public Vector3 LastPlacementPosition;
 
         protected internal override BuildingBase GetPrefab() => TestPrefab;
@@ -247,6 +255,7 @@ namespace Systems.SimpleBuilding.Tests
         {
             PlacedCallCount++;
             LastPlacementPosition = context.position;
+            LastPlacementWasSaveSystemRequest = context.isSaveSystemRequest;
         }
 
         protected internal override void OnBuildingPlacementFailed(
@@ -261,6 +270,7 @@ namespace Systems.SimpleBuilding.Tests
             in OperationResult result)
         {
             DemolishedCallCount++;
+            LastDemolitionWasSaveSystemRequest = context.isSaveSystemRequest;
         }
     }
 

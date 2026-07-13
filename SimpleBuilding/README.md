@@ -61,7 +61,7 @@ Resource consumption and refunds should be atomic. `TryRefundResources` is invok
 
 SimpleBuilding saves the buildings created through `BuildingAPI` with the SimpleCore save pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
 
-Before loading, register every entry that can appear in the save; active `BuildingSlot` components register themselves. Loading replaces the currently API-placed buildings without consuming resources, issuing refunds, or replaying placement callbacks. Save-driven placement and removal contexts set `isSaveSystemRequest` to `true`, so custom rules can recognize the source explicitly.
+Before loading, register every entry that can appear in the save; active `BuildingSlot` components register themselves. Loading replaces the currently API-placed buildings without consuming resources or issuing refunds, while still invoking placement and demolition callbacks. Save-driven placement and removal contexts set `isSaveSystemRequest` to `true`, so custom rules can recognize the source explicitly.
 
 ```csharp
 using System.Collections.Generic;
