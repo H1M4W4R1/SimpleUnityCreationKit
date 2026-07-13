@@ -9,6 +9,22 @@ namespace Systems.SimpleBuilding.Components
     public sealed class BuildingSlot : MonoBehaviour
     {
         [CanBeNull] private BuildingBase _occupyingBuilding;
+        private Transform _cachedTransform;
+
+        /// <summary>
+        ///     Transform used by slot-snapping buildings for their placement position and base rotation.
+        /// </summary>
+        [NotNull]
+        public Transform SnapTransform
+        {
+            get
+            {
+                if (ReferenceEquals(_cachedTransform, null) || !_cachedTransform)
+                    _cachedTransform = transform;
+
+                return _cachedTransform;
+            }
+        }
 
         [CanBeNull]
         public BuildingBase OccupyingBuilding

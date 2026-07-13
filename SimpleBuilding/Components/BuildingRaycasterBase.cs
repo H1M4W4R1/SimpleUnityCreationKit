@@ -33,6 +33,21 @@ namespace Systems.SimpleBuilding.Components
         public float RotationDegrees => _rotationDegrees;
         public bool HasPlacementHit => _hasRaycastHit;
 
+        /// <summary>
+        ///     Configures shared placement output and preview references without requiring inspector wiring.
+        /// </summary>
+        public void Configure(
+            [CanBeNull] Transform buildingParent,
+            [CanBeNull] BuildingGhostPreview ghostPreview,
+            LayerMask raycastMask,
+            float maxRaycastDistance = 100f)
+        {
+            _buildingParent = buildingParent;
+            _ghostPreview = ghostPreview;
+            _raycastMask = raycastMask;
+            _maxRaycastDistance = Mathf.Max(0.01f, maxRaycastDistance);
+        }
+
         protected virtual void Update()
         {
             RefreshPlacementPreview();
@@ -141,6 +156,7 @@ namespace Systems.SimpleBuilding.Components
 
         protected virtual Vector3 GetPlacementPosition(Vector3 hitPosition)
         {
+            if (TryGetSlotSnapPosition(out Vector3 slotPosition)) return slotPosition;
             if (!_snapToGrid) return hitPosition;
 
             float gridSize = Mathf.Max(0.01f, _gridSize);
@@ -151,7 +167,11 @@ namespace Systems.SimpleBuilding.Components
         }
 
         protected virtual Quaternion GetPlacementRotation()
-            => Quaternion.Euler(0f, _rotationDegrees, 0f);
+        {
+            Quaternion rotationOffset = Quaternion.Euler(0f, _rotationDegrees, 0f);
+            if (TryGetSlotSnapRotation(out Quaternion slotRotation)) return slotRotation * rotationOffset;
+            return rotationOffset;
+        }
 
         private bool RefreshPlacementPreview(
             [CanBeNull] IBuildingUser user = null,
@@ -197,6 +217,44 @@ namespace Systems.SimpleBuilding.Components
             hit = default;
             if (!TryGetRay(out Ray ray)) return false;
             return Physics.Raycast(ray, out hit, _maxRaycastDistance, _raycastMask, QueryTriggerInteraction.Ignore);
+        }
+
+        private bool TryGetSlotSnapPosition(out Vector3 position)
+        {
+            position = default;
+            if (!ShouldSnapToSlot()) return false;
+
+            Vector3 totalPosition = Vector3.zero;
+            for (int slotIndex = 0; slotIndex < _placementSlots.Count; slotIndex++)
+            {
+                BuildingSlot slot = _placementSlots[slotIndex];
+                if (ReferenceEquals(slot, null) || !slot) return false;
+                totalPosition += slot.SnapTransform.position;
+            }
+
+            position = totalPosition / _placementSlots.Count;
+            return true;
+        }
+
+        private bool TryGetSlotSnapRotation(out Quaternion rotation)
+        {
+            rotation = default;
+            if (!ShouldSnapToSlot()) return false;
+
+            BuildingSlot slot = _placementSlots[0];
+            if (ReferenceEquals(slot, null) || !slot) return false;
+            rotation = slot.SnapTransform.rotation;
+            return true;
+        }
+
+        private bool ShouldSnapToSlot()
+        {
+            if (_placementSlots.Count == 0) return false;
+            if (ReferenceEquals(_selectedEntry, null) || !_selectedEntry) return false;
+
+            BuildingBase prefab = _selectedEntry.GetPrefab();
+            if (ReferenceEquals(prefab, null) || !prefab) return false;
+            return prefab is ISlotBuilding slotBuilding && slotBuilding.SnapToSlot;
         }
 
         protected virtual void OnDestroy()

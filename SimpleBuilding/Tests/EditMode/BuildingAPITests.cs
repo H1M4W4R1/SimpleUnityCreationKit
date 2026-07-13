@@ -92,6 +92,32 @@ namespace Systems.SimpleBuilding.Tests
             Assert.AreEqual(1, entry.DemolishedCallCount);
         }
 
+        [Test]
+        public void TryBuild_WithDefaultSlotSnapping_UsesTheSlotTransformPosition()
+        {
+            TestBuildingEntry entry = CreateEntry<TestSlotBuilding>();
+            GameObject slotObject = Track(new GameObject("Building Slot"));
+            slotObject.transform.position = new Vector3(4f, 0.25f, -3f);
+            BoxCollider boxCollider = slotObject.AddComponent<BoxCollider>();
+            boxCollider.size = new Vector3(1f, 0.2f, 1f);
+            BuildingSlot slot = slotObject.AddComponent<BuildingSlot>();
+            GameObject raycasterObject = Track(new GameObject("Building Raycaster"));
+            TestBuildingRaycaster raycaster = raycasterObject.AddComponent<TestBuildingRaycaster>();
+            raycaster.RaycastRay = new Ray(slotObject.transform.position + Vector3.up * 5f, Vector3.down);
+            Physics.SyncTransforms();
+
+            OperationResult selectResult = raycaster.Select(entry);
+            OperationResult buildResult = raycaster.TryBuild(out BuildingBase building);
+
+            Assert.IsTrue(selectResult);
+            Assert.IsTrue(buildResult);
+            Track(building.gameObject);
+            Assert.AreEqual(slot.SnapTransform.position, building.transform.position);
+            ISlotBuilding slotBuilding = building as ISlotBuilding;
+            Assert.IsNotNull(slotBuilding);
+            Assert.IsTrue(slotBuilding.SnapToSlot);
+        }
+
         private TestBuildingEntry CreateEntry<TBuildingType>() where TBuildingType : BuildingBase
         {
             GameObject prefabObject = Track(new GameObject("Building Prefab"));
@@ -172,5 +198,17 @@ namespace Systems.SimpleBuilding.Tests
     public sealed class TestSlotBuilding : TestBuilding, ISlotBuilding
     {
         public int SlotCount => 1;
+    }
+
+    public sealed class TestBuildingRaycaster : BuildingRaycasterBase
+    {
+        [System.NonSerialized]
+        public Ray RaycastRay;
+
+        protected override bool TryGetRay(out Ray ray)
+        {
+            ray = RaycastRay;
+            return true;
+        }
     }
 }

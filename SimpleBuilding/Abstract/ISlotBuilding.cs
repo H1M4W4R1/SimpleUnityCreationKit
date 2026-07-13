@@ -6,5 +6,10 @@ namespace Systems.SimpleBuilding.Abstract
     public interface ISlotBuilding
     {
         int SlotCount { get; }
+
+        /// <summary>
+        ///     Whether placement should use the selected slot transform automatically.
+        /// </summary>
+        bool SnapToSlot => true;
     }
 }

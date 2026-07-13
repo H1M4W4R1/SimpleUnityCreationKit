@@ -16,6 +16,14 @@ namespace Systems.SimpleBuilding.Components
         [CanBeNull] private GameObject _sourcePrefab;
         private bool _isValid;
 
+        /// <summary>
+        ///     Assigns the material configuration used when the ghost switches between valid and invalid placement.
+        /// </summary>
+        public void Configure([CanBeNull] BuildingGhostMaterialConfiguration materialConfiguration)
+        {
+            _materialConfiguration = materialConfiguration;
+        }
+
         public void Show([NotNull] BuildingEntryBase entry, Vector3 position, Quaternion rotation, bool isValid)
         {
             GameObject sourcePrefab = entry.GetGhostPrefab();

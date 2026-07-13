@@ -101,6 +101,15 @@ namespace Game.Buildings
 
 `BuildingGhostMaterialConfiguration` applies one material while placement validates and another while it does not. These are ordinary material assets, so a custom shader can show fresnel, outlines, dissolve, grid projection, or any other ghost effect without changing the building system.
 
+## Example scene
+
+`Scene - Building Playground.unity` demonstrates free placement, slot-only placement, valid/invalid shader-ready ghosts, rotation, and demolition. Open it and enter Play mode:
+
+- Use the SimpleCore runtime panel to select the free-placement cube or the one-slot cylinder, and to rotate the selected preview.
+- Left-click builds and right-click demolishes.
+
+The generated materials, prefabs, and entry assets are stored in the package's `Examples` folder. Use **Simple Building/Regenerate Building Playground** to recreate the complete example after changing its generator.
+
 ## Slot buildings
 
 Implement `ISlotBuilding` on a building prefab to require a fixed number of unoccupied slots:
@@ -119,3 +128,5 @@ namespace Game.Buildings
 ```
 
 The default raycaster contributes the `BuildingSlot` on the hit object. Override `CollectPlacementSlots(in RaycastHit hit, List<BuildingSlot> slots)` in a custom raycaster to collect a grid footprint or other multi-slot layout. The API validates the exact count, rejects duplicates and occupied slots, reserves slots on placement, and releases them on demolition or destruction.
+
+`ISlotBuilding.SnapToSlot` defaults to `true`: the raycaster places the building at the selected slot position, or at the average of a multi-slot footprint. It also uses the first slot's rotation as the base rotation, then applies the caller's configured yaw. Override `SnapToSlot` as `false` only when a custom building needs to derive its position independently.

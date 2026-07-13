@@ -27,6 +27,14 @@ namespace Systems.SimpleBuilding.Components
             _hasPointerPosition = false;
         }
 
+        /// <summary>
+        ///     Assigns the camera used to convert the pointer position into a world ray.
+        /// </summary>
+        public void ConfigureCamera([CanBeNull] Camera sourceCamera)
+        {
+            _camera = sourceCamera;
+        }
+
         protected override bool TryGetRay(out Ray ray)
         {
             if (ReferenceEquals(_camera, null) || !_camera) _camera = Camera.main;
