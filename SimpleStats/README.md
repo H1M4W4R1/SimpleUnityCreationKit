@@ -272,7 +272,3 @@ character.TransferModifiersTo<DamageStat>(targetCollection);
 - `Scene - Stats.unity`: exposes runtime Unity UI for flat, percentage, timed, recompute, reset, and full modifier-flow cases.
 - `ExampleStatOwner`: scene driver and sample `IWithStatModifiers` implementation with live final-health status.
 - `ExampleHealthStatistic`: sample statistic definition used by the scene.
-
-## License
-
-See [LICENSE.md](LICENSE.md) in this directory.

@@ -318,7 +318,3 @@ Open `Examples/SimpleSkills - Example Scene.unity` and enter Play Mode to use th
 - Supports unlimited concurrent skill instances (charging, channeling, cooldown)
 - Reverse-iteration loops for safe addition/removal during callbacks
 - Built-in support for custom tick systems: override `Update()` to empty and call `OnTickExecuted(deltaTime)` manually (e.g., for turn-based systems)
-
-## License
-
-See LICENSE.md in this directory.

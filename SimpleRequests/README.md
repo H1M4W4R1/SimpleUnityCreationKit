@@ -135,7 +135,3 @@ RequestAPI.ClearHandlers<PriceRequest, PriceResponse>();
 - Set `priority` when registering a handler to control dispatch order. Higher values run first; equal values preserve newest-registration-first order.
 - Handlers should remain short and avoid allocating in hot paths.
 - A handler may be unregistered safely even when it is not currently registered. Null handlers are ignored.
-
-## License
-
-This package is available under the [MIT License](LICENSE.md).

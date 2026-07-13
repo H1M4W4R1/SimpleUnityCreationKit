@@ -220,7 +220,3 @@ SimpleUI follows a component-based architecture:
 - **Context System**: Decouples data from presentation through context providers
 - **Animation System**: Extensible animation framework using DOTween sequences
 - **Window Management**: Centralized window lifecycle and focus management via `UserInterface` utility class
-
-## License
-
-Copyright 2025 H1M4W4R1 - MIT License

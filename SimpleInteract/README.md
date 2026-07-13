@@ -193,7 +193,3 @@ public sealed class Player : InteractorBase
 ### Detectors
 - `InteractableDetector2D` - Circle-based detection for 2D games
 - `InteractableDetector3D` - Sphere-based detection for 3D games
-
-## License
-
-MIT License - See LICENSE.md for details

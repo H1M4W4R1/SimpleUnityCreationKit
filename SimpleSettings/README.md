@@ -283,9 +283,3 @@ Override `SaveFileName` on a group to control the filename in `PerGroup` mode:
 ```csharp
 public override string SaveFileName => "gameplay";
 ```
-
----
-
-## License
-
-Copyright 2025 H1M4W4R1 - MIT License

@@ -242,7 +242,3 @@ All colors are customizable in `DetectionSettings`.
 - `UnsafeList<float3>` for efficient detection point storage
 - Only raycasts for points inside the detection zone
 - Early-exit optimization when first detection point is confirmed visible
-
-## License
-
-MIT License - See LICENSE.md for details

@@ -275,6 +275,3 @@ SimpleCore includes an Editor-only test assembly at `Tests/EditMode/SimpleCore.T
 It references Unity Test Framework and has `includePlatforms` set to `Editor`, so the tests are not compiled into player builds.
 Run them from Unity Test Runner under Edit Mode when validating package changes.
 
-## License
-
-See [LICENSE.md](LICENSE.md) for details.

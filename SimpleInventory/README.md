@@ -213,7 +213,3 @@ ItemBase.DropItem<PickupItemWithDestroy>(
 - `Scene - Inventory.unity`: exposes runtime Unity UI for first-food use, best-food use, leather/steel equipment, unequip, and equippable database inspection.
 - `ExampleInventory`: scene driver with runtime buttons and context menu actions for replaying inventory and equipment examples.
 - Example food and armor item types: configured typed items used by the scene.
-
-## License
-
-See LICENSE.md for details.
