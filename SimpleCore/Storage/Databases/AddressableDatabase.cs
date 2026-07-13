@@ -21,7 +21,7 @@ namespace Systems.SimpleCore.Storage.Databases
     {
     }
 
-    public abstract class AddressableDatabase<TSelf, TUnityObject, TLoadType>
+    public abstract class AddressableDatabase<TSelf, TUnityObject, TLoadType> : IDatabaseLoading
         where TSelf : AddressableDatabase<TSelf, TUnityObject, TLoadType>, new()
         where TUnityObject : Object
         where TLoadType : Object
@@ -69,8 +69,20 @@ namespace Systems.SimpleCore.Storage.Databases
         /// <summary>
         ///     Gets loading progress
         /// </summary>
-        public static float LoadProgress
-            => _instance._loadRequest.IsValid() ? _instance._loadRequest.PercentComplete : 0;
+        public static float LoadProgress => _instance.CurrentLoadProgress;
+
+        /// <inheritdoc />
+        public bool IsLoading => _isLoading;
+
+        /// <inheritdoc />
+        public bool IsLoadingComplete => _isLoadingComplete;
+
+        /// <inheritdoc />
+        public bool IsLoaded => _isLoaded;
+
+        /// <inheritdoc />
+        public float CurrentLoadProgress
+            => _isLoaded ? 1f : _loadRequest.IsValid() ? _loadRequest.PercentComplete : 0f;
 
         /// <summary>
         ///     Amount of entries in database, way off the real item count
@@ -98,13 +110,15 @@ namespace Systems.SimpleCore.Storage.Databases
             if (!_isLoaded) LoadSynchronously();
         }
 
-        private void StartLoading()
+        /// <summary>Starts the Addressables request without synchronously waiting for it to finish.</summary>
+        public void BeginLoading()
         {
             // Prevent multiple loads
-            if (_isLoading) return;
+            if (_isLoading || _isLoaded) return;
             _isLoading = true;
             _isLoadingComplete = false;
             _isLoaded = false;
+            internalDataStorage.Clear();
 
             // Load items
             try
@@ -132,6 +146,7 @@ namespace Systems.SimpleCore.Storage.Databases
             }
             catch (OperationException)
             {
+                _isLoaded = false;
                 _isLoading = false;
                 _isLoadingComplete = true;
             }
@@ -144,13 +159,22 @@ namespace Systems.SimpleCore.Storage.Databases
         private bool HasAddressableLocations()
         {
             IEnumerable<IResourceLocator> resourceLocators = Addressables.ResourceLocators;
-            foreach (IResourceLocator resourceLocator in resourceLocators)
+            IEnumerator<IResourceLocator> resourceLocatorEnumerator = resourceLocators.GetEnumerator();
+            try
             {
-                if (!resourceLocator.Locate(AddressableLabel, typeof(TLoadType),
-                        out IList<IResourceLocation> locations))
-                    continue;
+                while (resourceLocatorEnumerator.MoveNext())
+                {
+                    IResourceLocator resourceLocator = resourceLocatorEnumerator.Current;
+                    if (!resourceLocator.Locate(AddressableLabel, typeof(TLoadType),
+                            out IList<IResourceLocation> locations))
+                        continue;
 
-                if (locations.Count > 0) return true;
+                    if (locations.Count > 0) return true;
+                }
+            }
+            finally
+            {
+                resourceLocatorEnumerator.Dispose();
             }
 
             return false;
@@ -161,7 +185,7 @@ namespace Systems.SimpleCore.Storage.Databases
         /// </summary>
         private void LoadSynchronously()
         {
-            StartLoading();
+            BeginLoading();
 
             if (!_loadRequest.IsValid()) return;
 

@@ -1,0 +1,19 @@
+{
+    "name": "SimpleLoading",
+    "rootNamespace": "",
+    "references": [
+        "SimpleCore",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.ugui"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
