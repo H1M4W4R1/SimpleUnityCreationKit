@@ -1,12 +1,7 @@
-<div align="center">
-  <h1>SimpleInteract</h1>
-</div>
-
-# About
-
+# SimpleInteract
 SimpleInteract is a lightweight, performant interaction detection system for Unity that enables game objects to interact with each other based on proximity. It provides a flexible framework for handling 2D and 3D interactions with built-in support for detection callbacks and interaction validation.
 
-# Requirements
+## Requirements
 
 - **Unity 2022.3+**
 - **SimpleCore** - Dependency for operation result handling
@@ -21,7 +16,7 @@ The assembly definition includes the following dependencies:
 - `SimpleDetection` - Detection framework
 - `SimpleCore` - Core operation utilities
 
-# Features
+## Features
 
 - **2D and 3D Support** - Use `InteractableDetector2D` for 2D games or `InteractableDetector3D` for 3D games
 - **Performance Optimized** - Override `CanBeDetected()` on interactable objects to filter which interactors can detect them, reducing unnecessary detection work
@@ -29,11 +24,9 @@ The assembly definition includes the following dependencies:
 - **Permission-Based Validation** - Override `CanInteract()` and `CanBeInteractedWith()` for custom rules
 - **Batch Interactions** - Interact with single or multiple objects in range
 
-# Usage
+## Usage
 
-## Basic Setup
-
-### 1. Create an Interactable Object
+### Create an Interactable Object
 
 ```csharp
 public sealed class Chest : InteractableObjectBase
@@ -93,8 +86,6 @@ public sealed class Player : InteractorBase
 In the Unity Inspector:
 - Add the `Player` component to your character GameObject
 - The player will detect nearby interactable objects automatically
-
-## Advanced Examples
 
 ### Restricting Which Interactors Can Detect and Interact
 

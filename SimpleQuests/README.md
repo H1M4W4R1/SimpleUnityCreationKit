@@ -1,12 +1,8 @@
-<div align="center">
-  <h1>Simple Quests</h1>
-</div>
-
-# About
+# Simple Quests
 
 Simple Quests is a lightweight, data-driven quest system for Unity games. It provides a framework for creating quests with multiple objectives that can be combined, sequenced, or run in parallel. Quests are defined as ScriptableObjects and managed through an addressable database, making it easy to organize and load quest content without hard coding.
 
-# Requirements
+## Requirements
 
 - **Unity**: 2022.3+
 - **SimpleCore**: Required system module (dependency for operation results and tick system)
@@ -15,8 +11,6 @@ Simple Quests is a lightweight, data-driven quest system for Unity games. It pro
 - **Unity Collections**: Included in assembly references
 - **DOTween**: Included in assembly references (optional, for animation support)
 - **.NET 4.x** or **.NET Standard 2.1** API Compatibility Level
-
-# Usage Examples
 
 ## Creating a Custom Quest
 
@@ -228,7 +222,7 @@ public class BonusObjective : QuestObjective
 
 Optional objectives fail independently without failing the quest. Required objectives activate sequentially - only one required objective is `InProgress` at a time. Optional objectives that appear before the next required objective in the list activate alongside it.
 
-# Architecture Overview
+## Architecture Overview
 
 - **Quest**: Base class for quest definitions (ScriptableObject)
 - **QuestInstance**: Runtime instance of a quest with state tracking

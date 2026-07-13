@@ -1,12 +1,7 @@
-<div align="center">
-  <h1>Simple Economy</h1>
-</div>
-
-# About
-
+# Simple Economy
 SimpleEconomy is a lightweight, type-safe currency and wallet system for Unity games. It provides robust management of in-game resources (gold, mana, points, etc.) with built-in overflow/underflow protection, customizable conditions, and override-based operation callbacks.
 
-# Requirements
+## Requirements
 
 SimpleEconomy requires the following dependencies:
 
@@ -18,11 +13,9 @@ SimpleEconomy requires the following dependencies:
 
 All dependencies are declared in `SimpleEconomy.asmdef`.
 
-# Usage
+## Usage
 
-## Basic Setup
-
-### 1. Create a Custom Currency
+### Create a Custom Currency
 
 Extend `CurrencyBase` to define a new currency type:
 
@@ -42,7 +35,7 @@ public class GoldCurrency : CurrencyBase
 }
 ```
 
-### 2. Create a Currency Wallet
+### Create a Currency Wallet
 
 Extend `CurrencyWalletBase<TCurrencyType>` to create a wallet for your currency:
 
@@ -68,7 +61,7 @@ public class PlayerGoldWallet : CurrencyWalletBase<GoldCurrency>
 
 Attach this component to a GameObject in your scene or reference it directly.
 
-### 3. Add and Take Currency
+### Add and Take Currency
 
 ```csharp
 // Get wallet reference
@@ -94,8 +87,6 @@ if (wallet.Has(100))
     Debug.Log("Wallet has at least 100 gold");
 }
 ```
-
-## Advanced Features
 
 ### Global Wallet (Singleton Pattern)
 
