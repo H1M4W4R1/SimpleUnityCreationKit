@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleStats.Abstract;
 using Systems.SimpleStats.Abstract.Modifiers;
 using Systems.SimpleStats.Data;
@@ -243,7 +242,6 @@ namespace Systems.SimpleStats.Tests
         public int RecomputeCompleteCount { get; private set; }
         public IStatModifier LastModifier { get; private set; }
         public IWithStatModifiers LastOwner { get; private set; }
-        public ActionSource LastActionSource { get; private set; }
         public ushort LastSystemCode { get; private set; }
         public ushort LastResultCode { get; private set; }
 
@@ -313,7 +311,6 @@ namespace Systems.SimpleStats.Tests
         {
             LastModifier = context.modifier;
             LastOwner = context.owner;
-            LastActionSource = context.actionSource;
         }
     }
 
@@ -329,7 +326,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -346,7 +342,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -363,7 +358,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -380,7 +374,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -397,7 +390,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -415,7 +407,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -433,7 +424,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -451,7 +441,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -470,7 +459,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -488,7 +476,6 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount => _recorder.ShouldApplyCount;
         public IStatModifier LastModifier => _recorder.LastModifier;
         public IWithStatModifiers LastOwner => _recorder.LastOwner;
-        public ActionSource LastActionSource => _recorder.LastActionSource;
         public bool ShouldApplyResult { get => _recorder.ShouldApplyResult; set => _recorder.ShouldApplyResult = value; }
         public override bool ShouldApply(in ModifierContext context) => _recorder.ShouldApply(in context);
     }
@@ -538,14 +525,12 @@ namespace Systems.SimpleStats.Tests
         public int ShouldApplyCount { get; private set; }
         public IStatModifier LastModifier { get; private set; }
         public IWithStatModifiers LastOwner { get; private set; }
-        public ActionSource LastActionSource { get; private set; }
 
         public bool ShouldApply(in ModifierContext context)
         {
             ShouldApplyCount++;
             LastModifier = context.modifier;
             LastOwner = context.owner;
-            LastActionSource = context.actionSource;
             return ShouldApplyResult;
         }
     }

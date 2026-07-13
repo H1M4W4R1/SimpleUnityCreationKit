@@ -161,7 +161,7 @@ The `IWithStatModifiers` interface defines validation hooks:
 public OperationResult CanApplyModifier(in ModifierContext context)
 {
     // Block modifiers based on game logic
-    if (context.actionSource == ActionSource.External && IsFrozen)
+    if (IsFrozen)
         return ModifierOperations.MaxModifiersExceeded();
     
     return ModifierOperations.Permitted();

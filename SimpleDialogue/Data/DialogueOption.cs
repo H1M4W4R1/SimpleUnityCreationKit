@@ -1,5 +1,4 @@
-using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
+﻿using Systems.SimpleCore.Operations;
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Components;
 
@@ -32,10 +31,10 @@ namespace Systems.SimpleDialogue.Data
             this.isAvailable = isAvailable;
         }
 
-        public OperationResult Select(ActionSource actionSource = ActionSource.External)
+        public OperationResult Select()
         {
             if (ReferenceEquals(dialogue, null)) return Systems.SimpleDialogue.Operations.DialogueOperations.DialogueNotRunning();
-            return dialogue.SelectOption(this, actionSource);
+            return dialogue.SelectOption(this);
         }
     }
 }

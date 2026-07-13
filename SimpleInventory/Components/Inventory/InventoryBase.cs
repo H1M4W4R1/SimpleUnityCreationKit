@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleInventory.Abstract.Data;
 using Systems.SimpleInventory.Abstract.Items;
 using Systems.SimpleInventory.Components.Equipment;
@@ -141,13 +140,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="slotIndex">Index of slot</param>
         /// <param name="toEquipment">Equipment to equip item to</param>
         /// <param name="flags">Flags for equip operation</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of the equip operation</returns>
         public OperationResult EquipItem(
             int slotIndex,
             [NotNull] EquipmentBase toEquipment,
-            EquipmentModificationFlags flags = EquipmentModificationFlags.AllowItemSwap,
-            ActionSource actionSource = ActionSource.External)
+            EquipmentModificationFlags flags = EquipmentModificationFlags.AllowItemSwap)
         {
             // Check if slot is valid
             if (slotIndex < 0 || slotIndex >= _inventoryData.Count) return InventoryOperations.InvalidSlotIndex();
@@ -161,7 +158,7 @@ namespace Systems.SimpleInventory.Components.Inventory
 
             // Create context
             EquipItemContext context = new(toEquipment, this, slotIndex, flags);
-            return toEquipment.Equip(context, actionSource);
+            return toEquipment.Equip(context);
         }
 
         /// <summary>
@@ -170,18 +167,16 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to unequip</param>
         /// <param name="fromEquipment">Equipment to unequip item from</param>
         /// <param name="flags">Flags for unequip operation</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of the unequip operation</returns>
         public OperationResult UnequipItem(
             [NotNull] WorldItem item,
             [NotNull] EquipmentBase fromEquipment,
-            EquipmentModificationFlags flags = EquipmentModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            EquipmentModificationFlags flags = EquipmentModificationFlags.None)
         {
             // Create context
             UnequipItemContext context = new(this, fromEquipment,
                 item, flags);
-            return fromEquipment.Unequip(context, actionSource);
+            return fromEquipment.Unequip(context);
         }
 
         /// <summary>
@@ -190,13 +185,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="slotIndex">Index of slot</param>
         /// <param name="fromEquipment">Equipment to unequip item from</param>
         /// <param name="flags">Flags for unequip operation</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of the unequip operation</returns>
         public OperationResult UnequipItem(
             int slotIndex,
             [NotNull] EquipmentBase fromEquipment,
-            EquipmentModificationFlags flags = EquipmentModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            EquipmentModificationFlags flags = EquipmentModificationFlags.None)
         {
             // Check if slot is valid
             if (slotIndex < 0 || slotIndex >= _inventoryData.Count) return InventoryOperations.InvalidSlotIndex();
@@ -206,7 +199,7 @@ namespace Systems.SimpleInventory.Components.Inventory
             if (item is null) return InventoryOperations.SlotIsEmpty();
 
             // Call to default implementation
-            return UnequipItem(item, fromEquipment, flags, actionSource);
+            return UnequipItem(item, fromEquipment, flags);
         }
 
         /// <summary>
@@ -214,20 +207,18 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="toEquipment">Equipment to equip item to</param>
         /// <param name="flags">Flags for equip operation</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TItemType">Item to equip</typeparam>
         /// <returns>Result of the equip operation</returns>
         public OperationResult EquipAnyItem<TItemType>(
             [NotNull] EquipmentBase toEquipment,
-            EquipmentModificationFlags flags = EquipmentModificationFlags.AllowItemSwap,
-            ActionSource actionSource = ActionSource.External)
+            EquipmentModificationFlags flags = EquipmentModificationFlags.AllowItemSwap)
             where TItemType : EquippableItemBase
         {
             // Get first item
             InventoryItemReference itemReference = GetFirstItemOfType<TItemType>();
             if (itemReference.item is null) return InventoryOperations.ItemNotFound();
 
-            return EquipItem(itemReference.slotIndex, toEquipment, flags, actionSource);
+            return EquipItem(itemReference.slotIndex, toEquipment, flags);
         }
 
         /// <summary>
@@ -235,13 +226,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="toEquipment">Equipment to equip item to</param>
         /// <param name="flags">Flags for unequip operation</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TItemType">Item to equip</typeparam>
         /// <returns>Result of the equip operation</returns>
         public OperationResult UnequipAnyItem<TItemType>(
             [NotNull] EquipmentBase toEquipment,
-            EquipmentModificationFlags flags = EquipmentModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            EquipmentModificationFlags flags = EquipmentModificationFlags.None)
             where TItemType : EquippableItemBase
         {
             // Get all items in inventory of specified type
@@ -249,7 +238,7 @@ namespace Systems.SimpleInventory.Components.Inventory
             if (item is null) return EquipmentOperations.NotEquipped();
 
             // Unequip item to inventory
-            return UnequipItem(item, toEquipment, flags, actionSource);
+            return UnequipItem(item, toEquipment, flags);
         }
 
         /// <summary>
@@ -280,9 +269,8 @@ namespace Systems.SimpleInventory.Components.Inventory
         ///     Uses item from inventory
         /// </summary>
         /// <param name="slotIndex">Index of slot</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of the use operation</returns>
-        public OperationResult UseItem(int slotIndex, ActionSource actionSource = ActionSource.External)
+        public OperationResult UseItem(int slotIndex)
         {
             // Check if slot is valid
             if (slotIndex < 0 || slotIndex >= _inventoryData.Count) return InventoryOperations.InvalidSlotIndex();
@@ -300,15 +288,12 @@ namespace Systems.SimpleInventory.Components.Inventory
             OperationResult useItemResult = usableItem.CanUse(context);
             if (!useItemResult)
             {
-                if (actionSource == ActionSource.Internal) return useItemResult;
                 OnItemUseFailed(context, useItemResult);
                 return useItemResult;
             }
 
             // Perform the use effect
             usableItem.OnUse(context, InventoryOperations.UsedSuccessfully());
-
-            if (actionSource == ActionSource.Internal) return InventoryOperations.UsedSuccessfully();
             OnItemUsed(context, InventoryOperations.UsedSuccessfully());
             return InventoryOperations.UsedSuccessfully();
         }
@@ -351,8 +336,7 @@ namespace Systems.SimpleInventory.Components.Inventory
         public OperationResult TryPickupItem(
             [NotNull] PickupItem pickup,
             int amount,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             amountLeft = amount;
 
@@ -361,19 +345,17 @@ namespace Systems.SimpleInventory.Components.Inventory
             OperationResult result = CanPickupItem(context);
             if (!result)
             {
-                if (actionSource == ActionSource.Internal) return result;
                 OnItemPickupFailed(context, result);
                 return result;
             }
 
-            return PickupItem(pickup, amount, out amountLeft, actionSource);
+            return PickupItem(pickup, amount, out amountLeft);
         }
 
         public OperationResult PickupItem(
             [NotNull] PickupItem pickup,
             int amount,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             PickupItemContext context = new(pickup, this, amount);
 
@@ -384,12 +366,9 @@ namespace Systems.SimpleInventory.Components.Inventory
             // Call inventory and item picked up events
             if (pickedUpAmount > 0)
             {
-                if (actionSource == ActionSource.Internal) return InventoryOperations.ItemsPickedUp();
                 OnItemPickedUp(context, addAttempt, amountLeft);
                 return InventoryOperations.ItemsPickedUp();
             }
-
-            if (actionSource == ActionSource.Internal) return addAttempt;
             OnItemPickupFailed(context, addAttempt);
             return addAttempt;
         }
@@ -399,13 +378,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="item">Item to drop</param>
         /// <param name="amount">Amount of items to drop</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TPickupItemType">Type of pickup component to use</typeparam>
         /// <returns>True if item was dropped, false otherwise</returns>
         public OperationResult TryDropItemAs<TPickupItemType>(
             [NotNull] WorldItem item,
-            int amount,
-            ActionSource actionSource = ActionSource.External)
+            int amount)
             where TPickupItemType : PickupItem, new()
         {
             // Create context
@@ -415,13 +392,12 @@ namespace Systems.SimpleInventory.Components.Inventory
             OperationResult dropItemResult = CanDropItem(context);
             if (!dropItemResult)
             {
-                if (actionSource == ActionSource.Internal) return dropItemResult;
                 OnItemDropFailed(context, dropItemResult);
                 return dropItemResult;
             }
 
             // Try to take required items
-            OperationResult takeResult = TryTake(item, amount, out int amountLeft, ActionSource.Internal);
+            OperationResult takeResult = TryTake(item, amount, out int amountLeft);
             if (!takeResult) return takeResult;
             Assert.IsTrue(amountLeft == 0, "Failed to take items from inventory, this should never happen");
 
@@ -431,7 +407,6 @@ namespace Systems.SimpleInventory.Components.Inventory
                 dropTransform.rotation, dropTransform);
 
             // Call events
-            if (actionSource == ActionSource.Internal) return InventoryOperations.ItemsDropped();
             OnItemDropped(context, InventoryOperations.ItemsDropped());
             return InventoryOperations.ItemsDropped();
         }
@@ -441,13 +416,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="slotIndex">Index of slot</param>
         /// <param name="amount">Amount of items to drop</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TPickupItemType">Type of pickup component to use</typeparam>
         /// <returns>Result of the drop operation</returns>
         public OperationResult TryDropItemAs<TPickupItemType>(
             int slotIndex,
-            int amount,
-            ActionSource actionSource = ActionSource.External)
+            int amount)
             where TPickupItemType : PickupItem, new()
         {
             // Check if slot is valid
@@ -458,7 +431,7 @@ namespace Systems.SimpleInventory.Components.Inventory
             if (itemReference is null) return InventoryOperations.SlotIsEmpty();
 
             // Fallback to original implementation
-            return TryDropItemAs<TPickupItemType>(itemReference, amount, actionSource);
+            return TryDropItemAs<TPickupItemType>(itemReference, amount);
         }
 
 #endregion
@@ -473,15 +446,13 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="sourceAmount">Amount of items to transfer from this inventory</param>
         /// <param name="targetItem">Item to transfer to this inventory</param>
         /// <param name="targetAmount">Amount of items to transfer to this inventory</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>True if transfer was successful</returns>
         public OperationResult TryTransferItems(
             [NotNull] InventoryBase targetInventory,
             [NotNull] WorldItem sourceItem,
             int sourceAmount,
             [CanBeNull] WorldItem targetItem = null,
-            int targetAmount = 0,
-            ActionSource actionSource = ActionSource.External)
+            int targetAmount = 0)
         {
             // Create context
             TransferItemContext context = new(this, targetInventory, sourceItem, targetItem,
@@ -491,40 +462,39 @@ namespace Systems.SimpleInventory.Components.Inventory
             OperationResult canTransferItem = CanTransferItem(context);
             if (!canTransferItem)
             {
-                if (actionSource == ActionSource.Internal) return canTransferItem;
                 OnItemTransferFailed(context, canTransferItem);
                 return canTransferItem;
             }
 
             // Take items from source inventory
-            if (!TryTake(sourceItem, sourceAmount, out _, ActionSource.Internal))
+            if (!TryTake(sourceItem, sourceAmount, out _))
                 return InventoryOperations.TransferFailed();
 
             // Take items from target inventory (if swapping)
             if (targetItem != null &&
-                !targetInventory.TryTake(targetItem, targetAmount, out _, ActionSource.Internal))
+                !targetInventory.TryTake(targetItem, targetAmount, out _))
             {
                 // Rollback: return source items
-                TryAdd(sourceItem, sourceAmount, out int srcRollback, ActionSource.Internal);
+                TryAdd(sourceItem, sourceAmount, out int srcRollback);
                 if (srcRollback != 0)
                     Debug.LogError($"Transfer rollback failed: could not return {srcRollback} source items to inventory");
                 return InventoryOperations.TransferFailed();
             }
 
             // Add source items to target inventory
-            targetInventory.TryAdd(sourceItem, sourceAmount, out int sourceAddResult, ActionSource.Internal);
+            targetInventory.TryAdd(sourceItem, sourceAmount, out int sourceAddResult);
             if (sourceAddResult != 0)
             {
                 // Rollback: return items to original inventories
                 int addedToTarget = sourceAmount - sourceAddResult;
                 if (addedToTarget > 0)
-                    targetInventory.TryTake(sourceItem, addedToTarget, out int tgtTakeRollback, ActionSource.Internal);
-                TryAdd(sourceItem, sourceAmount, out int srcRollback2, ActionSource.Internal);
+                    targetInventory.TryTake(sourceItem, addedToTarget, out int tgtTakeRollback);
+                TryAdd(sourceItem, sourceAmount, out int srcRollback2);
                 if (srcRollback2 != 0)
                     Debug.LogError($"Transfer rollback failed: could not return {srcRollback2} source items to inventory");
                 if (targetItem != null)
                 {
-                    targetInventory.TryAdd(targetItem, targetAmount, out int tgtRollback, ActionSource.Internal);
+                    targetInventory.TryAdd(targetItem, targetAmount, out int tgtRollback);
                     if (tgtRollback != 0)
                         Debug.LogError($"Transfer rollback failed: could not return {tgtRollback} target items to inventory");
                 }
@@ -534,18 +504,18 @@ namespace Systems.SimpleInventory.Components.Inventory
             // Add target items to source inventory (if swapping)
             if (targetItem != null)
             {
-                TryAdd(targetItem, targetAmount, out int targetAddResult, ActionSource.Internal);
+                TryAdd(targetItem, targetAmount, out int targetAddResult);
                 if (targetAddResult != 0)
                 {
                     // Rollback everything
                     int addedToSource = targetAmount - targetAddResult;
                     if (addedToSource > 0)
-                        TryTake(targetItem, addedToSource, out _, ActionSource.Internal);
-                    targetInventory.TryTake(sourceItem, sourceAmount, out int srcTakeRollback, ActionSource.Internal);
-                    TryAdd(sourceItem, sourceAmount, out int srcRollback3, ActionSource.Internal);
+                        TryTake(targetItem, addedToSource, out _);
+                    targetInventory.TryTake(sourceItem, sourceAmount, out int srcTakeRollback);
+                    TryAdd(sourceItem, sourceAmount, out int srcRollback3);
                     if (srcRollback3 != 0)
                         Debug.LogError($"Transfer rollback failed: could not return {srcRollback3} source items to inventory");
-                    targetInventory.TryAdd(targetItem, targetAmount, out int tgtRollback2, ActionSource.Internal);
+                    targetInventory.TryAdd(targetItem, targetAmount, out int tgtRollback2);
                     if (tgtRollback2 != 0)
                         Debug.LogError($"Transfer rollback failed: could not return {tgtRollback2} target items to inventory");
                     return InventoryOperations.TransferFailed();
@@ -553,7 +523,6 @@ namespace Systems.SimpleInventory.Components.Inventory
             }
 
             // Call events
-            if (actionSource == ActionSource.Internal) return InventoryOperations.ItemsTransferred();
             OnItemTransferred(context, InventoryOperations.ItemsTransferred());
             targetInventory.OnItemTransferred(context, InventoryOperations.ItemsTransferred());
             return InventoryOperations.ItemsTransferred();
@@ -566,14 +535,12 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="targetInventory">Inventory to transfer item to</param>
         /// <param name="targetSlot">Slot index of item to transfer to</param>
         /// <param name="transferFlags">Transfer flags</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>True if transfer was successful</returns>
         public virtual OperationResult TryTransferItem(
             int sourceSlot,
             [NotNull] InventoryBase targetInventory,
             int targetSlot,
-            ItemTransferFlags transferFlags = ItemTransferFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ItemTransferFlags transferFlags = ItemTransferFlags.None)
         {
             // Ensure slots are valid
             if (sourceSlot < 0 || sourceSlot >= _inventoryData.Count)
@@ -595,14 +562,12 @@ namespace Systems.SimpleInventory.Components.Inventory
             OperationResult targetInventoryOperationResult = targetInventory.CanTransferItem(itemTransferContext);
             if (!sourceInventoryOperationResult)
             {
-                if (actionSource == ActionSource.Internal) return sourceInventoryOperationResult;
                 OnItemTransferFailed(itemTransferContext, sourceInventoryOperationResult);
                 return sourceInventoryOperationResult;
             }
 
             if (!targetInventoryOperationResult)
             {
-                if (actionSource == ActionSource.Internal) return targetInventoryOperationResult;
                 OnItemTransferFailed(itemTransferContext, targetInventoryOperationResult);
                 return targetInventoryOperationResult;
             }
@@ -616,7 +581,6 @@ namespace Systems.SimpleInventory.Components.Inventory
                 HandleItemSwap(sourceSlotData, targetSlotData);
 
             // Call events
-            if (actionSource == ActionSource.Internal) return InventoryOperations.ItemsTransferred();
             OnItemTransferred(itemTransferContext, InventoryOperations.ItemsTransferred());
             targetInventory.OnItemTransferred(itemTransferContext, InventoryOperations.ItemsTransferred());
             return InventoryOperations.ItemsTransferred();
@@ -711,14 +675,12 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="amount">Amount of items to add</param>
         /// <param name="amountLeft">Amount of items that could not be added</param>
         /// <param name="itemData">Data for the world item</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TItemType">Type of item to add</typeparam>
         /// <returns>Amount of items that could not be added</returns>
         public OperationResult TryAdd<TItemType>(
             int amount,
             out int amountLeft,
-            [CanBeNull] ItemData itemData = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ItemData itemData = null)
             where TItemType : ItemBase, new()
         {
             amountLeft = amount;
@@ -728,7 +690,7 @@ namespace Systems.SimpleInventory.Components.Inventory
 
             // Generate item
             WorldItem worldItem = item.GenerateWorldItem(itemData);
-            return TryAdd(worldItem, amount, out amountLeft, actionSource);
+            return TryAdd(worldItem, amount, out amountLeft);
         }
 
         /// <summary>
@@ -736,20 +698,18 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="amount">Amount of items to remove</param>
         /// <param name="amountLeft">Amount of items that could not be removed</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TItemType">Item type to remove</typeparam>
         /// <returns>True if items were removed, false otherwise</returns>
         public OperationResult TryTake<TItemType>(
             int amount,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
             where TItemType : ItemBase, new()
         {
             amountLeft = amount;
 
             TItemType item = ItemsDatabase.GetExact<TItemType>();
             if (item is null) return InventoryOperations.ItemNotFound();
-            return TryTake(item, amount, out amountLeft, actionSource);
+            return TryTake(item, amount, out amountLeft);
         }
 
         /// <summary>
@@ -785,13 +745,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to add</param>
         /// <param name="amountToAdd">Amount of item to add</param>
         /// <param name="amountLeft">Amount of items left to add</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Amount of items that could not be added</returns>
         public OperationResult TryAdd(
             [CanBeNull] WorldItem item,
             int amountToAdd,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Void items are always added
             if (item is null)
@@ -819,11 +777,10 @@ namespace Systems.SimpleInventory.Components.Inventory
 
             // Check if item can be added
             OperationResult canAddResult = CanAddItem(context);
-            if (canAddResult) return Add(item, amountToAdd, out amountLeft, actionSource);
+            if (canAddResult) return Add(item, amountToAdd, out amountLeft);
 
             // Call events if not
             amountLeft = amountToAdd;
-            if (actionSource == ActionSource.Internal) return canAddResult;
             OnItemAddFailed(context, canAddResult);
             return canAddResult;
         }
@@ -834,13 +791,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to add</param>
         /// <param name="amountToAdd">Amount of items to add</param>
         /// <param name="amountLeft">Amount of items that could not be added</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Amount of items that could not be added</returns>
         protected virtual OperationResult Add(
             [CanBeNull] WorldItem item,
             int amountToAdd,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Null guard to prevent ghost items
             if (ReferenceEquals(item, null))
@@ -895,7 +850,6 @@ namespace Systems.SimpleInventory.Components.Inventory
             int amountAdded = originalAmountToAdd - amountLeft;
 
             // Call events
-            if (actionSource == ActionSource.Internal) return InventoryOperations.ItemsAdded();
             OnItemAdded(new AddItemContext(item, this, amountAdded),
                 InventoryOperations.ItemsAdded(), amountLeft);
             return InventoryOperations.ItemsAdded();
@@ -907,12 +861,10 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to add</param>
         /// <param name="amountToAdd">Amount of items to add</param>
         /// <param name="amountLeft">Amount of items that could not be added</param>
-        /// <param name="actionSource">Source of action</param>
         public void TryAddOrDrop(
             [CanBeNull] WorldItem item,
             int amountToAdd,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Skip if item is null
             if (item is null)
@@ -921,14 +873,13 @@ namespace Systems.SimpleInventory.Components.Inventory
                 return;
             }
 
-            TryAdd(item, amountToAdd, out amountLeft, actionSource);
+            TryAdd(item, amountToAdd, out amountLeft);
             if (amountLeft == 0) return;
 
             Transform dropTransform = InventoryDropPosition ? InventoryDropPosition : transform;
             SpawnItemObject<PickupItemWithDestroy>(item, amountLeft,
                 dropTransform.position, dropTransform.rotation, dropTransform);
 
-            if (actionSource == ActionSource.Internal) return;
             OnItemDropped(new DropItemContext(this, item, amountLeft), InventoryOperations.ItemsDropped());
         }
 
@@ -938,13 +889,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to remove</param>
         /// <param name="amountToTake">Amount of item to remove</param>
         /// <param name="amountLeft">Amount of items that could not be removed</param>
-        /// <param name="actionSource">Action source</param>
         /// <returns>Amount of items that could not be removed</returns>
         public OperationResult TryTake(
             [CanBeNull] ItemBase item,
             int amountToTake,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Void items are always removed
             if (item is null)
@@ -975,13 +924,12 @@ namespace Systems.SimpleInventory.Components.Inventory
             if (!canTakeResult)
             {
                 amountLeft = amountToTake;
-                if (actionSource == ActionSource.Internal) return canTakeResult;
                 OnItemTakeFailed(context, canTakeResult);
                 return canTakeResult;
             }
 
             // Take item and verify
-            OperationResult operationCheck = Take(item, amountToTake, out amountLeft, actionSource);
+            OperationResult operationCheck = Take(item, amountToTake, out amountLeft);
             if (amountLeft != 0)
             {
                 Debug.LogError("Failed to take items from inventory, this should never happen");
@@ -996,13 +944,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to remove</param>
         /// <param name="amountToTake">Amount of item to remove</param>
         /// <param name="amountLeft">Amount of items that could not be removed</param>
-        /// <param name="actionSource">Action source</param>
         /// <returns>True if items were removed, false otherwise</returns>
         public OperationResult TryTake(
             [CanBeNull] WorldItem item,
             int amountToTake,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Void items are always removed
             if (item is null)
@@ -1033,13 +979,12 @@ namespace Systems.SimpleInventory.Components.Inventory
             if (!canTakeResult)
             {
                 amountLeft = amountToTake;
-                if (actionSource == ActionSource.Internal) return canTakeResult;
                 OnItemTakeFailed(context, canTakeResult);
                 return canTakeResult;
             }
 
             // Take item and verify
-            OperationResult takeResult = Take(item, amountToTake, out amountLeft, actionSource);
+            OperationResult takeResult = Take(item, amountToTake, out amountLeft);
             if (amountLeft != 0)
             {
                 Debug.LogError("Failed to take items from inventory, this should never happen");
@@ -1052,9 +997,8 @@ namespace Systems.SimpleInventory.Components.Inventory
         ///     Method to take all items from a specific slot
         /// </summary>
         /// <param name="slotSlotIndex">Slot index to take items from</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>0</returns>
-        public OperationResult Take(int slotSlotIndex, ActionSource actionSource)
+        public OperationResult Take(int slotSlotIndex)
         {
             // Get slot
             InventorySlot slot = GetSlotAt(slotSlotIndex);
@@ -1074,7 +1018,6 @@ namespace Systems.SimpleInventory.Components.Inventory
 
             // Call events
             OperationResult opResult = InventoryOperations.ItemsTaken();
-            if (actionSource == ActionSource.Internal) return opResult;
             OnItemTaken(context, opResult, amountTaken);
             return opResult;
         }
@@ -1084,12 +1027,10 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// </summary>
         /// <param name="slotIndex">Index of the slot to take from</param>
         /// <param name="amountToTake">Amount of items to take</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of the operation</returns>
         internal OperationResult Take(
             int slotIndex,
-            int amountToTake,
-            ActionSource actionSource = ActionSource.External)
+            int amountToTake)
         {
             if (slotIndex < 0 || slotIndex >= _inventoryData.Count)
                 return InventoryOperations.InvalidSlotIndex();
@@ -1105,7 +1046,6 @@ namespace Systems.SimpleInventory.Components.Inventory
 
             TakeItemContext context = new(cachedItem, this, amountToTake);
             OperationResult opResult = InventoryOperations.ItemsTaken();
-            if (actionSource == ActionSource.Internal) return opResult;
             OnItemTaken(context, opResult, amountToTake);
             return opResult;
         }
@@ -1116,13 +1056,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to take</param>
         /// <param name="amountToTake">Amount to take</param>
         /// <param name="amountLeft">Amount of items left to take</param>
-        /// <param name="actionSource">Action source</param>
         /// <returns>True if items were taken, false otherwise</returns>
         protected virtual OperationResult Take(
             [CanBeNull] ItemBase item,
             int amountToTake,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Void items are always removed
             if (item is null)
@@ -1139,7 +1077,6 @@ namespace Systems.SimpleInventory.Components.Inventory
             TakeItemContext context = new(item, this, amountTaken);
 
             OperationResult opResult = InventoryOperations.ItemsTaken();
-            if (actionSource == ActionSource.Internal) return opResult;
             OnItemTaken(context, opResult, amountTaken);
             return opResult;
         }
@@ -1150,13 +1087,11 @@ namespace Systems.SimpleInventory.Components.Inventory
         /// <param name="item">Item to take</param>
         /// <param name="amountToTake">Amount of items to take</param>
         /// <param name="amountLeft">Amount of items left to take</param>
-        /// <param name="actionSource">Action source</param>
         /// <returns>Amount of items left to take</returns>
         protected virtual OperationResult Take(
             [CanBeNull] WorldItem item,
             int amountToTake,
-            out int amountLeft,
-            ActionSource actionSource = ActionSource.External)
+            out int amountLeft)
         {
             // Void items are always removed
             if (item is null)
@@ -1173,7 +1108,6 @@ namespace Systems.SimpleInventory.Components.Inventory
             TakeItemContext context = new(item, this, amountTaken);
 
             OperationResult opResult = InventoryOperations.ItemsTaken();
-            if (actionSource == ActionSource.Internal) return opResult;
             OnItemTaken(context, opResult, amountTaken);
             return opResult;
         }

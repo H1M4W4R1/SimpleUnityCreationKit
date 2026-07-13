@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
@@ -7,7 +7,6 @@ using Systems.SimpleBuilding.Data.Context;
 using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleBuilding.Utility;
 using Systems.SimpleCore.Saving.Abstract;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Data
@@ -124,7 +123,6 @@ namespace Systems.SimpleBuilding.Data
                     savedBuilding.Position,
                     savedBuilding.Rotation,
                     slots: _resolvedSlots,
-                    actionSource: ActionSource.Internal,
                     isSaveSystemRequest: true);
                 if (!BuildingAPI.TryRestore(in context, out BuildingBase building)) continue;
 
@@ -158,7 +156,6 @@ namespace Systems.SimpleBuilding.Data
                 BuildingBase building = _registeredBuildings[buildingIndex];
                 BuildingDemolitionContext context = new BuildingDemolitionContext(
                     building,
-                    actionSource: ActionSource.Internal,
                     isSaveSystemRequest: true);
                 BuildingAPI.ClearForSave(in context);
             }

@@ -1,7 +1,6 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Automation.Attributes;
 using Systems.SimpleCore.Timing;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 
 namespace Systems.SimpleCore.Tests
@@ -46,13 +45,6 @@ namespace Systems.SimpleCore.Tests
             Assert.IsInstanceOf<AutoAddressableObjectAttribute>(attribute);
             Assert.AreEqual("Generated/Test", attribute.Path);
             Assert.IsNull(attribute.Label);
-        }
-
-        [Test]
-        public void ActionSource_ExposesExternalAndInternalValuesInOrder()
-        {
-            Assert.AreEqual(0, (int)ActionSource.External);
-            Assert.AreEqual(1, (int)ActionSource.Internal);
         }
 
         [Test]

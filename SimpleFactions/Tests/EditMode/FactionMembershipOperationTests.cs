@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleFactions.Abstract;
 using Systems.SimpleFactions.Operations;
 using Systems.SimpleFactions.Utility;
@@ -149,21 +148,21 @@ namespace Systems.SimpleFactions.Tests
         }
 
         [Test]
-        public void ActionSourceInternal_SuppressesCallbacksButStillMutatesState()
+        public void JoinAndLeave_AlwaysInvokeCallbacks()
         {
             TestFaction faction = CreateRegisteredFaction<TestFaction>();
             TestFactionMembership membership = CreateMembership();
 
-            OperationResult joinResult = membership.JoinFaction<TestFaction>(ActionSource.Internal);
-            OperationResult leaveResult = membership.LeaveFaction<TestFaction>(ActionSource.Internal);
+            OperationResult joinResult = membership.JoinFaction<TestFaction>();
+            OperationResult leaveResult = membership.LeaveFaction<TestFaction>();
 
             AssertSimilar(FactionOperations.Joined(), joinResult);
             AssertSimilar(FactionOperations.Left(), leaveResult);
             Assert.IsFalse(membership.IsMemberOf<TestFaction>());
-            Assert.AreEqual(0, membership.JoinedCount);
-            Assert.AreEqual(0, faction.JoinedCount);
-            Assert.AreEqual(0, membership.LeftCount);
-            Assert.AreEqual(0, faction.LeftCount);
+            Assert.AreEqual(1, membership.JoinedCount);
+            Assert.AreEqual(1, faction.JoinedCount);
+            Assert.AreEqual(1, membership.LeftCount);
+            Assert.AreEqual(1, faction.LeftCount);
         }
 
         [Test]

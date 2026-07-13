@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Systems.SimpleCore.Automation.Attributes;
 using Systems.SimpleCore.Identifiers;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleInventory.Abstract.Data;
 using Systems.SimpleInventory.Components.Items.Pickup;
 using Systems.SimpleInventory.Data;
@@ -187,22 +186,18 @@ namespace Systems.SimpleInventory.Abstract.Items
         /// <param name="position">Position to drop item at</param>
         /// <param name="rotation">Rotation of dropped item</param>
         /// <param name="parent">Parent of dropped item</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TPickupItemType">Type of pickup component to use</typeparam>
         public static void DropItem<TPickupItemType>(
             [NotNull] WorldItem itemObj,
             int amount,
             in Vector3 position,
             in Quaternion rotation,
-            [CanBeNull] Transform parent = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] Transform parent = null)
             where TPickupItemType : PickupItem, new()
         {
             // Spawn pickup
             itemObj.Item.SpawnPickup<TPickupItemType>(itemObj, amount, position, rotation, parent);
 
-            // Call event for external actions
-            if (actionSource == ActionSource.Internal) return;
             itemObj.Item.OnDrop(new DropItemContext(null, itemObj, amount), 
                 InventoryOperations.ItemsDropped());
         }

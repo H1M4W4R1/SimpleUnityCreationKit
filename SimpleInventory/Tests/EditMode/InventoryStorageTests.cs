@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleInventory.Data.Inventory;
 using Systems.SimpleInventory.Operations;
 
@@ -95,19 +94,19 @@ namespace Systems.SimpleInventory.Tests
         }
 
         [Test]
-        public void TryTake_WithInternalAction_SuppressesCallbacks()
+        public void TryTake_AlwaysInvokesCallbacks()
         {
             TestInventory inventory = CreateInventory();
             TestItem item = CreateItem<TestItem>();
             WorldItem worldItem = item.GenerateWorldItem(null);
-            inventory.TryAdd(worldItem, 1, out _, ActionSource.Internal);
+            inventory.TryAdd(worldItem, 1, out _);
 
-            OperationResult result = inventory.TryTake(worldItem, 1, out int amountLeft, ActionSource.Internal);
+            OperationResult result = inventory.TryTake(worldItem, 1, out int amountLeft);
 
             AssertSimilar(InventoryOperations.ItemsTaken(), result);
             Assert.AreEqual(0, amountLeft);
-            Assert.AreEqual(0, inventory.AddedCount);
-            Assert.AreEqual(0, inventory.TakenCount);
+            Assert.AreEqual(1, inventory.AddedCount);
+            Assert.AreEqual(1, inventory.TakenCount);
         }
 
         [Test]

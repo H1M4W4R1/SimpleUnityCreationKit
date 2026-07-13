@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleEntities.Data;
 using Systems.SimpleEntities.Data.Affinity;
 using Systems.SimpleEntities.Data.Context;
@@ -76,7 +75,7 @@ namespace Systems.SimpleEntities.Components
                 IStatModifier modifier = statModifiers[i];
                 statModifiers.RemoveAt(i);
 
-                ModifierContext context = new(modifier, self, ActionSource.Internal);
+                ModifierContext context = new(modifier, self);
                 OperationResult expiredResult = ModifierOperations.ModifierRemoved();
                 self.OnModifierExpired(in context, in expiredResult);
             }
@@ -165,17 +164,14 @@ namespace Systems.SimpleEntities.Components
         ///     Heals the entity
         /// </summary>
         /// <param name="context">Context of the healing event</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <returns>Result of the operation with amount of healed health</returns>
         public OperationResult Heal(
-            in HealContext context,
-            ActionSource actionSource = ActionSource.External)
+            in HealContext context)
         {
             // Check if entity can be healed
             OperationResult canHealResult = CanBeHealed(context);
             if (!canHealResult)
             {
-                if (actionSource == ActionSource.Internal) return canHealResult;
                 OnHealFailed(context, canHealResult);
                 return canHealResult;
             }
@@ -189,7 +185,6 @@ namespace Systems.SimpleEntities.Components
             CurrentHealth += healthToChange;
 
             OperationResult opResult = EntityOperations.Healed();
-            if (actionSource == ActionSource.Internal) return opResult;
             OnHealReceived(context, opResult, healthToChange);
             return opResult;
         }
@@ -199,16 +194,14 @@ namespace Systems.SimpleEntities.Components
         /// </summary>
         /// <param name="source">Source of the damage</param>
         /// <param name="amount">Base amount of damage</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <typeparam name="TDamageAffinity">Affinity of the damage</typeparam>
         public OperationResult Damage<TDamageAffinity>(
             [CanBeNull] object source,
-            long amount,
-            ActionSource actionSource = ActionSource.External)
+            long amount)
             where TDamageAffinity : AffinityType, new()
         {
             DamageContext context = DamageContext.Create<TDamageAffinity>(this, source, amount);
-            return Damage(context, actionSource);
+            return Damage(context);
         }
 
         /// <summary>
@@ -216,32 +209,27 @@ namespace Systems.SimpleEntities.Components
         /// </summary>
         /// <param name="source">Source of the healing</param>
         /// <param name="amount">Base amount of healing</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <typeparam name="THealingAffinity">Affinity of the healing</typeparam>
         public OperationResult Heal<THealingAffinity>(
             [CanBeNull] object source,
-            long amount,
-            ActionSource actionSource = ActionSource.External)
+            long amount)
             where THealingAffinity : AffinityType, new()
         {
             HealContext context = HealContext.Create<THealingAffinity>(this, source, amount);
-            return Heal(context, actionSource);
+            return Heal(context);
         }
 
         /// <summary>
         ///     Deals damage to the entity
         /// </summary>
         /// <param name="context">Context of the damage event</param>
-        /// <param name="actionSource">Source of the action</param>
         public OperationResult Damage(
-            in DamageContext context,
-            ActionSource actionSource = ActionSource.External)
+            in DamageContext context)
         {
             // Check if entity can be damaged
             OperationResult canBeDamagedResult = CanBeDamaged(context);
             if (!canBeDamagedResult)
             {
-                if (actionSource == ActionSource.Internal) return canBeDamagedResult;
                 OnDamageFailed(context, canBeDamagedResult);
                 return canBeDamagedResult;
             }
@@ -253,10 +241,7 @@ namespace Systems.SimpleEntities.Components
             CurrentHealth -= healthToChange;
 
             OperationResult opResult = EntityOperations.Damaged();
-            if (actionSource == ActionSource.External)
-            {
-                OnDamageReceived(context, opResult, healthToChange);
-            }
+            OnDamageReceived(context, opResult, healthToChange);
 
             // If health is zero or less, kill the entity
             if (CurrentHealth > 0) return opResult;
@@ -273,7 +258,6 @@ namespace Systems.SimpleEntities.Components
         /// </remarks>
         public OperationResult Kill(
             in DamageContext context,
-            ActionSource actionSource = ActionSource.External,
             long healthBeforeDeath = -1)
         {
             // Capture health before zeroing so OnDeath receives the correct value
@@ -292,14 +276,12 @@ namespace Systems.SimpleEntities.Components
 
                 OperationResult deathSaveData =
                     EntityOperations.SavedFromDeath();
-                if (actionSource == ActionSource.Internal) return deathSaveData;
 
                 OnSavedFromDeath(context, deathSaveContext, deathSaveData, CurrentHealth);
                 return deathSaveData;
             }
 
             // Perform death events
-            if (actionSource == ActionSource.Internal) return EntityOperations.Killed();
             OnDeath(context, EntityOperations.Killed(), healthBeforeDeath);
             return EntityOperations.Killed();
         }
@@ -446,18 +428,16 @@ namespace Systems.SimpleEntities.Components
         /// </summary>
         /// <param name="stackCount">Stack count to apply</param>
         /// <param name="flags">Flags to modify the application</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <typeparam name="TStatusType">Type of the status to apply</typeparam>
         /// <returns>Result of the application with new stack count</returns>
         public OperationResult ApplyStatus<TStatusType>(
             int stackCount = 1,
-            StatusModificationFlags flags = StatusModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            StatusModificationFlags flags = StatusModificationFlags.None)
             where TStatusType : StatusBase, new()
         {
             TStatusType status = StatusDatabase.GetExact<TStatusType>();
             Assert.IsFalse(ReferenceEquals(status, null), "Status not found in database");
-            return ApplyStatus(status, stackCount, flags, actionSource);
+            return ApplyStatus(status, stackCount, flags);
         }
 
         /// <summary>
@@ -466,13 +446,11 @@ namespace Systems.SimpleEntities.Components
         /// <param name="status">Status to apply</param>
         /// <param name="stackCount">Stack count to apply</param>
         /// <param name="flags">Flags to modify the application</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <returns>Result of the application with new stack count</returns>
         public OperationResult ApplyStatus(
             [NotNull] StatusBase status,
             int stackCount = 1,
-            StatusModificationFlags flags = StatusModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            StatusModificationFlags flags = StatusModificationFlags.None)
         {
             if (stackCount <= 0) return StatusOperations.InvalidStackCount();
 
@@ -494,7 +472,6 @@ namespace Systems.SimpleEntities.Components
             OperationResult canApplyStatus = CanApplyStatus(checkContext);
             if (!canApplyStatus && (flags & StatusModificationFlags.IgnoreConditions) == 0)
             {
-                if (actionSource == ActionSource.Internal) return canApplyStatus;
                 OnStatusApplicationFailed(checkContext, canApplyStatus);
                 return canApplyStatus;
             }
@@ -511,8 +488,6 @@ namespace Systems.SimpleEntities.Components
                 statusReference = new AppliedStatusData(status, stackCount);
                 _appliedStatuses.Add(statusReference);
                 OperationResult opResult = StatusOperations.StatusApplied();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusApplied(addStatusContext, opResult, statusReference.stackCount);
                 return opResult;
             }
@@ -521,8 +496,6 @@ namespace Systems.SimpleEntities.Components
             if (respectStackLimit && statusReference.stackCount >= status.MaxStack)
             {
                 OperationResult opResult = StatusOperations.MaxStackReached();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusApplicationFailed(checkContext, StatusOperations.MaxStackReached());
                 return opResult;
             }
@@ -538,7 +511,6 @@ namespace Systems.SimpleEntities.Components
             OperationResult opResult1 = StatusOperations.StatusStackChanged();
 
             // Call event
-            if (actionSource == ActionSource.Internal) return opResult1;
             OnStatusStackChanged(modifyStatusContext, opResult1, statusReference.stackCount);
             return opResult1;
         }
@@ -548,18 +520,16 @@ namespace Systems.SimpleEntities.Components
         /// </summary>
         /// <param name="stackCount">Stack count to remove</param>
         /// <param name="flags">Flags to modify the removal</param>
-        /// <param name="actionSource">Source of the removal</param>
         /// <typeparam name="TStatusType">Type of the status to remove</typeparam>
         /// <returns>Result of the removal with new stack count</returns>
         public OperationResult RemoveStatus<TStatusType>(
             int stackCount = 1,
-            StatusModificationFlags flags = StatusModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            StatusModificationFlags flags = StatusModificationFlags.None)
             where TStatusType : StatusBase, new()
         {
             TStatusType status = StatusDatabase.GetExact<TStatusType>();
             Assert.IsFalse(ReferenceEquals(status, null), "Status not found in database");
-            return RemoveStatus(status, stackCount, flags, actionSource);
+            return RemoveStatus(status, stackCount, flags);
         }
 
         /// <summary>
@@ -568,13 +538,11 @@ namespace Systems.SimpleEntities.Components
         /// <param name="status">Status to remove</param>
         /// <param name="stackCount">Stack count to remove</param>
         /// <param name="flags">Flags to modify the removal</param>
-        /// <param name="actionSource">Source of the removal</param>
         /// <returns>Result of the removal</returns>
         public OperationResult RemoveStatus(
             [NotNull] StatusBase status,
             int stackCount = 1,
-            StatusModificationFlags flags = StatusModificationFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            StatusModificationFlags flags = StatusModificationFlags.None)
         {
             if (stackCount <= 0) return StatusOperations.InvalidStackCount();
 
@@ -597,8 +565,6 @@ namespace Systems.SimpleEntities.Components
             if (ReferenceEquals(statusReference.status, null))
             {
                 OperationResult opResult = StatusOperations.NotApplied();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusRemovalFailed(checkContext, StatusOperations.NotApplied());
                 return opResult;
             }
@@ -607,7 +573,6 @@ namespace Systems.SimpleEntities.Components
             OperationResult canRemoveStatus = status.CanRemove(checkContext);
             if (!canRemoveStatus && (flags & StatusModificationFlags.IgnoreConditions) == 0)
             {
-                if (actionSource == ActionSource.Internal) return canRemoveStatus;
                 OnStatusRemovalFailed(checkContext, canRemoveStatus);
                 return canRemoveStatus;
             }
@@ -620,8 +585,6 @@ namespace Systems.SimpleEntities.Components
             {
                 OperationResult opResult =
                     StatusOperations.NotEnoughStacks();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusRemovalFailed(checkContext, StatusOperations.NotEnoughStacks());
                 return opResult;
             }
@@ -639,8 +602,6 @@ namespace Systems.SimpleEntities.Components
                 _appliedStatuses.RemoveAt(statusReferenceIndex);
 
                 OperationResult opResult = StatusOperations.StatusRemoved();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusRemoved(removeStatusContext, opResult);
                 return opResult;
             }
@@ -653,8 +614,6 @@ namespace Systems.SimpleEntities.Components
 
                 OperationResult opResult =
                     StatusOperations.StatusStackChanged();
-
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnStatusStackChanged(reduceStackContext, opResult, statusReference.stackCount);
                 return opResult;
             }

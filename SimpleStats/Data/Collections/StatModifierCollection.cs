@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleStats.Abstract;
 using Systems.SimpleStats.Abstract.Modifiers;
 using Systems.SimpleStats.Operations;
@@ -87,7 +86,7 @@ namespace Systems.SimpleStats.Data.Collections
 
                 if (modifier is IConditionalModifier conditional)
                 {
-                    ModifierContext context = new(modifier, _owner, ActionSource.Internal);
+                    ModifierContext context = new(modifier, _owner);
                     if (!conditional.ShouldApply(in context))
                         continue;
                 }
@@ -103,8 +102,7 @@ namespace Systems.SimpleStats.Data.Collections
         ///     Phase 3: Callback dispatch on success/failure.
         /// </summary>
         public OperationResult TryAddModifier(
-            [CanBeNull] IStatModifier modifier,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IStatModifier modifier)
         {
             // Phase 1: Parameter validation
             // Note: no OnModifierAddFailed callback here because ModifierContext requires a non-null modifier.
@@ -114,15 +112,15 @@ namespace Systems.SimpleStats.Data.Collections
             if (modifier is ITimedModifier {IsExpired: true})
             {
                 OperationResult expired = ModifierOperations.ModifierExpired();
-                if (actionSource == ActionSource.External && _owner != null)
+                if (_owner != null)
                 {
-                    ModifierContext expiredContext = new(modifier, _owner, actionSource);
+                    ModifierContext expiredContext = new(modifier, _owner);
                     _owner.OnModifierAddFailed(in expiredContext, in expired);
                 }
                 return expired;
             }
 
-            ModifierContext context = new(modifier, _owner, actionSource);
+            ModifierContext context = new(modifier, _owner);
 
             // Phase 2: Business logic validation (delegated to owner)
             if (_owner != null)
@@ -130,8 +128,7 @@ namespace Systems.SimpleStats.Data.Collections
                 OperationResult canApply = _owner.CanApplyModifier(in context);
                 if (!canApply)
                 {
-                    if (actionSource == ActionSource.External)
-                        _owner.OnModifierAddFailed(in context, in canApply);
+                    _owner.OnModifierAddFailed(in context, in canApply);
                     return canApply;
                 }
             }
@@ -143,7 +140,7 @@ namespace Systems.SimpleStats.Data.Collections
             OperationResult result = ModifierOperations.ModifierAdded();
 
             // Phase 3: Callbacks
-            if (actionSource == ActionSource.External && _owner != null)
+            if (_owner != null)
                 _owner.OnModifierAdded(in context, in result);
 
             return result;
@@ -153,20 +150,19 @@ namespace Systems.SimpleStats.Data.Collections
         ///     Remove modifier with validation and callbacks
         /// </summary>
         public OperationResult TryRemoveModifier(
-            [CanBeNull] IStatModifier modifier,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IStatModifier modifier)
         {
             // Phase 1: Parameter validation
             if (ReferenceEquals(modifier, null))
                 return ModifierOperations.ModifierIsNull();
 
-            ModifierContext context = new(modifier, _owner, actionSource);
+            ModifierContext context = new(modifier, _owner);
 
             // Execute
             if (!_modifiers.Remove(modifier))
             {
                 OperationResult notFound = ModifierOperations.ModifierNotFound();
-                if (actionSource == ActionSource.External && _owner != null)
+                if (_owner != null)
                     _owner.OnModifierRemoveFailed(in context, in notFound);
                 return notFound;
             }
@@ -174,7 +170,7 @@ namespace Systems.SimpleStats.Data.Collections
             OperationResult result = ModifierOperations.ModifierRemoved();
 
             // Phase 3: Callbacks
-            if (actionSource == ActionSource.External && _owner != null)
+            if (_owner != null)
                 _owner.OnModifierRemoved(in context, in result);
 
             return result;
@@ -262,7 +258,7 @@ namespace Systems.SimpleStats.Data.Collections
                 _modifiers.RemoveAt(i);
 
                 if (_owner == null) continue;
-                ModifierContext context = new(modifier, _owner, ActionSource.Internal);
+                ModifierContext context = new(modifier, _owner);
                 OperationResult expiredResult = ModifierOperations.ModifierRemoved();
                 _owner.OnModifierExpired(in context, in expiredResult);
             }
@@ -286,7 +282,7 @@ namespace Systems.SimpleStats.Data.Collections
 
                 if (modifier is IConditionalModifier conditional)
                 {
-                    ModifierContext context = new(modifier, _owner, ActionSource.Internal);
+                    ModifierContext context = new(modifier, _owner);
                     if (!conditional.ShouldApply(in context))
                         continue;
                 }

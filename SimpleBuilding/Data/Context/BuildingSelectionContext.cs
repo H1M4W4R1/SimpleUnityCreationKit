@@ -1,7 +1,6 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
-using Systems.SimpleCore.Utility.Enums;
 
 namespace Systems.SimpleBuilding.Data.Context
 {
@@ -13,18 +12,15 @@ namespace Systems.SimpleBuilding.Data.Context
         [CanBeNull] public readonly BuildingEntryBase entry;
         [CanBeNull] public readonly IBuildingUser user;
         [CanBeNull] public readonly BuildingRaycasterBase raycaster;
-        public readonly ActionSource actionSource;
 
         public BuildingSelectionContext(
             [CanBeNull] BuildingEntryBase entry,
             [CanBeNull] IBuildingUser user = null,
-            [CanBeNull] BuildingRaycasterBase raycaster = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] BuildingRaycasterBase raycaster = null)
         {
             this.entry = entry;
             this.user = user;
             this.raycaster = raycaster;
-            this.actionSource = actionSource;
         }
     }
 }

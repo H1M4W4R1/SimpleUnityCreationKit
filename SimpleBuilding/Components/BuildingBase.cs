@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Data.Context;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleBuilding.Utility;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Components
@@ -37,10 +36,9 @@ namespace Systems.SimpleBuilding.Components
         ///     Attempts to demolish this building through the common transaction API.
         /// </summary>
         public OperationResult TryDemolish(
-            [CanBeNull] IBuildingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IBuildingUser user = null)
         {
-            BuildingDemolitionContext context = new BuildingDemolitionContext(this, user, null, actionSource);
+            BuildingDemolitionContext context = new BuildingDemolitionContext(this, user, null);
             return BuildingAPI.TryDemolish(in context);
         }
 

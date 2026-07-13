@@ -1,6 +1,5 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleFactions.Abstract;
 using UnityEngine;
 
@@ -24,11 +23,10 @@ namespace Systems.SimpleFactions.Utility
         ///     or an error result describing the reason for failure.
         /// </returns>
         public static OperationResult Join<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] FactionMembershipBase<THolder> membership)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
-            => membership.JoinFaction<TFaction>(actionSource);
+            => membership.JoinFaction<TFaction>();
 
         /// <summary>
         ///     Attempts to make the object tracked by <paramref name="membership"/> leave
@@ -39,11 +37,10 @@ namespace Systems.SimpleFactions.Utility
         ///     or an error result describing the reason for failure.
         /// </returns>
         public static OperationResult Leave<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] FactionMembershipBase<THolder> membership)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
-            => membership.LeaveFaction<TFaction>(actionSource);
+            => membership.LeaveFaction<TFaction>();
 
         /// <summary>
         ///     Adds <paramref name="amount"/> to the object's reputation with
@@ -56,11 +53,10 @@ namespace Systems.SimpleFactions.Utility
         /// </returns>
         public static OperationResult ChangeReputation<TFaction, THolder>(
             [NotNull] FactionMembershipBase<THolder> membership,
-            long amount,
-            ActionSource actionSource = ActionSource.External)
+            long amount)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
-            => membership.ChangeReputation<TFaction>(amount, actionSource);
+            => membership.ChangeReputation<TFaction>(amount);
 
         /// <summary>
         ///     Returns the currently active <see cref="ReputationLevelBase"/> for
@@ -98,10 +94,9 @@ namespace Systems.SimpleFactions.Utility
         /// </returns>
         public static OperationResult AssignLevel<TFaction, THolder>(
             [NotNull] FactionMembershipBase<THolder> membership,
-            [CanBeNull] ReputationLevelBase level,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ReputationLevelBase level)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
-            => membership.AssignLevel<TFaction>(level, actionSource);
+            => membership.AssignLevel<TFaction>(level);
     }
 }

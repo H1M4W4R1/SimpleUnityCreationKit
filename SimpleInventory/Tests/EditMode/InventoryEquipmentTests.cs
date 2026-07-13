@@ -1,5 +1,4 @@
-using NUnit.Framework;
-using Systems.SimpleCore.Utility.Enums;
+﻿using NUnit.Framework;
 using Systems.SimpleInventory.Data.Enums;
 using Systems.SimpleInventory.Data.Inventory;
 using Systems.SimpleInventory.Operations;
@@ -228,7 +227,7 @@ namespace Systems.SimpleInventory.Tests
         }
 
         [Test]
-        public void EquipItem_WithInternalFailure_SuppressesCallbacks()
+        public void EquipItem_FailureAlwaysInvokesCallbacks()
         {
             TestInventory inventory = CreateInventory();
             TestEquipment equipment = CreateEquipment();
@@ -239,9 +238,9 @@ namespace Systems.SimpleInventory.Tests
 
             AssertSimilar(
                 InventoryOperations.InvalidAmount(),
-                inventory.EquipItem(0, equipment, EquipmentModificationFlags.None, ActionSource.Internal));
+                inventory.EquipItem(0, equipment, EquipmentModificationFlags.None));
 
-            Assert.AreEqual(0, item.EquipFailedCount);
+            Assert.AreEqual(1, item.EquipFailedCount);
         }
     }
 }

@@ -1,8 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Data.Context
@@ -19,7 +18,6 @@ namespace Systems.SimpleBuilding.Data.Context
         [CanBeNull] public readonly IReadOnlyList<BuildingSlot> slots;
         public readonly Vector3 position;
         public readonly Quaternion rotation;
-        public readonly ActionSource actionSource;
         /// <summary>
         ///     Whether this placement was requested while restoring a building save.
         /// </summary>
@@ -33,7 +31,6 @@ namespace Systems.SimpleBuilding.Data.Context
             [CanBeNull] BuildingRaycasterBase raycaster = null,
             [CanBeNull] Transform parent = null,
             [CanBeNull] IReadOnlyList<BuildingSlot> slots = null,
-            ActionSource actionSource = ActionSource.External,
             bool isSaveSystemRequest = false)
         {
             this.entry = entry;
@@ -43,7 +40,6 @@ namespace Systems.SimpleBuilding.Data.Context
             this.raycaster = raycaster;
             this.parent = parent;
             this.slots = slots;
-            this.actionSource = actionSource;
             this.isSaveSystemRequest = isSaveSystemRequest;
         }
     }

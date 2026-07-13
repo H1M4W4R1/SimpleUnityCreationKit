@@ -1,6 +1,5 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleDialogue.Components;
 using Systems.SimpleDialogue.Data;
 
@@ -12,46 +11,40 @@ namespace Systems.SimpleDialogue.Utility
     public static class DialogueAPI
     {
         public static OperationResult Begin(
-            [NotNull] Dialogue dialogue,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] Dialogue dialogue)
         {
-            return dialogue.BeginDialogue(dialogue.DefaultEntryId, actionSource);
+            return dialogue.BeginDialogue(dialogue.DefaultEntryId);
         }
 
         public static OperationResult Begin(
             [NotNull] Dialogue dialogue,
-            string entryId,
-            ActionSource actionSource = ActionSource.External)
+            string entryId)
         {
-            return dialogue.BeginDialogue(entryId, actionSource);
+            return dialogue.BeginDialogue(entryId);
         }
 
         public static OperationResult Select(
-            in DialogueOption option,
-            ActionSource actionSource = ActionSource.External)
+            in DialogueOption option)
         {
-            return option.Select(actionSource);
+            return option.Select();
         }
 
         public static OperationResult Interrupt(
-            [NotNull] Dialogue dialogue,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] Dialogue dialogue)
         {
-            return dialogue.InterruptDialogue(actionSource);
+            return dialogue.InterruptDialogue();
         }
 
         public static OperationResult CanAdvance(
-            [NotNull] Dialogue dialogue,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] Dialogue dialogue)
         {
-            return dialogue.CanAdvance(actionSource);
+            return dialogue.CanAdvance();
         }
 
         public static OperationResult Advance(
-            [NotNull] Dialogue dialogue,
-            ActionSource actionSource = ActionSource.External)
+            [NotNull] Dialogue dialogue)
         {
-            return dialogue.Advance(actionSource);
+            return dialogue.Advance();
         }
     }
 }

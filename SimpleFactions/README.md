@@ -176,9 +176,6 @@ protected override OperationResult CanBeDemoted<TFaction>(in FactionLevelChangeC
 | `IsAtLeastLevel<TFaction, THolder>(membership, level)` | True if current level index >= target level index |
 | `AssignLevel<TFaction, THolder>(membership, level)` | Manually set level; pass null to clear |
 
-All methods accept an optional `ActionSource actionSource` parameter. Passing `ActionSource.Internal`
-suppresses all event callbacks (useful for initialisation or batch operations).
-
 ---
 
 ## Key Types

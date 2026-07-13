@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Data.Context;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleBuilding.Utility;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Components
@@ -58,15 +57,14 @@ namespace Systems.SimpleBuilding.Components
         /// </summary>
         public OperationResult Select(
             [CanBeNull] BuildingEntryBase entry,
-            [CanBeNull] IBuildingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IBuildingUser user = null)
         {
-            OperationResult result = BuildingAPI.CanSelect(entry, user, this, actionSource);
+            OperationResult result = BuildingAPI.CanSelect(entry, user, this);
             if (!result) return result;
 
             _selectedEntry = entry;
             _rotationDegrees = 0f;
-            RefreshPlacementPreview(user, actionSource);
+            RefreshPlacementPreview(user);
             return BuildingOperations.Permitted();
         }
 
@@ -106,13 +104,12 @@ namespace Systems.SimpleBuilding.Components
         /// </summary>
         public OperationResult TryBuild(
             [CanBeNull] out BuildingBase building,
-            [CanBeNull] IBuildingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IBuildingUser user = null)
         {
             building = null;
             if (ReferenceEquals(_selectedEntry, null) || !_selectedEntry)
                 return BuildingOperations.EntryIsNull();
-            if (!RefreshPlacementPreview(user, actionSource)) return BuildingOperations.RaycastNotHit();
+            if (!RefreshPlacementPreview(user)) return BuildingOperations.RaycastNotHit();
 
             BuildingPlacementContext context = new BuildingPlacementContext(
                 _selectedEntry,
@@ -121,8 +118,7 @@ namespace Systems.SimpleBuilding.Components
                 user,
                 this,
                 _buildingParent,
-                _placementSlots,
-                actionSource);
+                _placementSlots);
             OperationResult result = BuildingAPI.TryBuild(in context, out building);
             if (result && !ReferenceEquals(_ghostPreview, null) && _ghostPreview)
                 _ghostPreview.Hide();
@@ -133,14 +129,13 @@ namespace Systems.SimpleBuilding.Components
         ///     Demolishes the first <see cref="BuildingBase"/> found on the object hit by this controller's ray.
         /// </summary>
         public OperationResult TryDemolishTarget(
-            [CanBeNull] IBuildingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IBuildingUser user = null)
         {
             if (!TryGetRaycastHit(out RaycastHit hit)) return BuildingOperations.RaycastNotHit();
 
             BuildingBase building = hit.collider.GetComponentInParent<BuildingBase>();
             if (ReferenceEquals(building, null)) return BuildingOperations.BuildingIsNull();
-            return BuildingAPI.TryDemolish(building, user, this, actionSource);
+            return BuildingAPI.TryDemolish(building, user, this);
         }
 
         protected abstract bool TryGetRay(out Ray ray);
@@ -174,8 +169,7 @@ namespace Systems.SimpleBuilding.Components
         }
 
         private bool RefreshPlacementPreview(
-            [CanBeNull] IBuildingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IBuildingUser user = null)
         {
             if (ReferenceEquals(_selectedEntry, null) || !_selectedEntry)
             {
@@ -203,8 +197,7 @@ namespace Systems.SimpleBuilding.Components
                 user,
                 this,
                 _buildingParent,
-                _placementSlots,
-                actionSource);
+                _placementSlots);
 
             if (!ReferenceEquals(_ghostPreview, null) && _ghostPreview)
                 _ghostPreview.Show(_selectedEntry, position, rotation, result);

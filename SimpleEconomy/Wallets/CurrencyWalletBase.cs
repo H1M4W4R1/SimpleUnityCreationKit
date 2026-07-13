@@ -1,5 +1,4 @@
-using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
+﻿using Systems.SimpleCore.Operations;
 using Systems.SimpleEconomy.Currencies;
 using Systems.SimpleEconomy.Data;
 using Systems.SimpleEconomy.Data.Context;
@@ -44,12 +43,10 @@ namespace Systems.SimpleEconomy.Wallets
         /// </summary>
         /// <param name="currencyAmount">Amount of currency to add</param>
         /// <param name="flags">Flags to modify wallet behavior</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <returns>Operation result of the add attempt with remaining amount of currency</returns>
         public sealed override OperationResult TryAdd(
             long currencyAmount,
-            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None)
         {
             if (currencyAmount <= 0) return EconomyOperations.InvalidCurrencyAmount();
 
@@ -67,7 +64,6 @@ namespace Systems.SimpleEconomy.Wallets
             if (!canAddCurrency && (flags & ModifyWalletCurrencyFlags.IgnoreConditions) == 0)
             {
                 // Invoke event
-                if (actionSource == ActionSource.Internal) return canAddCurrency;
                 OnCurrencyAddFailed(context, canAddCurrency);
                 return canAddCurrency;
             }
@@ -83,14 +79,12 @@ namespace Systems.SimpleEconomy.Wallets
             if (remainder == -1)
             {
                 OperationResult overflowResult = EconomyOperations.Overflow();
-                if (actionSource == ActionSource.Internal) return overflowResult;
                 OnCurrencyAddFailed(context, overflowResult);
                 return overflowResult;
             }
 
             // Invoke event
             OperationResult currencyAddResult = EconomyOperations.CurrencyAdded();
-            if (actionSource == ActionSource.Internal) return currencyAddResult;
 
             OnCurrencyAdded(context, currencyAddResult, remainder);
             return currencyAddResult;
@@ -103,12 +97,10 @@ namespace Systems.SimpleEconomy.Wallets
         /// </summary>
         /// <param name="currencyAmount">Amount of currency to take</param>
         /// <param name="flags">Flags to modify wallet behavior</param>
-        /// <param name="actionSource">Source of the action</param>
         /// <returns>Operation result of the take attempt with remaining amount of currency</returns>
         public sealed override OperationResult TryTake(
             long currencyAmount,
-            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None,
-            ActionSource actionSource = ActionSource.External
+            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None
         )
         {
             if (currencyAmount <= 0) return EconomyOperations.InvalidCurrencyAmount();
@@ -128,7 +120,6 @@ namespace Systems.SimpleEconomy.Wallets
                 Balance < context.amountExpected)
             {
                 OperationResult notEnough = EconomyOperations.NotEnoughCurrency();
-                if (actionSource == ActionSource.Internal) return notEnough;
                 OnCurrencyTakeFailed(context, notEnough);
                 return notEnough;
             }
@@ -138,7 +129,6 @@ namespace Systems.SimpleEconomy.Wallets
             if (!canTakeCurrency && (flags & ModifyWalletCurrencyFlags.IgnoreConditions) == 0)
             {
                 // Invoke event
-                if (actionSource == ActionSource.Internal) return canTakeCurrency;
                 OnCurrencyTakeFailed(context, canTakeCurrency);
                 return canTakeCurrency;
             }
@@ -176,7 +166,6 @@ namespace Systems.SimpleEconomy.Wallets
             if (underflowDetected)
             {
                 OperationResult overflowResult = EconomyOperations.Overflow();
-                if (actionSource == ActionSource.Internal) return overflowResult;
                 OnCurrencyTakeFailed(context, overflowResult);
                 return overflowResult;
             }
@@ -186,7 +175,6 @@ namespace Systems.SimpleEconomy.Wallets
                 : EconomyOperations.CurrencyTaken();
 
             // Invoke event
-            if (actionSource == ActionSource.Internal) return currencyTakeResult;
             OnCurrencyTaken(context, currencyTakeResult, currencyLeftToTake);
             return currencyTakeResult;
         }
@@ -239,13 +227,11 @@ namespace Systems.SimpleEconomy.Wallets
 
         public abstract OperationResult TryTake(
             long currencyAmount,
-            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None,
-            ActionSource actionSource = ActionSource.External);
+            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None);
 
         public abstract OperationResult TryAdd(
             long currencyAmount,
-            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None,
-            ActionSource actionSource = ActionSource.External);
+            ModifyWalletCurrencyFlags flags = ModifyWalletCurrencyFlags.None);
 
         /// <summary>
         ///     Checks if the specified amount of currency can be taken from the wallet.

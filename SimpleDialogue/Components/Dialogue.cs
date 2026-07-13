@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Data;
 using Systems.SimpleDialogue.Implementations;
@@ -39,25 +38,24 @@ namespace Systems.SimpleDialogue.Components
 
         public bool IsRunning { get; private set; }
 
-        public OperationResult BeginDialogue() => BeginDialogue(DefaultEntryId, ActionSource.External);
+        public OperationResult BeginDialogue() => BeginDialogue(DefaultEntryId);
 
         public OperationResult BeginDialogue(
-            string entryId,
-            ActionSource actionSource = ActionSource.External)
+            string entryId)
         {
-            if (!Graph) return FailStart(DialogueOperations.GraphIsNull(), actionSource);
+            if (!Graph) return FailStart(DialogueOperations.GraphIsNull());
 
             DialogueInteractionNode startNode = Graph.GetStartNode(entryId);
             if (ReferenceEquals(startNode, null))
-                return FailStart(DialogueOperations.EntryNotFound(), actionSource);
+                return FailStart(DialogueOperations.EntryNotFound());
             if (IsAnotherDialogueRunning())
-                return FailStart(DialogueOperations.AnotherDialogueRunning(), actionSource);
+                return FailStart(DialogueOperations.AnotherDialogueRunning());
 
             _currentGraph = Graph;
             IsRunning = true;
             _activeDialogue = this;
 
-            OperationResult enterResult = EnterNode(startNode, actionSource);
+            OperationResult enterResult = EnterNode(startNode);
             if (!enterResult)
             {
                 IsRunning = false;
@@ -67,20 +65,20 @@ namespace Systems.SimpleDialogue.Components
             }
 
             OperationResult result = DialogueOperations.Started();
-            if (actionSource == ActionSource.External) OnDialogueStarted(in result);
+            OnDialogueStarted(in result);
             return result;
         }
 
-        public OperationResult RecoverDialogue(ActionSource actionSource = ActionSource.External)
+        public OperationResult RecoverDialogue()
         {
-            if (!IsRunning) return BeginDialogue(DefaultEntryId, actionSource);
-            if (ReferenceEquals(_currentNode, null)) return BeginDialogue(DefaultEntryId, actionSource);
+            if (!IsRunning) return BeginDialogue(DefaultEntryId);
+            if (ReferenceEquals(_currentNode, null)) return BeginDialogue(DefaultEntryId);
 
-            RefreshView(actionSource);
+            RefreshView();
             return DialogueOperations.NodeEntered();
         }
 
-        public OperationResult InterruptDialogue(ActionSource actionSource = ActionSource.External)
+        public OperationResult InterruptDialogue()
         {
             if (!IsRunning) return DialogueOperations.DialogueNotRunning();
 
@@ -89,14 +87,13 @@ namespace Systems.SimpleDialogue.Components
             OperationResult result = DialogueOperations.Interrupted();
             ClearRuntimeState();
 
-            if (actionSource == ActionSource.External) OnDialogueInterrupted(in result);
+            OnDialogueInterrupted(in result);
             RenderCurrentState();
             return result;
         }
 
         public OperationResult SelectOption(
-            in DialogueOption option,
-            ActionSource actionSource = ActionSource.External)
+            in DialogueOption option)
         {
             if (!IsRunning) return DialogueOperations.DialogueNotRunning();
             if (!option.IsValid) return DialogueOperations.OptionNotFound();
@@ -105,7 +102,7 @@ namespace Systems.SimpleDialogue.Components
                 return DialogueOperations.OptionNotFound();
             if (!option.isAvailable) return DialogueOperations.OptionUnavailable();
 
-            DialogueContext context = CreateContext(option.node, in option, actionSource);
+            DialogueContext context = CreateContext(option.node, in option);
             OperationResult canEnterResult = option.node.CanEnterInternal(in context);
             if (!canEnterResult)
             {
@@ -117,15 +114,15 @@ namespace Systems.SimpleDialogue.Components
             if (!ReferenceEquals(_currentNode, null)) _currentNode.OnNodeExited(in context, in selectedResult);
 
             DialogueInteractionNode nextNode = option.node.GetNextNode();
-            if (ReferenceEquals(nextNode, null)) return FinishDialogue(actionSource);
+            if (ReferenceEquals(nextNode, null)) return FinishDialogue();
 
-            return EnterNode(nextNode, actionSource);
+            return EnterNode(nextNode);
         }
 
         /// <summary>
         ///     Verifies that the current NPC-only sequence can advance into its next node.
         /// </summary>
-        public OperationResult CanAdvance(ActionSource actionSource = ActionSource.External)
+        public OperationResult CanAdvance()
         {
             if (!IsRunning) return DialogueOperations.DialogueNotRunning();
             if (_options.Count > 0) return DialogueOperations.OptionUnavailable();
@@ -135,17 +132,17 @@ namespace Systems.SimpleDialogue.Components
             if (ReferenceEquals(nextNode, null)) return DialogueOperations.NodeIsNull();
 
             DialogueOption emptyOption = default;
-            DialogueContext context = CreateContext(nextNode, in emptyOption, actionSource);
+            DialogueContext context = CreateContext(nextNode, in emptyOption);
             return nextNode.CanEnterInternal(in context);
         }
 
-        public OperationResult Advance(ActionSource actionSource = ActionSource.External)
+        public OperationResult Advance()
         {
-            OperationResult canAdvanceResult = CanAdvance(actionSource);
+            OperationResult canAdvanceResult = CanAdvance();
             if (!canAdvanceResult)
             {
                 if (canAdvanceResult.resultCode == DialogueOperations.ERROR_NODE_IS_NULL)
-                    return FinishDialogue(actionSource);
+                    return FinishDialogue();
 
                 return canAdvanceResult;
             }
@@ -153,21 +150,20 @@ namespace Systems.SimpleDialogue.Components
             NPCDialogueNode npcNode = (NPCDialogueNode) _currentNode;
             DialogueInteractionNode nextNode = npcNode.GetNextNode();
             DialogueOption emptyOption = default;
-            DialogueContext context = CreateContext(nextNode, in emptyOption, actionSource);
+            DialogueContext context = CreateContext(nextNode, in emptyOption);
             OperationResult advancedResult = DialogueOperations.NodeEntered();
             npcNode.OnNodeExited(in context, in advancedResult);
 
-            return EnterNode(nextNode, actionSource);
+            return EnterNode(nextNode);
         }
 
         private OperationResult EnterNode(
-            [CanBeNull] DialogueInteractionNode node,
-            ActionSource actionSource)
+            [CanBeNull] DialogueInteractionNode node)
         {
             if (ReferenceEquals(node, null)) return DialogueOperations.NodeIsNull();
 
             DialogueOption emptyOption = default;
-            DialogueContext context = CreateContext(node, in emptyOption, actionSource);
+            DialogueContext context = CreateContext(node, in emptyOption);
             OperationResult result = node.CanEnterInternal(in context);
             if (!result)
             {
@@ -178,62 +174,62 @@ namespace Systems.SimpleDialogue.Components
             _currentNode = node;
             _currentGraph = node.graph as DialogueGraph;
 
-            if (node is DialogueExitNode) return FinishDialogue(actionSource);
+            if (node is DialogueExitNode) return FinishDialogue();
             if (node is ConditionalDialogueNode conditionalNode)
-                return EnterNode(conditionalNode.GetNextNode(in context), actionSource);
+                return EnterNode(conditionalNode.GetNextNode(in context));
             if (node is SwitchDialogueNode switchNode)
-                return EnterNode(switchNode.GetNextNode(in context), actionSource);
+                return EnterNode(switchNode.GetNextNode(in context));
             if (node is SubDialogueNode subDialogueNode && subDialogueNode.Graph)
             {
                 DialogueInteractionNode subStartNode = subDialogueNode.Graph.GetStartNode(subDialogueNode.EntryId);
                 if (ReferenceEquals(subStartNode, null)) return DialogueOperations.EntryNotFound();
-                return EnterNode(subStartNode, actionSource);
+                return EnterNode(subStartNode);
             }
 
-            RefreshView(actionSource);
+            RefreshView();
             OperationResult enteredResult = DialogueOperations.NodeEntered();
             node.OnNodeEntered(in context, in enteredResult);
             return enteredResult;
         }
 
-        private OperationResult FinishDialogue(ActionSource actionSource)
+        private OperationResult FinishDialogue()
         {
             IsRunning = false;
             ClearActiveDialogue();
             OperationResult result = DialogueOperations.Finished();
             ClearRuntimeState();
 
-            if (actionSource == ActionSource.External) OnDialogueFinished(in result);
+            OnDialogueFinished(in result);
             RenderCurrentState();
             return result;
         }
 
-        private OperationResult FailStart(in OperationResult result, ActionSource actionSource)
+        private OperationResult FailStart(in OperationResult result)
         {
-            if (actionSource == ActionSource.External) OnDialogueStartFailed(in result);
+            OnDialogueStartFailed(in result);
             return result;
         }
 
-        private void RefreshView(ActionSource actionSource)
+        private void RefreshView()
         {
-            RebuildOptions(actionSource);
+            RebuildOptions();
 
             string speakerName = string.Empty;
             string text = string.Empty;
             if (!ReferenceEquals(_currentNode, null))
             {
                 DialogueOption emptyOption = default;
-                DialogueContext context = CreateContext(_currentNode, in emptyOption, actionSource);
+                DialogueContext context = CreateContext(_currentNode, in emptyOption);
                 speakerName = _currentNode.GetSpeakerName(in context);
                 text = _currentNode.GetText(in context);
             }
 
-            OperationResult canAdvanceResult = CanAdvance(actionSource);
+            OperationResult canAdvanceResult = CanAdvance();
             _viewContext.Set(this, _currentGraph, _currentNode, speakerName, text, IsRunning, canAdvanceResult);
             RenderCurrentState();
         }
 
-        private void RebuildOptions(ActionSource actionSource)
+        private void RebuildOptions()
         {
             _options.Clear();
             if (_currentNode is not NPCDialogueNode npcNode) return;
@@ -245,7 +241,7 @@ namespace Systems.SimpleDialogue.Components
                 if (ReferenceEquals(answerNode, null)) continue;
 
                 DialogueOption emptyOption = default;
-                DialogueContext context = CreateContext(answerNode, in emptyOption, actionSource);
+                DialogueContext context = CreateContext(answerNode, in emptyOption);
                 if (!answerNode.IsVisible(in context)) continue;
 
                 bool isAvailable = answerNode.IsAvailable(in context) && answerNode.CanEnterInternal(in context);
@@ -256,16 +252,14 @@ namespace Systems.SimpleDialogue.Components
 
         private DialogueContext CreateContext(
             [CanBeNull] DialogueInteractionNode targetNode,
-            in DialogueOption selectedOption,
-            ActionSource actionSource)
+            in DialogueOption selectedOption)
         {
             return new DialogueContext(
                 this,
                 _currentGraph,
                 _currentNode,
                 targetNode,
-                in selectedOption,
-                actionSource);
+                in selectedOption);
         }
 
         private void RenderCurrentState()

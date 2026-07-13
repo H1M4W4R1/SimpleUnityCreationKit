@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleEntities.Data.Context;
 using Systems.SimpleEntities.Operations;
 
@@ -42,18 +41,18 @@ namespace Systems.SimpleEntities.Tests
         }
 
         [Test]
-        public void Damage_WithInternalSource_SuppressesDamageCallbacks()
+        public void Damage_AlwaysInvokesDamageCallbacks()
         {
             TestEntity entity = CreateEntity();
             TestAffinity affinity = CreateAffinity<TestAffinity>();
             DamageContext context = new DamageContext(entity, null, affinity, 0f, 10);
 
-            OperationResult result = entity.Damage(context, ActionSource.Internal);
+            OperationResult result = entity.Damage(context);
 
             AssertSimilar(EntityOperations.Damaged(), result);
             Assert.AreEqual(90, entity.CurrentHealth);
-            Assert.AreEqual(0, entity.DamageReceivedCount);
-            Assert.AreEqual(0, affinity.DamageReceivedCount);
+            Assert.AreEqual(1, entity.DamageReceivedCount);
+            Assert.AreEqual(1, affinity.DamageReceivedCount);
         }
 
         [Test]
@@ -157,18 +156,18 @@ namespace Systems.SimpleEntities.Tests
         }
 
         [Test]
-        public void Heal_WithInternalSource_SuppressesCallbacks()
+        public void Heal_AlwaysInvokesCallbacks()
         {
             TestEntity entity = CreateEntity(currentHealth: 60);
             TestAffinity affinity = CreateAffinity<TestAffinity>();
             HealContext context = new HealContext(entity, null, affinity, 0f, 10);
 
-            OperationResult result = entity.Heal(context, ActionSource.Internal);
+            OperationResult result = entity.Heal(context);
 
             AssertSimilar(EntityOperations.Healed(), result);
             Assert.AreEqual(70, entity.CurrentHealth);
-            Assert.AreEqual(0, entity.HealReceivedCount);
-            Assert.AreEqual(0, affinity.HealReceivedCount);
+            Assert.AreEqual(1, entity.HealReceivedCount);
+            Assert.AreEqual(1, affinity.HealReceivedCount);
         }
     }
 }

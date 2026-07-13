@@ -1,5 +1,4 @@
-using NUnit.Framework;
-using Systems.SimpleCore.Utility.Enums;
+﻿using NUnit.Framework;
 using Systems.SimpleInventory.Data.Inventory;
 using Systems.SimpleInventory.Operations;
 
@@ -41,7 +40,7 @@ namespace Systems.SimpleInventory.Tests
         }
 
         [Test]
-        public void UseItem_WithInternalFailure_SuppressesFailureCallbacks()
+        public void UseItem_FailureAlwaysInvokesCallbacks()
         {
             TestInventory inventory = CreateInventory();
             TestUsableItem item = CreateItem<TestUsableItem>();
@@ -49,10 +48,10 @@ namespace Systems.SimpleInventory.Tests
             WorldItem worldItem = item.GenerateWorldItem(null);
             inventory.TryAdd(worldItem, 1, out _);
 
-            AssertSimilar(InventoryOperations.InvalidAmount(), inventory.UseItem(0, ActionSource.Internal));
+            AssertSimilar(InventoryOperations.InvalidAmount(), inventory.UseItem(0));
 
-            Assert.AreEqual(0, item.UseFailedCount);
-            Assert.AreEqual(0, inventory.UseFailedCount);
+            Assert.AreEqual(1, item.UseFailedCount);
+            Assert.AreEqual(1, inventory.UseFailedCount);
         }
 
         [Test]

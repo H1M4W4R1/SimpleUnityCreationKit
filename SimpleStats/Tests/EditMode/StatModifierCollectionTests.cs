@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleStats.Abstract.Modifiers;
 using Systems.SimpleStats.Data.Collections;
 using Systems.SimpleStats.Implementations;
@@ -42,25 +41,23 @@ namespace Systems.SimpleStats.Tests
             Assert.AreEqual(1, owner.AddedCount);
             Assert.AreSame(modifier, owner.LastModifier);
             Assert.AreSame(owner, owner.LastOwner);
-            Assert.AreEqual(ActionSource.External, owner.LastActionSource);
             Assert.AreEqual(ModifierOperations.SUCCESS_MODIFIER_ADDED, owner.LastResultCode);
         }
 
         [Test]
-        public void TryAddModifier_InternalSuccessValidatesButSuppressesAddedCallback()
+        public void TryAddModifier_AlwaysInvokesSuccessCallbacks()
         {
             TestModifierOwner owner = new TestModifierOwner();
             StatModifierCollection collection = new StatModifierCollection(owner);
             IStatModifier modifier = new FlatAddModifier<TestStatistic>(5f);
 
-            OperationResult result = collection.TryAddModifier(modifier, ActionSource.Internal);
+            OperationResult result = collection.TryAddModifier(modifier);
 
             AssertSimilar(ModifierOperations.ModifierAdded(), result);
             Assert.AreEqual(1, collection.Count);
             Assert.AreEqual(1, owner.CanApplyCount);
-            Assert.AreEqual(0, owner.AddedCount);
+            Assert.AreEqual(1, owner.AddedCount);
             Assert.AreSame(modifier, owner.LastModifier);
-            Assert.AreEqual(ActionSource.Internal, owner.LastActionSource);
         }
 
         [Test]
@@ -81,18 +78,18 @@ namespace Systems.SimpleStats.Tests
         }
 
         [Test]
-        public void TryAddModifier_OwnerRejectionBlocksInternalAddWithoutFailureCallback()
+        public void TryAddModifier_OwnerRejectionAlwaysInvokesFailureCallback()
         {
             TestModifierOwner owner = new TestModifierOwner { RejectAdds = true };
             StatModifierCollection collection = new StatModifierCollection(owner);
             IStatModifier modifier = new FlatAddModifier<TestStatistic>(5f);
 
-            OperationResult result = collection.TryAddModifier(modifier, ActionSource.Internal);
+            OperationResult result = collection.TryAddModifier(modifier);
 
             AssertSimilar(ModifierOperations.MaxModifiersExceeded(), result);
             Assert.AreEqual(0, collection.Count);
             Assert.AreEqual(1, owner.CanApplyCount);
-            Assert.AreEqual(0, owner.AddFailedCount);
+            Assert.AreEqual(1, owner.AddFailedCount);
         }
 
         [Test]
@@ -135,18 +132,18 @@ namespace Systems.SimpleStats.Tests
         }
 
         [Test]
-        public void TryRemoveModifier_InternalSuccessSuppressesCallbacks()
+        public void TryRemoveModifier_AlwaysInvokesSuccessCallbacks()
         {
             TestModifierOwner owner = new TestModifierOwner();
             StatModifierCollection collection = new StatModifierCollection(owner);
             IStatModifier modifier = new FlatAddModifier<TestStatistic>(5f);
             collection.Add(modifier);
 
-            OperationResult result = collection.TryRemoveModifier(modifier, ActionSource.Internal);
+            OperationResult result = collection.TryRemoveModifier(modifier);
 
             AssertSimilar(ModifierOperations.ModifierRemoved(), result);
             Assert.AreEqual(0, collection.Count);
-            Assert.AreEqual(0, owner.RemovedCount);
+            Assert.AreEqual(1, owner.RemovedCount);
             Assert.AreEqual(0, owner.RemoveFailedCount);
         }
 
@@ -205,7 +202,6 @@ namespace Systems.SimpleStats.Tests
             Assert.AreEqual(1, inactive.ShouldApplyCount);
             Assert.AreSame(active, active.LastModifier);
             Assert.AreSame(owner, active.LastOwner);
-            Assert.AreEqual(ActionSource.Internal, active.LastActionSource);
         }
 
         [Test]

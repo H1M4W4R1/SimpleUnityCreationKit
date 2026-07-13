@@ -1,5 +1,4 @@
-using Systems.SimpleCore.Utility.Enums;
-using Systems.SimpleDialogue.Data;
+﻿using Systems.SimpleDialogue.Data;
 using Systems.SimpleUI.Components.Abstract.Markers;
 using Systems.SimpleUI.Components.Lists;
 using TMPro;
@@ -56,7 +55,7 @@ namespace Systems.SimpleDialogue.UI
         private void OnClick()
         {
             if (!TryGetContext(out DialogueOption option)) return;
-            option.Select(ActionSource.External);
+            option.Select();
         }
     }
 }

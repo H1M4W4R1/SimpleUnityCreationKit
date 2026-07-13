@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleSkills.Data.Enums;
 using Systems.SimpleSkills.Operations;
 
@@ -105,16 +104,16 @@ namespace Systems.SimpleSkills.Tests
         }
 
         [Test]
-        public void TryCastSkill_WithInternalActionSource_SuppressesFailureCallback()
+        public void TryCastSkill_FailureAlwaysInvokesCallbacks()
         {
             TestSkillCaster caster = CreateCaster();
             TestSkill skill = CreateSkill<TestSkill>();
             skill.AvailabilityPermitted = false;
 
-            OperationResult result = caster.TryCastSkill(skill, caster, SkillCastFlags.None, ActionSource.Internal);
+            OperationResult result = caster.TryCastSkill(skill, caster, SkillCastFlags.None);
 
             AssertSimilar(SkillOperations.Denied(), result);
-            Assert.AreEqual(0, skill.FailedCount);
+            Assert.AreEqual(1, skill.FailedCount);
         }
 
         [Test]

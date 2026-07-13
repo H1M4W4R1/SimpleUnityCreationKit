@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleShops.Abstract;
 using Systems.SimpleShops.Data.Context;
 using Systems.SimpleShops.Data.Enums;
@@ -20,64 +19,56 @@ namespace Systems.SimpleShops.Components
         public OperationResult CanPurchase(
             [CanBeNull] PurchaseOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 this,
                 offer,
                 customer,
                 ShopTransactionKind.Purchase,
-                flags,
-                actionSource);
+                flags);
             return ShopAPI.CanPurchase(in context);
         }
 
         public OperationResult TryPurchase(
             [CanBeNull] PurchaseOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 this,
                 offer,
                 customer,
                 ShopTransactionKind.Purchase,
-                flags,
-                actionSource);
+                flags);
             return ShopAPI.TryPurchase(in context);
         }
 
         public OperationResult CanSell(
             [CanBeNull] SellOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 this,
                 offer,
                 customer,
                 ShopTransactionKind.Sell,
-                flags,
-                actionSource);
+                flags);
             return ShopAPI.CanSell(in context);
         }
 
         public OperationResult TrySell(
             [CanBeNull] SellOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 this,
                 offer,
                 customer,
                 ShopTransactionKind.Sell,
-                flags,
-                actionSource);
+                flags);
             return ShopAPI.TrySell(in context);
         }
 

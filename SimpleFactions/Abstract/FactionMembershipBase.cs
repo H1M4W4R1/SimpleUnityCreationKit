@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleFactions.Data;
 using Systems.SimpleFactions.Data.Context;
 using Systems.SimpleFactions.Interfaces;
@@ -102,7 +101,7 @@ namespace Systems.SimpleFactions.Abstract
         ///     Fires <see cref="OnJoinedFaction{TFaction}"/> and the faction's
         ///     <see cref="FactionBase.OnJoined"/> on success.
         /// </summary>
-        public OperationResult JoinFaction<TFaction>(ActionSource actionSource = ActionSource.External)
+        public OperationResult JoinFaction<TFaction>()
             where TFaction : FactionBase<THolder>, new()
         {
             TFaction faction = FactionDatabase.GetExact<TFaction>();
@@ -118,21 +117,21 @@ namespace Systems.SimpleFactions.Abstract
             OperationResult factionCheck = faction.CanJoin(nonGenericCtx);
             if (!factionCheck)
             {
-                if (actionSource != ActionSource.Internal) OnJoinFailed<TFaction>(typedCtx, factionCheck);
+                OnJoinFailed<TFaction>(typedCtx, factionCheck);
                 return factionCheck;
             }
 
             OperationResult memberCheck = CanJoinFaction<TFaction>(typedCtx);
             if (!memberCheck)
             {
-                if (actionSource != ActionSource.Internal) OnJoinFailed<TFaction>(typedCtx, memberCheck);
+                OnJoinFailed<TFaction>(typedCtx, memberCheck);
                 return memberCheck;
             }
 
             state.isMember = true;
 
             OperationResult result = FactionOperations.Joined();
-            if (actionSource != ActionSource.Internal) OnJoinedFaction<TFaction>(typedCtx, result);
+            OnJoinedFaction<TFaction>(typedCtx, result);
             return result;
         }
 
@@ -141,7 +140,7 @@ namespace Systems.SimpleFactions.Abstract
         ///     Fires <see cref="OnLeftFaction{TFaction}"/> and the faction's
         ///     <see cref="FactionBase.OnLeft"/> on success.
         /// </summary>
-        public OperationResult LeaveFaction<TFaction>(ActionSource actionSource = ActionSource.External)
+        public OperationResult LeaveFaction<TFaction>()
             where TFaction : FactionBase<THolder>, new()
         {
             TFaction faction = FactionDatabase.GetExact<TFaction>();
@@ -157,21 +156,21 @@ namespace Systems.SimpleFactions.Abstract
             OperationResult factionCheck = faction.CanLeave(nonGenericCtx);
             if (!factionCheck)
             {
-                if (actionSource != ActionSource.Internal) OnLeaveFailed<TFaction>(typedCtx, factionCheck);
+                OnLeaveFailed<TFaction>(typedCtx, factionCheck);
                 return factionCheck;
             }
 
             OperationResult memberCheck = CanLeaveFaction<TFaction>(typedCtx);
             if (!memberCheck)
             {
-                if (actionSource != ActionSource.Internal) OnLeaveFailed<TFaction>(typedCtx, memberCheck);
+                OnLeaveFailed<TFaction>(typedCtx, memberCheck);
                 return memberCheck;
             }
 
             state.isMember = false;
 
             OperationResult result = FactionOperations.Left();
-            if (actionSource != ActionSource.Internal) OnLeftFaction<TFaction>(typedCtx, result);
+            OnLeftFaction<TFaction>(typedCtx, result);
             return result;
         }
 
@@ -180,7 +179,7 @@ namespace Systems.SimpleFactions.Abstract
         ///     (use a negative value to subtract). Fires <see cref="OnReputationChanged{TFaction}"/>
         ///     and automatically evaluates promotion/demotion thresholds when the faction has levels.
         /// </summary>
-        public OperationResult ChangeReputation<TFaction>(long amount, ActionSource actionSource = ActionSource.External)
+        public OperationResult ChangeReputation<TFaction>(long amount)
             where TFaction : FactionBase<THolder>, new()
         {
             if (amount == 0) return FactionOperations.InvalidReputation();
@@ -199,24 +198,24 @@ namespace Systems.SimpleFactions.Abstract
             OperationResult factionCheck = faction.CanChangeReputation(nonGenericCtx);
             if (!factionCheck)
             {
-                if (actionSource != ActionSource.Internal) OnReputationChangeFailed<TFaction>(typedCtx, factionCheck);
+                OnReputationChangeFailed<TFaction>(typedCtx, factionCheck);
                 return factionCheck;
             }
 
             OperationResult memberCheck = CanChangeReputation<TFaction>(typedCtx);
             if (!memberCheck)
             {
-                if (actionSource != ActionSource.Internal) OnReputationChangeFailed<TFaction>(typedCtx, memberCheck);
+                OnReputationChangeFailed<TFaction>(typedCtx, memberCheck);
                 return memberCheck;
             }
 
             state.reputation += amount;
 
             OperationResult result = FactionOperations.ReputationChanged();
-            if (actionSource != ActionSource.Internal) OnReputationChanged<TFaction>(typedCtx, result);
+            OnReputationChanged<TFaction>(typedCtx, result);
 
             if (faction.Levels.Count > 0)
-                HandleAutomaticLevelChange(faction, state, previousReputation, state.reputation, actionSource);
+                HandleAutomaticLevelChange(faction, state, previousReputation, state.reputation);
 
             return result;
         }
@@ -225,10 +224,10 @@ namespace Systems.SimpleFactions.Abstract
         ///     Manually assigns <paramref name="level"/> as the active reputation level for
         ///     <typeparamref name="TFaction"/>. Pass <c>null</c> to clear the active level.
         ///     This bypasses <see cref="CanBePromoted{TFaction}"/> and
-        ///     <see cref="CanBeDemoted{TFaction}"/> — it is an unconditional override (e.g. a king
+        ///     <see cref="CanBeDemoted{TFaction}"/> â€” it is an unconditional override (e.g. a king
         ///     granting knighthood regardless of reputation score).
         /// </summary>
-        public OperationResult AssignLevel<TFaction>([CanBeNull] ReputationLevelBase level, ActionSource actionSource = ActionSource.External)
+        public OperationResult AssignLevel<TFaction>([CanBeNull] ReputationLevelBase level)
             where TFaction : FactionBase<THolder>, new()
         {
             TFaction faction = FactionDatabase.GetExact<TFaction>();
@@ -244,8 +243,7 @@ namespace Systems.SimpleFactions.Abstract
                 ReputationLevelBase previousLevel = GetLevelAt(faction, previousIndex);
                 state.currentLevelIndex = -1;
 
-                if (actionSource != ActionSource.Internal)
-                    FireLevelCallbacks(faction, state, previousLevel, null, previousIndex, -1, isPromotion: false);
+                FireLevelCallbacks(faction, state, previousLevel, null, previousIndex, -1, isPromotion: false);
 
                 return FactionOperations.LevelCleared();
             }
@@ -258,8 +256,7 @@ namespace Systems.SimpleFactions.Abstract
             ReputationLevelBase prevLevel = GetLevelAt(faction, prevIndex);
             state.currentLevelIndex = targetIndex;
 
-            if (actionSource != ActionSource.Internal)
-                FireLevelCallbacks(faction, state, prevLevel, level, prevIndex, targetIndex, isPromotion);
+            FireLevelCallbacks(faction, state, prevLevel, level, prevIndex, targetIndex, isPromotion);
 
             return FactionOperations.LevelAssigned();
         }
@@ -425,14 +422,13 @@ namespace Systems.SimpleFactions.Abstract
             [NotNull] TFaction faction,
             FactionMemberState state,
             long previousRep,
-            long newRep,
-            ActionSource actionSource)
+            long newRep)
             where TFaction : FactionBase<THolder>, new()
         {
             IReadOnlyList<ReputationLevelBase> levels = faction.Levels;
             int levelCount = levels.Count;
 
-            // PROMOTION — only when reputation increased
+            // PROMOTION â€” only when reputation increased
             if (newRep > previousRep)
             {
                 int bestPromotion = -1;
@@ -463,14 +459,13 @@ namespace Systems.SimpleFactions.Abstract
                     if (!memberCheck) return;
 
                     state.currentLevelIndex = bestPromotion;
-                    if (actionSource != ActionSource.Internal)
-                        FireLevelCallbacks(faction, state, prevLevel, newLevel, prevIndex, bestPromotion, isPromotion: true);
+                    FireLevelCallbacks(faction, state, prevLevel, newLevel, prevIndex, bestPromotion, isPromotion: true);
                 }
 
                 return;
             }
 
-            // DEMOTION — only when reputation decreased and a level is currently active
+            // DEMOTION â€” only when reputation decreased and a level is currently active
             if (newRep < previousRep && state.currentLevelIndex >= 0)
             {
                 while (state.currentLevelIndex >= 0)
@@ -511,8 +506,7 @@ namespace Systems.SimpleFactions.Abstract
                     if (!memberCheck) break;
 
                     state.currentLevelIndex = newIndex;
-                    if (actionSource != ActionSource.Internal)
-                        FireLevelCallbacks(faction, state, prevLevel, newLevel, prevIndex, newIndex, isPromotion: false);
+                    FireLevelCallbacks(faction, state, prevLevel, newLevel, prevIndex, newIndex, isPromotion: false);
                 }
             }
         }

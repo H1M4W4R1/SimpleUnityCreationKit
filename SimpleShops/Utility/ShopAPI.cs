@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleShops.Abstract;
 using Systems.SimpleShops.Components;
 using Systems.SimpleShops.Data.Context;
@@ -20,16 +19,14 @@ namespace Systems.SimpleShops.Utility
             [CanBeNull] ShopBase shop,
             [CanBeNull] PurchaseOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 shop,
                 offer,
                 customer,
                 ShopTransactionKind.Purchase,
-                flags,
-                actionSource);
+                flags);
             return CanPurchase(in context);
         }
 
@@ -58,16 +55,14 @@ namespace Systems.SimpleShops.Utility
             [CanBeNull] ShopBase shop,
             [CanBeNull] PurchaseOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 shop,
                 offer,
                 customer,
                 ShopTransactionKind.Purchase,
-                flags,
-                actionSource);
+                flags);
             return TryPurchase(in context);
         }
 
@@ -88,7 +83,6 @@ namespace Systems.SimpleShops.Utility
             }
 
             OperationResult completed = ShopOperations.TransactionCompleted();
-            if (context.actionSource == ActionSource.Internal) return completed;
             context.shop!.OnPurchased(in context, in completed);
             return completed;
         }
@@ -97,16 +91,14 @@ namespace Systems.SimpleShops.Utility
             [CanBeNull] ShopBase shop,
             [CanBeNull] SellOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 shop,
                 offer,
                 customer,
                 ShopTransactionKind.Sell,
-                flags,
-                actionSource);
+                flags);
             return CanSell(in context);
         }
 
@@ -135,16 +127,14 @@ namespace Systems.SimpleShops.Utility
             [CanBeNull] ShopBase shop,
             [CanBeNull] SellOfferBase offer,
             [CanBeNull] IShopCustomer customer = null,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             ShopTransactionContext context = new ShopTransactionContext(
                 shop,
                 offer,
                 customer,
                 ShopTransactionKind.Sell,
-                flags,
-                actionSource);
+                flags);
             return TrySell(in context);
         }
 
@@ -165,7 +155,6 @@ namespace Systems.SimpleShops.Utility
             }
 
             OperationResult completed = ShopOperations.TransactionCompleted();
-            if (context.actionSource == ActionSource.Internal) return completed;
             context.shop!.OnSold(in context, in completed);
             return completed;
         }
@@ -243,7 +232,6 @@ namespace Systems.SimpleShops.Utility
             in ShopTransactionContext context,
             in OperationResult result)
         {
-            if (context.actionSource == ActionSource.Internal) return;
             if (ReferenceEquals(context.shop, null)) return;
             if (!context.shop) return;
             context.shop.OnPurchaseFailed(in context, in result);
@@ -253,7 +241,6 @@ namespace Systems.SimpleShops.Utility
             in ShopTransactionContext context,
             in OperationResult result)
         {
-            if (context.actionSource == ActionSource.Internal) return;
             if (ReferenceEquals(context.shop, null)) return;
             if (!context.shop) return;
             context.shop.OnSellFailed(in context, in result);

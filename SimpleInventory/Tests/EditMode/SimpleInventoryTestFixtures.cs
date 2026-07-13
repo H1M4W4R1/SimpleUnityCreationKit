@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleInventory.Abstract.Data;
 using Systems.SimpleInventory.Abstract.Items;
 using Systems.SimpleInventory.Components.Equipment;

@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleFactions.Abstract;
 using Systems.SimpleFactions.Data;
 using Systems.SimpleFactions.Data.Context;

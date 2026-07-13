@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleEconomy.Data.Enums;
 using Systems.SimpleEconomy.Operations;
 
@@ -107,19 +106,19 @@ namespace Systems.SimpleEconomy.Tests
         }
 
         [Test]
-        public void TryAdd_WithInternalAction_MutatesAndSuppressesCallbacks()
+        public void TryAdd_AlwaysInvokesSuccessCallbacks()
         {
             TestCurrency currency = CreateRegisteredCurrency<TestCurrency>();
             TestWallet wallet = CreateWallet<TestWallet>();
 
-            OperationResult result = wallet.TryAdd(12L, actionSource: ActionSource.Internal);
+            OperationResult result = wallet.TryAdd(12L);
 
             AssertSimilar(EconomyOperations.CurrencyAdded(), result);
             Assert.AreEqual(12L, wallet.Balance);
             Assert.AreEqual(1, wallet.AddCheckCount);
             Assert.AreEqual(1, currency.AddCheckCount);
-            Assert.AreEqual(0, wallet.AddedCount);
-            Assert.AreEqual(0, currency.AddedCount);
+            Assert.AreEqual(1, wallet.AddedCount);
+            Assert.AreEqual(1, currency.AddedCount);
         }
 
         [Test]
@@ -290,20 +289,20 @@ namespace Systems.SimpleEconomy.Tests
         }
 
         [Test]
-        public void TryTake_WithInternalAction_MutatesAndSuppressesCallbacks()
+        public void TryTake_AlwaysInvokesSuccessCallbacks()
         {
             TestCurrency currency = CreateRegisteredCurrency<TestCurrency>();
             TestWallet wallet = CreateWallet<TestWallet>();
             wallet.SetBalanceForTests(20L);
 
-            OperationResult result = wallet.TryTake(5L, actionSource: ActionSource.Internal);
+            OperationResult result = wallet.TryTake(5L);
 
             AssertSimilar(EconomyOperations.CurrencyTaken(), result);
             Assert.AreEqual(15L, wallet.Balance);
             Assert.AreEqual(1, wallet.TakeCheckCount);
             Assert.AreEqual(1, currency.TakeCheckCount);
-            Assert.AreEqual(0, wallet.TakenCount);
-            Assert.AreEqual(0, currency.TakenCount);
+            Assert.AreEqual(1, wallet.TakenCount);
+            Assert.AreEqual(1, currency.TakenCount);
         }
     }
 }

@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleEntities.Data.Enums;
 using Systems.SimpleEntities.Operations;
 
@@ -89,17 +88,17 @@ namespace Systems.SimpleEntities.Tests
         }
 
         [Test]
-        public void ApplyStatus_WithInternalSource_SuppressesCallbacks()
+        public void ApplyStatus_AlwaysInvokesCallbacks()
         {
             TestEntity entity = CreateEntity();
             TestStatus status = CreateStatus<TestStatus>(3);
 
-            OperationResult result = entity.ApplyStatus(status, 2, actionSource: ActionSource.Internal);
+            OperationResult result = entity.ApplyStatus(status, 2);
 
             AssertSimilar(StatusOperations.StatusApplied(), result);
             Assert.AreEqual(2, entity.GetStatusStackCount(status));
             Assert.AreEqual(1, status.CanApplyCount);
-            Assert.AreEqual(0, status.AppliedCount);
+            Assert.AreEqual(1, status.AppliedCount);
         }
 
         [Test]
@@ -195,18 +194,18 @@ namespace Systems.SimpleEntities.Tests
         }
 
         [Test]
-        public void RemoveStatus_WithInternalSource_SuppressesCallbacks()
+        public void RemoveStatus_AlwaysInvokesCallbacks()
         {
             TestEntity entity = CreateEntity();
             TestStatus status = CreateStatus<TestStatus>(3);
-            entity.ApplyStatus(status, 2, actionSource: ActionSource.Internal);
+            entity.ApplyStatus(status, 2);
 
-            OperationResult result = entity.RemoveStatus(status, 1, actionSource: ActionSource.Internal);
+            OperationResult result = entity.RemoveStatus(status, 1);
 
             AssertSimilar(StatusOperations.StatusStackChanged(), result);
             Assert.AreEqual(1, entity.GetStatusStackCount(status));
             Assert.AreEqual(1, status.CanRemoveCount);
-            Assert.AreEqual(0, status.StackChangedCount);
+            Assert.AreEqual(1, status.StackChangedCount);
             Assert.AreEqual(0, status.RemovedCount);
         }
 

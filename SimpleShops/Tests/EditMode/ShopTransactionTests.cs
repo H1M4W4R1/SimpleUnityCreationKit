@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleShops.Abstract;
 using Systems.SimpleShops.Data.Enums;
 using Systems.SimpleShops.Operations;
@@ -83,19 +82,18 @@ namespace Systems.SimpleShops.Tests
         }
 
         [Test]
-        public void TryPurchase_WithInternalAction_SuppressesCallbacks()
+        public void TryPurchase_AlwaysInvokesCallbacks()
         {
             TestPurchaseOffer offer = CreatePurchaseOffer();
             TestShop shop = CreateShop(new List<ShopOfferBase> { offer });
 
             OperationResult result = shop.TryPurchase(
                 offer,
-                new TestCustomer(),
-                actionSource: ActionSource.Internal);
+                new TestCustomer());
 
             AssertSimilar(ShopOperations.TransactionCompleted(), result);
-            Assert.AreEqual(0, shop.PurchaseCount);
-            Assert.AreEqual(0, offer.PurchasedCount);
+            Assert.AreEqual(1, shop.PurchaseCount);
+            Assert.AreEqual(1, offer.PurchasedCount);
         }
 
         [Test]

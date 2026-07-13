@@ -1,6 +1,5 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleFactions.Abstract;
 using Systems.SimpleFactions.Operations;
 
@@ -80,20 +79,20 @@ namespace Systems.SimpleFactions.Tests
         }
 
         [Test]
-        public void AssignLevel_WithInternalAction_ChangesLevelWithoutCallbacks()
+        public void AssignLevel_AlwaysInvokesCallbacks()
         {
             TestFaction faction = CreateRegisteredFaction<TestFaction>();
             TestReputationLevel level = CreateRegisteredLevel<TestReputationLevel>();
             faction.AssignLevel(level);
             TestFactionMembership membership = CreateMembership();
-            membership.JoinFaction<TestFaction>(ActionSource.Internal);
+            membership.JoinFaction<TestFaction>();
 
-            OperationResult result = membership.AssignLevel<TestFaction>(level, ActionSource.Internal);
+            OperationResult result = membership.AssignLevel<TestFaction>(level);
 
             AssertSimilar(FactionOperations.LevelAssigned(), result);
             Assert.AreSame(level, membership.GetCurrentLevel<TestFaction>());
-            Assert.AreEqual(0, faction.LevelChangedCount);
-            Assert.AreEqual(0, level.ChangedCount);
+            Assert.AreEqual(1, faction.LevelChangedCount);
+            Assert.AreEqual(1, level.ChangedCount);
         }
 
         [Test]
@@ -294,23 +293,23 @@ namespace Systems.SimpleFactions.Tests
         }
 
         [Test]
-        public void ChangeReputation_WithInternalAction_ChangesAutomaticLevelWithoutCallbacks()
+        public void ChangeReputation_AlwaysInvokesAutomaticLevelCallbacks()
         {
             TestFaction faction = CreateRegisteredFaction<TestFaction>();
             TestReputationLevel level =
                 CreateRegisteredLevel<TestReputationLevel>(automaticPromotion: true, promotionThreshold: 10L);
             faction.AssignLevel(level);
             TestFactionMembership membership = CreateMembership();
-            membership.JoinFaction<TestFaction>(ActionSource.Internal);
+            membership.JoinFaction<TestFaction>();
 
-            OperationResult result = membership.ChangeReputation<TestFaction>(25L, ActionSource.Internal);
+            OperationResult result = membership.ChangeReputation<TestFaction>(25L);
 
             AssertSimilar(FactionOperations.ReputationChanged(), result);
             Assert.AreSame(level, membership.GetCurrentLevel<TestFaction>());
             Assert.AreEqual(1, faction.PromotionCheckCount);
             Assert.AreEqual(1, level.CanPromoteToCount);
-            Assert.AreEqual(0, faction.LevelChangedCount);
-            Assert.AreEqual(0, level.ChangedCount);
+            Assert.AreEqual(1, faction.LevelChangedCount);
+            Assert.AreEqual(1, level.ChangedCount);
         }
     }
 }

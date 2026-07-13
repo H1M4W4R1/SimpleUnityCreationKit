@@ -139,20 +139,6 @@ wallet.TryTake(500,
     ModifyWalletCurrencyFlags.IgnoreBalanceLimits);
 ```
 
-### Action Source Tracking
-
-Track whether operations come from internal or external sources:
-
-```csharp
-using Systems.SimpleCore.Utility.Enums;
-
-// Internal operation (callbacks will not fire)
-wallet.TryAdd(50, actionSource: ActionSource.Internal);
-
-// External operation (callbacks will fire normally)
-wallet.TryAdd(50, actionSource: ActionSource.External);
-```
-
 ## Operation Callbacks
 
 Respond to currency operations by overriding callback methods in your wallet or currency:

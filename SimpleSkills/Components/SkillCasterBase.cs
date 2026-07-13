@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleSkills.Data;
 using Systems.SimpleSkills.Data.Abstract;
 using Systems.SimpleSkills.Data.Context;
@@ -47,7 +46,7 @@ namespace Systems.SimpleSkills.Components
         /// </summary>
         protected void HandleCharging(float deltaTime)
         {
-            // Iterate in reverse for safety — new skills added by event handlers start iterating next cycle
+            // Iterate in reverse for safety â€” new skills added by event handlers start iterating next cycle
             for (int i = currentlyCastedSkills.Count - 1; i >= 0; i--)
             {
                 CastedSkillReference castedSkillReference = currentlyCastedSkills[i];
@@ -83,7 +82,7 @@ namespace Systems.SimpleSkills.Components
         /// </summary>
         protected void HandleChanneling(float deltaTime)
         {
-            // Iterate in reverse for safety — new skills added by event handlers start iterating next cycle
+            // Iterate in reverse for safety â€” new skills added by event handlers start iterating next cycle
             for (int i = currentlyCastedSkills.Count - 1; i >= 0; i--)
             {
                 CastedSkillReference castedSkillReference = currentlyCastedSkills[i];
@@ -188,18 +187,16 @@ namespace Systems.SimpleSkills.Components
         /// </summary>
         /// <param name="target">Target of skill</param>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TSkill">Type of skill to cast</typeparam>
         /// <returns>Result of operation</returns>
         public OperationResult TryCastSkill<TSkill>(
             [CanBeNull] ISkillTarget target = null,
-            SkillCastFlags flags = SkillCastFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillCastFlags flags = SkillCastFlags.None)
             where TSkill : SkillBase, new()
         {
             TSkill skill = SkillsDatabase.GetExact<TSkill>();
             if (ReferenceEquals(skill, null)) return SkillOperations.SkillNotFound();
-            return TryCastSkill(skill, target is null ? this : target, flags, actionSource);
+            return TryCastSkill(skill, target is null ? this : target, flags);
         }
 
         /// <summary>
@@ -208,16 +205,14 @@ namespace Systems.SimpleSkills.Components
         /// <param name="skill">Skill to cast</param>
         /// <param name="target">Target of skill</param>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of operation</returns>
         public OperationResult TryCastSkill(
             [NotNull] SkillBase skill,
             ISkillTarget target,
-            SkillCastFlags flags = SkillCastFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillCastFlags flags = SkillCastFlags.None)
         {
             CastSkillContext context = new(this, skill, flags, target);
-            return TryCastSkill(context, actionSource);
+            return TryCastSkill(context);
         }
 
 
@@ -225,11 +220,9 @@ namespace Systems.SimpleSkills.Components
         ///     Tries to cast skill
         /// </summary>
         /// <param name="context">Context of casted skill</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of operation</returns>
         public OperationResult TryCastSkill(
-            in CastSkillContext context,
-            ActionSource actionSource = ActionSource.External)
+            in CastSkillContext context)
         {
             // Resolve skill level if applicable
             SkillBase resolvedSkill = context.skill;
@@ -260,7 +253,6 @@ namespace Systems.SimpleSkills.Components
             if (resolvedContext.skill.RequiresTarget && ReferenceEquals(resolvedContext.target, null))
             {
                 OperationResult noTargetResult = SkillOperations.NoTargetSelected();
-                if (actionSource == ActionSource.Internal) return noTargetResult;
                 OnSkillCastFailed(resolvedContext, noTargetResult);
                 return noTargetResult;
             }
@@ -269,7 +261,6 @@ namespace Systems.SimpleSkills.Components
             OperationResult isSkillAvailableCheck = IsSkillAvailable(resolvedContext);
             if (!isSkillAvailableCheck && (resolvedContext.flags & SkillCastFlags.IgnoreAvailability) == 0)
             {
-                if (actionSource == ActionSource.Internal) return isSkillAvailableCheck;
                 OnSkillCastFailed(resolvedContext, isSkillAvailableCheck);
                 return isSkillAvailableCheck;
             }
@@ -278,7 +269,6 @@ namespace Systems.SimpleSkills.Components
             OperationResult isSkillOnCooldownCheck = IsSkillOnCooldown(resolvedContext);
             if (!isSkillOnCooldownCheck && (resolvedContext.flags & SkillCastFlags.IgnoreCooldown) == 0)
             {
-                if (actionSource == ActionSource.Internal) return isSkillOnCooldownCheck;
                 OnSkillCastFailed(resolvedContext, isSkillOnCooldownCheck);
                 return isSkillOnCooldownCheck;
             }
@@ -287,7 +277,6 @@ namespace Systems.SimpleSkills.Components
             OperationResult groupCooldownCheck = IsSkillGroupOnCooldown(resolvedContext);
             if (!groupCooldownCheck && (resolvedContext.flags & SkillCastFlags.IgnoreCooldown) == 0)
             {
-                if (actionSource == ActionSource.Internal) return groupCooldownCheck;
                 OnSkillCastFailed(resolvedContext, groupCooldownCheck);
                 return groupCooldownCheck;
             }
@@ -299,7 +288,6 @@ namespace Systems.SimpleSkills.Components
                 if (availableCharges <= 0 && (resolvedContext.flags & SkillCastFlags.IgnoreCooldown) == 0)
                 {
                     OperationResult noChargesResult = SkillOperations.NoChargesAvailable();
-                    if (actionSource == ActionSource.Internal) return noChargesResult;
                     OnSkillCastFailed(resolvedContext, noChargesResult);
                     return noChargesResult;
                 }
@@ -317,7 +305,6 @@ namespace Systems.SimpleSkills.Components
                     }
                     else
                     {
-                        if (actionSource == ActionSource.Internal) return isSkillAlreadyActiveCheck;
                         OnSkillCastFailed(resolvedContext, isSkillAlreadyActiveCheck);
                         return isSkillAlreadyActiveCheck;
                     }
@@ -328,7 +315,6 @@ namespace Systems.SimpleSkills.Components
             OperationResult hasEnoughSkillResourcesCheck = HasEnoughSkillResources(resolvedContext);
             if (!hasEnoughSkillResourcesCheck && (resolvedContext.flags & SkillCastFlags.IgnoreCosts) == 0)
             {
-                if (actionSource == ActionSource.Internal) return hasEnoughSkillResourcesCheck;
                 OnSkillCastFailed(resolvedContext, hasEnoughSkillResourcesCheck);
                 return hasEnoughSkillResourcesCheck;
             }
@@ -348,8 +334,6 @@ namespace Systems.SimpleSkills.Components
                 // Refund resources if flag is set and resources were consumed
                 if (resourcesConsumed && (resolvedContext.flags & SkillCastFlags.RefundResourcesOnFailure) != 0)
                     RefundSkillResources(resolvedContext);
-
-                if (actionSource == ActionSource.Internal) return canSkillBeCastedCheck;
                 OnSkillCastFailed(resolvedContext, canSkillBeCastedCheck);
                 return canSkillBeCastedCheck;
             }
@@ -389,17 +373,15 @@ namespace Systems.SimpleSkills.Components
         ///     Tries to cancel casted skill
         /// </summary>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TSkill">Type of skill to cancel</typeparam>
         /// <returns>Result of operation</returns>
         public OperationResult TryCancelSkill<TSkill>(
-            SkillInterruptFlags flags = SkillInterruptFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillInterruptFlags flags = SkillInterruptFlags.None)
             where TSkill : SkillBase, new()
         {
             TSkill skill = SkillsDatabase.GetExact<TSkill>();
             if (ReferenceEquals(skill, null)) return SkillOperations.SkillNotFound();
-            return TryCancelSkill(skill, flags, actionSource);
+            return TryCancelSkill(skill, flags);
         }
 
         /// <summary>
@@ -407,15 +389,13 @@ namespace Systems.SimpleSkills.Components
         /// </summary>
         /// <param name="skill">Skill to cancel</param>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of operation</returns>
         public OperationResult TryCancelSkill(
             [NotNull] SkillBase skill,
-            SkillInterruptFlags flags = SkillInterruptFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillInterruptFlags flags = SkillInterruptFlags.None)
         {
             InterruptSkillContext context = new(this, this, skill, flags);
-            return TryInterruptSkill(context, actionSource);
+            return TryInterruptSkill(context);
         }
 
         /// <summary>
@@ -423,18 +403,16 @@ namespace Systems.SimpleSkills.Components
         /// </summary>
         /// <param name="source">Source of interruption</param>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <typeparam name="TSkill">Type of skill to interrupt</typeparam>
         /// <returns>Result of operation</returns>
         public OperationResult TryInterruptSkill<TSkill>(
             [CanBeNull] object source,
-            SkillInterruptFlags flags = SkillInterruptFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillInterruptFlags flags = SkillInterruptFlags.None)
             where TSkill : SkillBase, new()
         {
             TSkill skill = SkillsDatabase.GetExact<TSkill>();
             if (ReferenceEquals(skill, null)) return SkillOperations.SkillNotFound();
-            return TryInterruptSkill(skill, source, flags, actionSource);
+            return TryInterruptSkill(skill, source, flags);
         }
 
         /// <summary>
@@ -443,33 +421,28 @@ namespace Systems.SimpleSkills.Components
         /// <param name="skill">Skill to interrupt</param>
         /// <param name="source">Source of interruption</param>
         /// <param name="flags">Flags that describe how skill should be casted</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of operation</returns>
         public OperationResult TryInterruptSkill(
             [NotNull] SkillBase skill,
             [CanBeNull] object source,
-            SkillInterruptFlags flags = SkillInterruptFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            SkillInterruptFlags flags = SkillInterruptFlags.None)
         {
             InterruptSkillContext context = new(this, source, skill, flags);
-            return TryInterruptSkill(context, actionSource);
+            return TryInterruptSkill(context);
         }
 
         /// <summary>
         ///     Tries to interrupt cast skill
         /// </summary>
         /// <param name="context">Context of skill cast</param>
-        /// <param name="actionSource">Source of action</param>
         /// <returns>Result of operation</returns>
         internal OperationResult TryInterruptSkill(
-            in InterruptSkillContext context,
-            ActionSource actionSource = ActionSource.External)
+            in InterruptSkillContext context)
         {
             // Ensure skill is casted
             if (!TryGetCastedSkillDataFor(context.skill, out CastedSkillReference skillData))
             {
                 OperationResult opResult = SkillOperations.SkillNotCasted();
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnSkillCastInterruptFailed(context, opResult);
                 return opResult;
             }
@@ -478,7 +451,6 @@ namespace Systems.SimpleSkills.Components
             if (skillData.IsOnCooldown)
             {
                 OperationResult opResult = SkillOperations.CooldownNotFinished();
-                if (actionSource == ActionSource.Internal) return opResult;
                 OnSkillCastInterruptFailed(context, opResult);
                 return opResult;
             }
@@ -486,7 +458,6 @@ namespace Systems.SimpleSkills.Components
             OperationResult canSkillBeInterruptedCheck = CanSkillBeInterrupted(context);
             if (!canSkillBeInterruptedCheck && (context.flags & SkillInterruptFlags.IgnoreRequirements) == 0)
             {
-                if (actionSource == ActionSource.Internal) return canSkillBeInterruptedCheck;
                 OnSkillCastInterruptFailed(context, canSkillBeInterruptedCheck);
                 return canSkillBeInterruptedCheck;
             }
@@ -497,7 +468,6 @@ namespace Systems.SimpleSkills.Components
             UpdateCastedSkillDataFor(context.skill, skillData);
 
             // Execute events
-            if (actionSource == ActionSource.Internal) return canSkillBeInterruptedCheck;
             OnSkillCastInterrupted(context, canSkillBeInterruptedCheck);
             return canSkillBeInterruptedCheck;
         }

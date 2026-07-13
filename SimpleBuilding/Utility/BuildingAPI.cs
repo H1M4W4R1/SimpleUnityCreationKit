@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
@@ -9,7 +9,6 @@ using Systems.SimpleCore.Saving.Abstract;
 using Systems.SimpleCore.Saving.Utility;
 using Systems.SimpleBuilding.Operations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -67,10 +66,9 @@ namespace Systems.SimpleBuilding.Utility
         public static OperationResult CanSelect(
             [CanBeNull] BuildingEntryBase entry,
             [CanBeNull] IBuildingUser user = null,
-            [CanBeNull] BuildingRaycasterBase raycaster = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] BuildingRaycasterBase raycaster = null)
         {
-            BuildingSelectionContext context = new BuildingSelectionContext(entry, user, raycaster, actionSource);
+            BuildingSelectionContext context = new BuildingSelectionContext(entry, user, raycaster);
             return CanSelect(in context);
         }
 
@@ -89,11 +87,10 @@ namespace Systems.SimpleBuilding.Utility
             [CanBeNull] IBuildingUser user = null,
             [CanBeNull] BuildingRaycasterBase raycaster = null,
             [CanBeNull] Transform parent = null,
-            [CanBeNull] IReadOnlyList<BuildingSlot> slots = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IReadOnlyList<BuildingSlot> slots = null)
         {
             BuildingPlacementContext context = new BuildingPlacementContext(
-                entry, position, rotation, user, raycaster, parent, slots, actionSource);
+                entry, position, rotation, user, raycaster, parent, slots);
             return CanBuild(in context);
         }
 
@@ -108,7 +105,7 @@ namespace Systems.SimpleBuilding.Utility
             if (ReferenceEquals(prefab, null) || !prefab) return BuildingOperations.PrefabMissing();
 
             BuildingSelectionContext selectionContext = new BuildingSelectionContext(
-                entry, context.user, context.raycaster, context.actionSource);
+                entry, context.user, context.raycaster);
             OperationResult result = entry.IsAvailable(in selectionContext);
             if (!result) return result;
 
@@ -126,11 +123,10 @@ namespace Systems.SimpleBuilding.Utility
             [CanBeNull] IBuildingUser user = null,
             [CanBeNull] BuildingRaycasterBase raycaster = null,
             [CanBeNull] Transform parent = null,
-            [CanBeNull] IReadOnlyList<BuildingSlot> slots = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] IReadOnlyList<BuildingSlot> slots = null)
         {
             BuildingPlacementContext context = new BuildingPlacementContext(
-                entry, position, rotation, user, raycaster, parent, slots, actionSource);
+                entry, position, rotation, user, raycaster, parent, slots);
             return TryBuild(in context, out building);
         }
 
@@ -161,7 +157,7 @@ namespace Systems.SimpleBuilding.Utility
             if (!instance.TryAssignSlots(context.slots))
             {
                 BuildingDemolitionContext refundContext = new BuildingDemolitionContext(
-                    instance, context.user, context.raycaster, context.actionSource);
+                    instance, context.user, context.raycaster);
                 OperationResult refundResult = entry.TryRefundResources(in refundContext);
                 DestroyGameObject(instance.gameObject);
                 OperationResult finalResult = refundResult
@@ -233,10 +229,9 @@ namespace Systems.SimpleBuilding.Utility
         public static OperationResult CanDemolish(
             [CanBeNull] BuildingBase building,
             [CanBeNull] IBuildingUser user = null,
-            [CanBeNull] BuildingRaycasterBase raycaster = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] BuildingRaycasterBase raycaster = null)
         {
-            BuildingDemolitionContext context = new BuildingDemolitionContext(building, user, raycaster, actionSource);
+            BuildingDemolitionContext context = new BuildingDemolitionContext(building, user, raycaster);
             return CanDemolish(in context);
         }
 
@@ -256,10 +251,9 @@ namespace Systems.SimpleBuilding.Utility
         public static OperationResult TryDemolish(
             [CanBeNull] BuildingBase building,
             [CanBeNull] IBuildingUser user = null,
-            [CanBeNull] BuildingRaycasterBase raycaster = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] BuildingRaycasterBase raycaster = null)
         {
-            BuildingDemolitionContext context = new BuildingDemolitionContext(building, user, raycaster, actionSource);
+            BuildingDemolitionContext context = new BuildingDemolitionContext(building, user, raycaster);
             return TryDemolish(in context);
         }
 

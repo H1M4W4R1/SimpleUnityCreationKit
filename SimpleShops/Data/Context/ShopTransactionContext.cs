@@ -1,5 +1,4 @@
-using JetBrains.Annotations;
-using Systems.SimpleCore.Utility.Enums;
+﻿using JetBrains.Annotations;
 using Systems.SimpleShops.Abstract;
 using Systems.SimpleShops.Components;
 using Systems.SimpleShops.Data.Enums;
@@ -13,22 +12,19 @@ namespace Systems.SimpleShops.Data.Context
         [CanBeNull] public readonly IShopCustomer customer;
         public readonly ShopTransactionKind transactionKind;
         public readonly ShopTransactionFlags flags;
-        public readonly ActionSource actionSource;
 
         public ShopTransactionContext(
             [CanBeNull] ShopBase shop,
             [CanBeNull] ShopOfferBase offer,
             [CanBeNull] IShopCustomer customer,
             ShopTransactionKind transactionKind,
-            ShopTransactionFlags flags = ShopTransactionFlags.None,
-            ActionSource actionSource = ActionSource.External)
+            ShopTransactionFlags flags = ShopTransactionFlags.None)
         {
             this.shop = shop;
             this.offer = offer;
             this.customer = customer;
             this.transactionKind = transactionKind;
             this.flags = flags;
-            this.actionSource = actionSource;
         }
     }
 }

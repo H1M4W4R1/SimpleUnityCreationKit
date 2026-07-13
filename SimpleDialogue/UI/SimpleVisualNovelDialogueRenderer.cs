@@ -1,5 +1,4 @@
-using Systems.SimpleCore.Utility.Enums;
-using Systems.SimpleDialogue.Abstract;
+﻿using Systems.SimpleDialogue.Abstract;
 using Systems.SimpleDialogue.Data;
 using Systems.SimpleUI.Components.Panels;
 using UnityEngine;
@@ -29,7 +28,7 @@ namespace Systems.SimpleDialogue.UI
             _continueButton.gameObject.SetActive(context.CanAdvance);
             if (!context.CanAdvance || ReferenceEquals(context.Dialogue, null)) return;
             _continueButton.onClick.RemoveAllListeners();
-            _continueButton.onClick.AddListener(() => context.Dialogue.Advance(ActionSource.External));
+            _continueButton.onClick.AddListener(() => context.Dialogue.Advance());
         }
 
         public void ClearDialogue()

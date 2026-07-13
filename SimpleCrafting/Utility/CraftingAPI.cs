@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Utility.Enums;
 using Systems.SimpleCrafting.Abstract;
 using Systems.SimpleCrafting.Components;
 using Systems.SimpleCrafting.Data.Context;
@@ -29,20 +28,18 @@ namespace Systems.SimpleCrafting.Utility
         public static OperationResult CanCraft(
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] CraftingStationBase station = null,
-            [CanBeNull] ICraftingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ICraftingUser user = null)
         {
-            CraftingContext context = new CraftingContext(recipe, station, user, actionSource);
+            CraftingContext context = new CraftingContext(recipe, station, user);
             return CanCraft(in context);
         }
 
         public static OperationResult CanCraft(
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] IReadOnlyList<CraftingStationBase> stations,
-            [CanBeNull] ICraftingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ICraftingUser user = null)
         {
-            CraftingContext context = new CraftingContext(recipe, stations, user, actionSource);
+            CraftingContext context = new CraftingContext(recipe, stations, user);
             return CanCraft(in context);
         }
 
@@ -68,10 +65,9 @@ namespace Systems.SimpleCrafting.Utility
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] out CraftingInstance instance,
             [CanBeNull] CraftingStationBase station = null,
-            [CanBeNull] ICraftingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ICraftingUser user = null)
         {
-            CraftingContext context = new CraftingContext(recipe, station, user, actionSource);
+            CraftingContext context = new CraftingContext(recipe, station, user);
             return TryStartCrafting(in context, out instance);
         }
 
@@ -79,10 +75,9 @@ namespace Systems.SimpleCrafting.Utility
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] out CraftingInstance instance,
             [CanBeNull] IReadOnlyList<CraftingStationBase> stations,
-            [CanBeNull] ICraftingUser user = null,
-            ActionSource actionSource = ActionSource.External)
+            [CanBeNull] ICraftingUser user = null)
         {
-            CraftingContext context = new CraftingContext(recipe, stations, user, actionSource);
+            CraftingContext context = new CraftingContext(recipe, stations, user);
             return TryStartCrafting(in context, out instance);
         }
 

@@ -14,7 +14,7 @@ Building entry assets are auto-created under `Assets/Generated/Buildings/` and r
 
 ## Entry rules and callbacks
 
-Every override receives the operation context. The placement context includes the entry, user, controller, parent, position, rotation, candidate slots, and `ActionSource`; the demolition context includes the building, user, controller, and `ActionSource`.
+Every override receives the operation context. The placement context includes the entry, user, controller, parent, position, rotation, and candidate slots; the demolition context includes the building, user, and controller.
 
 ```csharp
 using Systems.SimpleBuilding.Abstract;

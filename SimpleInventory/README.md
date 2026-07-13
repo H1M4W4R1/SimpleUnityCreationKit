@@ -195,8 +195,7 @@ ItemBase.DropItem<PickupItemWithDestroy>(
     amount,
     position,
     rotation,
-    parent: null,
-    actionSource: ActionSource.External
+    parent: null
 );
 ```
 
