@@ -9,9 +9,6 @@ namespace Systems.SimpleAchievements.Examples.Achievements
     ///     unlocks the achievement automatically once the counter reaches <c>_targetCount</c>.
     ///     Call <see cref="IncrementCount"/> from game code to drive the counter.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "SimpleAchievements/Examples/Conditional Achievement",
-        fileName = "ExampleConditionalAchievement")]
     public sealed class ExampleConditionalAchievement : AchievementData
     {
         [SerializeField] private int _targetCount = 10;

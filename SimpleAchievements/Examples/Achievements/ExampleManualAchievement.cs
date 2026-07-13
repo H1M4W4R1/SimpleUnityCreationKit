@@ -11,9 +11,6 @@ namespace Systems.SimpleAchievements.Examples.Achievements
     ///     AchievementAPI.Unlock(new AchievementUnlockContext(myAchievementAsset));
     ///     </code>
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "SimpleAchievements/Examples/Manual Achievement",
-        fileName = "ExampleManualAchievement")]
     public sealed class ExampleManualAchievement : AchievementData
     {
         /// <inheritdoc />

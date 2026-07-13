@@ -5,12 +5,9 @@ namespace Systems.SimpleAchievements.Examples.Platforms
 {
     /// <summary>
     ///     Mocked Steam platform integration.
-    ///     Replace the TODO bodies with Steamworks.NET or Facepunch.Steamworks SDK calls once
+    ///     Replace the bodies with Steamworks.NET or Facepunch.Steamworks SDK calls once
     ///     the relevant package is imported.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "SimpleAchievements/Platforms/Steam",
-        fileName = "SteamAchievementPlatform")]
     public sealed class SteamAchievementPlatform : AchievementPlatformBase
     {
         /// <inheritdoc />

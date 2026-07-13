@@ -5,12 +5,9 @@ namespace Systems.SimpleAchievements.Examples.Platforms
 {
     /// <summary>
     ///     Mocked Epic Games Store platform integration.
-    ///     Replace the TODO bodies with Epic Online Services (EOS) SDK calls once
+    ///     Replace the bodies with Epic Online Services (EOS) SDK calls once
     ///     the relevant package is imported.
     /// </summary>
-    [CreateAssetMenu(
-        menuName = "SimpleAchievements/Platforms/Epic Games Store",
-        fileName = "EpicAchievementPlatform")]
     public sealed class EpicAchievementPlatform : AchievementPlatformBase
     {
         /// <inheritdoc />
@@ -20,7 +17,7 @@ namespace Systems.SimpleAchievements.Examples.Platforms
         public override void Initialise()
         {
             // Initialize EOS SDK platform handle.
-            //       EOS_Platform_Create with your product credentials.
+            // OS_Platform_Create with your product credentials.
         }
 
         /// <inheritdoc />
