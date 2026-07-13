@@ -1,5 +1,4 @@
 using Systems.SimpleDialogue.Components;
-using Systems.SimpleDialogue.Utility;
 using UnityEngine;
 
 namespace Systems.SimpleDialogue.Examples
@@ -20,7 +19,7 @@ namespace Systems.SimpleDialogue.Examples
         private void Start()
         {
             if (!_dialogue) return;
-            DialogueAPI.Begin(_dialogue);
+            _dialogue.BeginDialogue();
         }
 
         private void OnValidate()
