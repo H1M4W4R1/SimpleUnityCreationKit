@@ -1,0 +1,25 @@
+{
+    "name": "SimpleEconomy.Tests",
+    "rootNamespace": "Systems.SimpleEconomy.Tests",
+    "references": [
+        "SimpleCore",
+        "SimpleEconomy",
+        "Unity.Mathematics",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

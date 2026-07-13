@@ -1,0 +1,22 @@
+{
+    "name": "SimpleEntities", 
+    "rootNamespace": "",
+    "references": [
+        "Unity.Addressables",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.ResourceManager",
+        "SimpleStats",
+        "SimpleCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

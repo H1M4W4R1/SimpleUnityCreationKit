@@ -1,0 +1,19 @@
+{
+    "name": "SimpleEconomy",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "SimpleCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

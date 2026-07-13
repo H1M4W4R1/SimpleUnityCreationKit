@@ -1,0 +1,22 @@
+{
+    "name": "SimpleCore", 
+    "rootNamespace": "",
+    "references": [
+        "Unity.Addressables",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.InputSystem",
+        "Unity.ugui",
+        "Unity.ResourceManager"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,26 @@
+{
+    "name": "SimpleFactions.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.ResourceManager",
+        "SimpleCore",
+        "SimpleCore.Editor",
+        "SimpleFactions"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

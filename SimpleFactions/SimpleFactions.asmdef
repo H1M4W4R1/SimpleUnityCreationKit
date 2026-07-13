@@ -1,0 +1,21 @@
+{
+    "name": "SimpleFactions",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Addressables",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.ResourceManager",
+        "SimpleCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

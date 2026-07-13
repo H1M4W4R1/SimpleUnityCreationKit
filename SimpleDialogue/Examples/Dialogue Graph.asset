@@ -1,0 +1,746 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8707057427641679648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 136, y: -72}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: -8707057427641679648}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -6401454082097923717}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -8707057427641679648}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: John
+--- !u!114 &-6401454082097923717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 440, y: -56}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: -6401454082097923717}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 143119437541908325}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -6401454082097923717}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: -8707057427641679648}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: -6401454082097923717}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: Hi John!
+--- !u!114 &-6058575136006248883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: -488, y: 216}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: -6058575136006248883}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -6058575136006248883}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: 2966936861852567466}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: -6058575136006248883}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: This is world.
+--- !u!114 &-5014905649377732419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 440, y: 120}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: -5014905649377732419}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 143119437541908325}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -5014905649377732419}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: -960328948987913419}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: -5014905649377732419}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: Hi Jack!
+--- !u!114 &-4697910633746140574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 440, y: 296}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: -4697910633746140574}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 143119437541908325}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -4697910633746140574}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: -2161444388200373372}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: -4697910633746140574}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: Hi Jeanette!
+--- !u!114 &-2297381375330275016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb31640801384868957bb9e7b5f9824b, type: 3}
+  m_Name: Dialogue Exit
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.DialogueExitNode
+  graph: {fileID: 11400000}
+  position: {x: 1032, y: 248}
+  ports:
+    keys:
+    - input
+    values:
+    - _fieldName: input
+      _node: {fileID: -2297381375330275016}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: 143119437541908325}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+--- !u!114 &-2161444388200373372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 136, y: 248}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: -2161444388200373372}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -4697910633746140574}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -2161444388200373372}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: Jeanette
+--- !u!114 &-1917004769267357326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: -248, y: 216}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: -1917004769267357326}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -8707057427641679648}
+        reroutePoints: []
+      - fieldName: input
+        node: {fileID: -960328948987913419}
+        reroutePoints: []
+      - fieldName: input
+        node: {fileID: -2161444388200373372}
+        reroutePoints: []
+      - fieldName: input
+        node: {fileID: 7820391384711581565}
+        reroutePoints: []
+      - fieldName: input
+        node: {fileID: 7794921804950529968}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -1917004769267357326}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: -6058575136006248883}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: -1917004769267357326}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: What's your name?
+--- !u!114 &-960328948987913419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 136, y: 72}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: -960328948987913419}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -5014905649377732419}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: -960328948987913419}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: Jack
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ddb59e833c441bcb2349c44a795209c, type: 3}
+  m_Name: Dialogue Graph
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.DialogueGraph
+  nodes:
+  - {fileID: 2966936861852567466}
+  - {fileID: -1917004769267357326}
+  - {fileID: -8707057427641679648}
+  - {fileID: -960328948987913419}
+  - {fileID: -6401454082097923717}
+  - {fileID: -5014905649377732419}
+  - {fileID: -2297381375330275016}
+  - {fileID: 143119437541908325}
+  - {fileID: -2161444388200373372}
+  - {fileID: 7820391384711581565}
+  - {fileID: -4697910633746140574}
+  - {fileID: 4590792090544762305}
+  - {fileID: 7794921804950529968}
+  - {fileID: 1281781259432470091}
+  - {fileID: -6058575136006248883}
+--- !u!114 &143119437541908325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 760, y: 232}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: 143119437541908325}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -2297381375330275016}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: 143119437541908325}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -6401454082097923717}
+        reroutePoints: []
+      - fieldName: answers
+        node: {fileID: -5014905649377732419}
+        reroutePoints: []
+      - fieldName: answers
+        node: {fileID: -4697910633746140574}
+        reroutePoints: []
+      - fieldName: answers
+        node: {fileID: 4590792090544762305}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: Bye!
+--- !u!114 &1281781259432470091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb31640801384868957bb9e7b5f9824b, type: 3}
+  m_Name: Dialogue Exit
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.DialogueExitNode
+  graph: {fileID: 11400000}
+  position: {x: 440, y: 632}
+  ports:
+    keys:
+    - input
+    values:
+    - _fieldName: input
+      _node: {fileID: 1281781259432470091}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: 7794921804950529968}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+--- !u!114 &2966936861852567466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4e0568445aa4eb887cf7cd40b01e0b8, type: 3}
+  m_Name: Dialogue Entry
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.DialogueEntryNode
+  graph: {fileID: 11400000}
+  position: {x: -712, y: 200}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: 2966936861852567466}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: -6058575136006248883}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: 2966936861852567466}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  <EntryId>k__BackingField: default
+--- !u!114 &4590792090544762305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b0fb1af4c04f2caa121c73c13ebaa8, type: 3}
+  m_Name: Simple NPC Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimpleNPCDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 440, y: 456}
+  ports:
+    keys:
+    - answers
+    - input
+    - next
+    values:
+    - _fieldName: answers
+      _node: {fileID: 4590792090544762305}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 143119437541908325}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: 4590792090544762305}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: next
+        node: {fileID: 7820391384711581565}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: next
+      _node: {fileID: 4590792090544762305}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+  _speakerName: World
+  _text: Hi Jollie!
+--- !u!114 &7794921804950529968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 120, y: 568}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: 7794921804950529968}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 1281781259432470091}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: 7794921804950529968}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: Bye!
+--- !u!114 &7820391384711581565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0e9804223d46069cf7a55865a3f014, type: 3}
+  m_Name: Simple Player Dialogue
+  m_EditorClassIdentifier: SimpleDialogue::Systems.SimpleDialogue.Implementations.SimplePlayerDialogueNode
+  graph: {fileID: 11400000}
+  position: {x: 120, y: 408}
+  ports:
+    keys:
+    - next
+    - input
+    values:
+    - _fieldName: next
+      _node: {fileID: 7820391384711581565}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: input
+        node: {fileID: 4590792090544762305}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+    - _fieldName: input
+      _node: {fileID: 7820391384711581565}
+      _typeQualifiedName: Systems.SimpleDialogue.Abstract.DialogueConnection, SimpleDialogue,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: answers
+        node: {fileID: -1917004769267357326}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+  _text: Jollie

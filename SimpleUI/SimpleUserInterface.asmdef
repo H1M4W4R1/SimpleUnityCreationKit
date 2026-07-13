@@ -1,0 +1,24 @@
+{
+    "name": "SimpleUserInterface", 
+    "rootNamespace": "",
+    "references": [
+        "Unity.Addressables",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.ResourceManager",
+        "Unity.TextMeshPro",
+        "Unity.Localization",
+        "DOTween.Modules",
+        "SimpleCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

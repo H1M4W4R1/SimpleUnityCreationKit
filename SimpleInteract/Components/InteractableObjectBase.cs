@@ -1,0 +1,230 @@
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
+using Systems.SimpleCore.Operations;
+using Systems.SimpleDetection.Data;
+using Systems.SimpleDetection.Operations;
+using Systems.SimpleInteract.Components.Detectors.Abstract;
+using Systems.SimpleInteract.Data;
+using Systems.SimpleInteract.Operations;
+using UnityEngine;
+
+namespace Systems.SimpleInteract.Components
+{
+    /// <summary>
+    ///     Represents object that can be interacted with in 2D space
+    /// </summary>
+    /// <remarks>
+    ///     <see>
+    ///         <cref>TInteractorSealed</cref>
+    ///     </see>
+    ///     is provided with high intention to reduce performance issues
+    ///     when having a lot of interaction objects on the scene - it allows to reduce raycast amount
+    ///     by ignoring objects that are not e.g. player or other interactors.
+    ///     For reference see <see cref="CanBeDetected"/> method.
+    /// </remarks>
+    [RequireComponent(typeof(IInteractableDetector))]
+    public abstract class InteractableObjectBase : MonoBehaviour
+    {
+        /// <summary>
+        ///     Detector linked to this object
+        /// </summary>
+        private IInteractableDetector _detector;
+
+        /// <summary>
+        ///     Cache of all interactors that can interact with this object
+        ///     at current frame
+        /// </summary>
+        private readonly List<InteractorBase> _interactors = new();
+
+        /// <summary>
+        ///     All interactors that are able to interact at current frame
+        /// </summary>
+        public IReadOnlyList<InteractorBase> Interactors => _interactors;
+
+        /// <summary>
+        ///     Check if this object can be interacted with
+        /// </summary>
+        /// <returns>True if this object can be interacted with</returns>
+        protected internal virtual OperationResult CanBeInteractedWith(InteractionContext context) => 
+            InteractOperations.Permitted();
+
+        /// <summary>
+        ///     Attempts to interact with this object using given interactor.
+        ///     This method is the single entry point for all interaction logic.
+        ///
+        ///     If this object can be interacted with, then <see cref="OnInteract"/> is called,
+        ///     otherwise <see cref="OnInteractFailed"/> is called.
+        /// </summary>
+        /// <param name="interactor">Object that is attempting to interact with this object</param>
+        protected internal OperationResult Interact([NotNull] InteractorBase interactor)
+        {
+            // Create context
+            InteractionContext context = new(this, interactor);
+
+            // Check if the interactable itself permits interaction
+            OperationResult canBeInteractedResult = CanBeInteractedWith(context);
+            if (!canBeInteractedResult)
+            {
+                OnInteractFailed(context, canBeInteractedResult);
+                return canBeInteractedResult;
+            }
+
+            // Check if interactor can interact
+            OperationResult interactCapabilityResult = interactor.CanInteract(context);
+            if (interactCapabilityResult)
+            {
+                OnInteract(context, interactCapabilityResult);
+                return InteractOperations.Interacted();
+            }
+
+            OnInteractFailed(context, interactCapabilityResult);
+            return interactCapabilityResult;
+        }
+
+        /// <summary>
+        ///     Called when interaction with this object has failed.
+        ///     This event is called after <see cref="CanBeInteractedWith"/> has returned false.
+        /// </summary>
+        /// <param name="context">Context of interaction</param>
+        /// <param name="interactCapabilityResult">Result of interaction capability check</param>
+        protected virtual void OnInteractFailed(in InteractionContext context, in OperationResult interactCapabilityResult)
+        {
+        }
+
+        /// <summary>
+        ///     Called when interaction with this object has succeeded.
+        ///     This event is called after <see cref="CanBeInteractedWith"/> has returned true.
+        /// </summary>
+        /// <param name="context">Context of interaction</param>
+        /// <param name="interactCapabilityResult">Result of interaction capability check</param>
+        protected abstract void OnInteract(in InteractionContext context, in OperationResult interactCapabilityResult);
+
+        /// <summary>
+        ///     Called when object enters interaction zone.
+        /// </summary>
+        /// <param name="obj">Object that entered interaction zone</param>
+        protected virtual void OnInteractionZoneEnter(InteractorBase obj)
+        {
+        }
+
+        /// <summary>
+        ///     Called when object exits interaction zone.
+        /// </summary>
+        /// <param name="obj">Object that exited interaction zone</param>
+        protected virtual void OnInteractionZoneExit(InteractorBase obj)
+        {
+        }
+
+#region Unity Lifecycle
+
+        /// <remarks>
+        ///     This method is intentionally non-virtual to prevent subclasses from accidentally
+        ///     breaking the event subscription chain. Do not declare Awake in subclasses;
+        ///     use <see cref="OnInteractionZoneEnter"/> and other virtual callbacks instead.
+        /// </remarks>
+        protected void Awake()
+        {
+            _detector = GetComponent<IInteractableDetector>();
+
+            if (_detector == null)
+            {
+                Debug.LogError(
+                    $"[{nameof(InteractableObjectBase)}] No IInteractableDetector component found on '{gameObject.name}'. " +
+                    "Add an InteractableDetector2D or InteractableDetector3D component.", this);
+                return;
+            }
+
+            _detector.ObjectCanBeDetected += CanBeDetected;
+            _detector.ObjectDetectionStart += OnObjectDetectionStart;
+            _detector.ObjectDetectionEnd += OnObjectDetectionEnd;
+            _detector.ObjectDetectionFailed += OnObjectDetectionFailed;
+            _detector.ObjectDetected += OnObjectDetected;
+            _detector.ObjectGhostDetected += OnObjectGhostDetected;
+        }
+
+        /// <remarks>
+        ///     This method is intentionally non-virtual to prevent subclasses from accidentally
+        ///     breaking the event unsubscription chain. Do not declare OnDestroy in subclasses.
+        /// </remarks>
+        protected void OnDestroy()
+        {
+            if (_detector == null) return;
+
+            _detector.ObjectCanBeDetected -= CanBeDetected;
+            _detector.ObjectDetectionStart -= OnObjectDetectionStart;
+            _detector.ObjectDetectionEnd -= OnObjectDetectionEnd;
+            _detector.ObjectDetectionFailed -= OnObjectDetectionFailed;
+            _detector.ObjectDetected -= OnObjectDetected;
+            _detector.ObjectGhostDetected -= OnObjectGhostDetected;
+        }
+
+#endregion
+
+#region IInteractableDetector Handlers
+
+        /// <summary>
+        ///     Checks if object can be detected by this interactor.
+        ///     Used for performance optimization.
+        /// </summary>
+        /// <param name="context">Context of the detection to check</param>
+        protected internal virtual OperationResult CanBeDetected(ObjectDetectionContext context)
+        {
+            return DetectionOperations.Permitted();
+        }
+
+
+        protected virtual void OnObjectDetectionStart(
+            in ObjectDetectionContext context,
+            in OperationResult detectionResult)
+        {
+            if (context.detectableObject is InteractorBase interactor) OnInteractionZoneEnter(interactor);
+        }
+
+        protected virtual void OnObjectDetectionEnd(
+            in ObjectDetectionContext context,
+            in OperationResult detectionResult)
+        {
+            if (context.detectableObject is InteractorBase interactor) OnInteractionZoneExit(interactor);
+        }
+
+        protected virtual void OnObjectDetectionFailed(
+            in ObjectDetectionContext context,
+            in OperationResult detectionResult)
+        {
+            if (context.detectableObject is InteractorBase detectableObjectBase)
+                _interactors.RemoveAll(o => ReferenceEquals(o, detectableObjectBase));
+
+            // Clean up any stale (destroyed) interactor references
+            _interactors.RemoveAll(o => o == null);
+        }
+
+        protected virtual void OnObjectDetected(
+            in ObjectDetectionContext context,
+            in OperationResult detectionResult)
+        {
+            // Skip if object is not of type TDetectableObjectBase
+            if (context.detectableObject is not InteractorBase detectableObjectBase) return;
+
+            // Skip destroyed objects
+            if (detectableObjectBase == null) return;
+
+            // Add interactor if it is not already in the list
+            if (!_interactors.Contains(detectableObjectBase)) _interactors.Add(detectableObjectBase);
+        }
+
+        protected virtual void OnObjectGhostDetected(
+            in ObjectDetectionContext context,
+            in OperationResult detectionResult)
+        {
+            // Safety fallback, technically ghosts should not be supported by interactable objects,
+            // but we keep it just in case somebody decides otherwise and adds ghost support to object class.
+            OnObjectDetected(context, detectionResult);
+        }
+        
+    
+
+#endregion
+
+       
+    }
+}

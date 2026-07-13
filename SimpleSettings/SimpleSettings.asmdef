@@ -1,0 +1,13 @@
+{
+    "name": "SimpleSettings",
+    "rootNamespace": "",
+    "references": [
+        "SimpleCore",
+        "SimpleUserInterface",
+        "Unity.InputSystem",
+        "Unity.Localization",
+        "Unity.TextMeshPro"
+    ],
+    "allowUnsafeCode": true,
+    "autoReferenced": true
+}

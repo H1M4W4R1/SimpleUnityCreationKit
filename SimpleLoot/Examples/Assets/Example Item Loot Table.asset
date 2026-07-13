@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71af13e617271644cb14576f060b3211, type: 3}
+  m_Name: Example Item Loot Table
+  m_EditorClassIdentifier: SimpleLoot::Systems.SimpleLoot.Examples.Scripts.ExampleItemLootTable
+  _entries:
+  - _item: {fileID: 11400000, guid: d0d21ee4f9694713bb8f85ffb041d0c5, type: 2}
+    _rarityOverride: {fileID: 0}
+  - _item: {fileID: 11400000, guid: a4fbe25b63404896b079790ac7ce0ebd, type: 2}
+    _rarityOverride: {fileID: 0}
+  - _item: {fileID: 11400000, guid: 9185dd48bd3d49e4a5a60b6589d04d33, type: 2}
+    _rarityOverride: {fileID: 0}

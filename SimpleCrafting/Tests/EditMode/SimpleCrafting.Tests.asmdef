@@ -1,0 +1,24 @@
+{
+    "name": "SimpleCrafting.Tests",
+    "rootNamespace": "Systems.SimpleCrafting.Tests",
+    "references": [
+        "SimpleCore",
+        "SimpleCrafting",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

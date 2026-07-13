@@ -1,0 +1,20 @@
+{
+    "name": "SimpleDialogue",
+    "rootNamespace": "",
+    "references": [
+        "SimpleCore",
+        "SimpleUserInterface",
+        "Unity.TextMeshPro",
+        "Unity.ugui",
+        "XNode"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
