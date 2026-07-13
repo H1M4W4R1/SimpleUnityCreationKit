@@ -122,7 +122,15 @@ public sealed class DefeatOneThousandEnemiesAchievement : AchievementData, IProg
 }
 ```
 
+When the achievement type is known, `AchievementAPI.Unlock<TAchievement>()` resolves the generated definition from `AchievementDatabase`:
+
+```csharp
+OperationResult result = AchievementAPI.Unlock<DefeatTenEnemiesAchievement>();
+```
+
 `NotifyProgress` returns `AchievementOperations.ProgressUpdated()` until the goal is reached, then returns `AchievementOperations.Unlocked()`. Progress state belongs to the achievement implementation; store the source counter in the host game's save data when it must survive a restart.
+
+Use `AchievementAPI.NotifyProgress<TAchievement>()` when the progressible achievement type is known and its generated definition should be resolved automatically.
 
 ## Validation Hooks
 

@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleCrafting.Abstract;
 using Systems.SimpleCrafting.Components;
+using Systems.SimpleCrafting.Data;
 using Systems.SimpleCrafting.Data.Context;
 using Systems.SimpleCrafting.Data.Enums;
 using Systems.SimpleCrafting.Data.Runtime;
@@ -34,6 +35,18 @@ namespace Systems.SimpleCrafting.Utility
             return CanCraft(in context);
         }
 
+        /// <summary>
+        ///     Validates crafting with the generated recipe asset of type <typeparamref name="TCraftingRecipe"/>.
+        /// </summary>
+        public static OperationResult CanCraft<TCraftingRecipe>(
+            [CanBeNull] CraftingStationBase station = null,
+            [CanBeNull] ICraftingUser user = null)
+            where TCraftingRecipe : CraftingRecipeBase, new()
+        {
+            TCraftingRecipe recipe = CraftingRecipeDatabase.GetExact<TCraftingRecipe>();
+            return CanCraft(recipe, station, user);
+        }
+
         public static OperationResult CanCraft(
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] IReadOnlyList<CraftingStationBase> stations,
@@ -41,6 +54,18 @@ namespace Systems.SimpleCrafting.Utility
         {
             CraftingContext context = new CraftingContext(recipe, stations, user);
             return CanCraft(in context);
+        }
+
+        /// <summary>
+        ///     Validates crafting with the generated recipe asset of type <typeparamref name="TCraftingRecipe"/>.
+        /// </summary>
+        public static OperationResult CanCraft<TCraftingRecipe>(
+            [CanBeNull] IReadOnlyList<CraftingStationBase> stations,
+            [CanBeNull] ICraftingUser user = null)
+            where TCraftingRecipe : CraftingRecipeBase, new()
+        {
+            TCraftingRecipe recipe = CraftingRecipeDatabase.GetExact<TCraftingRecipe>();
+            return CanCraft(recipe, stations, user);
         }
 
         public static OperationResult CanCraft(in CraftingContext context)
@@ -71,6 +96,19 @@ namespace Systems.SimpleCrafting.Utility
             return TryStartCrafting(in context, out instance);
         }
 
+        /// <summary>
+        ///     Starts crafting with the generated recipe asset of type <typeparamref name="TCraftingRecipe"/>.
+        /// </summary>
+        public static OperationResult TryStartCrafting<TCraftingRecipe>(
+            [CanBeNull] out CraftingInstance instance,
+            [CanBeNull] CraftingStationBase station = null,
+            [CanBeNull] ICraftingUser user = null)
+            where TCraftingRecipe : CraftingRecipeBase, new()
+        {
+            TCraftingRecipe recipe = CraftingRecipeDatabase.GetExact<TCraftingRecipe>();
+            return TryStartCrafting(recipe, out instance, station, user);
+        }
+
         public static OperationResult TryStartCrafting(
             [CanBeNull] CraftingRecipeBase recipe,
             [CanBeNull] out CraftingInstance instance,
@@ -79,6 +117,19 @@ namespace Systems.SimpleCrafting.Utility
         {
             CraftingContext context = new CraftingContext(recipe, stations, user);
             return TryStartCrafting(in context, out instance);
+        }
+
+        /// <summary>
+        ///     Starts crafting with the generated recipe asset of type <typeparamref name="TCraftingRecipe"/>.
+        /// </summary>
+        public static OperationResult TryStartCrafting<TCraftingRecipe>(
+            [CanBeNull] out CraftingInstance instance,
+            [CanBeNull] IReadOnlyList<CraftingStationBase> stations,
+            [CanBeNull] ICraftingUser user = null)
+            where TCraftingRecipe : CraftingRecipeBase, new()
+        {
+            TCraftingRecipe recipe = CraftingRecipeDatabase.GetExact<TCraftingRecipe>();
+            return TryStartCrafting(recipe, out instance, stations, user);
         }
 
         public static OperationResult TryStartCrafting(

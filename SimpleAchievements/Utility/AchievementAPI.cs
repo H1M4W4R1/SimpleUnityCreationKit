@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Systems.SimpleAchievements.Abstract;
 using Systems.SimpleAchievements.Components;
+using Systems.SimpleAchievements.Data.Databases;
 using Systems.SimpleAchievements.Data.SaveFiles;
 using Systems.SimpleAchievements.Operations;
 using Systems.SimpleAchievements.Structs;
@@ -40,6 +41,17 @@ namespace Systems.SimpleAchievements.Utility
             => AchievementRegistry.Instance.Unlock(in context);
 
         /// <summary>
+        ///     Unlocks the generated achievement asset of type <typeparamref name="TAchievement"/>.
+        /// </summary>
+        public static OperationResult Unlock<TAchievement>(bool forceUnlock = false)
+            where TAchievement : AchievementData, new()
+        {
+            TAchievement achievement = AchievementDatabase.GetExact<TAchievement>();
+            AchievementUnlockContext context = new AchievementUnlockContext(achievement, forceUnlock);
+            return Unlock(in context);
+        }
+
+        /// <summary>
         ///     Applies one gameplay progress notification to a progress-based achievement.
         ///     When <paramref name="achievement"/> implements <see cref="IProgressibleAchievement"/> and its
         ///     <see cref="IProgressibleAchievement.UpdateProgress"/> implementation returns <c>true</c>, the
@@ -56,6 +68,16 @@ namespace Systems.SimpleAchievements.Utility
         public static OperationResult NotifyProgress([CanBeNull] AchievementData achievement)
             => AchievementRegistry.Instance.NotifyProgress(achievement);
 
+        /// <summary>
+        ///     Applies progress to the generated achievement asset of type <typeparamref name="TAchievement"/>.
+        /// </summary>
+        public static OperationResult NotifyProgress<TAchievement>()
+            where TAchievement : AchievementData, new()
+        {
+            TAchievement achievement = AchievementDatabase.GetExact<TAchievement>();
+            return NotifyProgress(achievement);
+        }
+
         // ------------------------------------------------------------------ //
         //  Query                                                               //
         // ------------------------------------------------------------------ //
@@ -67,6 +89,16 @@ namespace Systems.SimpleAchievements.Utility
         {
             if (ReferenceEquals(achievement, null)) return false;
             return AchievementRegistry.Instance.IsUnlocked(achievement.PlatformId);
+        }
+
+        /// <summary>
+        ///     Returns whether the generated achievement asset of type <typeparamref name="TAchievement"/> is unlocked.
+        /// </summary>
+        public static bool IsUnlocked<TAchievement>()
+            where TAchievement : AchievementData, new()
+        {
+            TAchievement achievement = AchievementDatabase.GetExact<TAchievement>();
+            return IsUnlocked(achievement);
         }
 
         /// <summary>

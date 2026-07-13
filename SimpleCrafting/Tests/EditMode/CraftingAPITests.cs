@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Systems.SimpleCore.Operations;
+using Systems.SimpleCrafting.Data;
 using Systems.SimpleCrafting.Data.Enums;
 using Systems.SimpleCrafting.Data.Runtime;
 using Systems.SimpleCrafting.Operations;
@@ -117,6 +118,23 @@ namespace Systems.SimpleCrafting.Tests
 
             AssertSimilar(CraftingOperations.Denied(), rejectedResult);
             AssertSimilar(CraftingOperations.Permitted(), allowedResult);
+        }
+
+        [Test]
+        public void GenericRecipeOverloads_ResolveTheRegisteredRecipe()
+        {
+            TestRecipe recipe = CreateRecipe();
+            CraftingRecipeDatabase.RegisterForTests(recipe);
+            TestCraftingUser user = new TestCraftingUser();
+
+            OperationResult canCraftResult = CraftingAPI.CanCraft<TestRecipe>(user: user);
+            OperationResult startResult = CraftingAPI.TryStartCrafting<TestRecipe>(out CraftingInstance instance, user: user);
+
+            AssertSimilar(CraftingOperations.Permitted(), canCraftResult);
+            AssertSimilar(CraftingOperations.Completed(), startResult);
+            Assert.IsNull(instance);
+            Assert.AreEqual(1, recipe.ConsumedCount);
+            Assert.AreEqual(1, recipe.GrantedCount);
         }
     }
 }

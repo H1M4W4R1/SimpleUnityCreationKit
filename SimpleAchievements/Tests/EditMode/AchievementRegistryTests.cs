@@ -178,5 +178,32 @@ namespace Systems.SimpleAchievements.Tests
             AssertSimilar(AchievementOperations.AlreadyUnlocked(), secondResult);
             Assert.AreEqual(1, achievement.ProgressCount);
         }
+
+        [Test]
+        public void GenericAchievementOverloads_ResolveRegisteredDefinitions()
+        {
+            TestAchievement achievement = CreateRegisteredAchievement("ACH_GENERIC_UNLOCK");
+            CreateRegistry();
+
+            OperationResult unlockResult = AchievementAPI.Unlock<TestAchievement>();
+
+            AssertSimilar(AchievementOperations.Unlocked(), unlockResult);
+            Assert.IsTrue(AchievementAPI.IsUnlocked<TestAchievement>());
+            Assert.IsTrue(AchievementAPI.IsUnlocked(achievement));
+        }
+
+        [Test]
+        public void GenericProgressOverload_ResolvesRegisteredDefinition()
+        {
+            TestProgressibleAchievement achievement =
+                CreateRegisteredProgressibleAchievement("ACH_GENERIC_PROGRESS", 1);
+            CreateRegistry();
+
+            OperationResult progressResult = AchievementAPI.NotifyProgress<TestProgressibleAchievement>();
+
+            AssertSimilar(AchievementOperations.Unlocked(), progressResult);
+            Assert.AreEqual(1, achievement.ProgressCount);
+            Assert.IsTrue(AchievementAPI.IsUnlocked<TestProgressibleAchievement>());
+        }
     }
 }

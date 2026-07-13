@@ -126,6 +126,14 @@ if (instance.IsReadyToComplete)
 }
 ```
 
+When the recipe type is known, the matching generic overload resolves its generated asset from `CraftingRecipeDatabase`:
+
+```csharp
+OperationResult result = CraftingAPI.TryStartCrafting<IronSwordRecipe>(
+    out CraftingInstance instance,
+    user: player);
+```
+
 Timed state is caller-owned. A component, save system, job queue, or entity system can store `CraftingInstance` and advance it using its own clock.
 
 To use the current global tick, add one `Systems.SimpleCrafting.Components.CraftingTickSystem` component to a persistent scene object. It subscribes to `SimpleCore.Timing.TickSystem`, advances every timed instance started through `CraftingAPI`, and completes instances when their duration elapses. Do not add it more than once.
