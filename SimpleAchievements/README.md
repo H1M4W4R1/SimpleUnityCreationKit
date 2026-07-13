@@ -17,8 +17,9 @@ SimpleAchievements is a lightweight achievement system for Unity projects. It st
 
 ```
 AchievementData             - ScriptableObject definition and unlock callbacks
+IProgressibleAchievement    - opt-in contract for active progress updates
 AchievementRegistry         - runtime singleton that tracks unlock state
-AchievementAPI              - static facade for unlock, query, save, and load operations
+AchievementAPI              - static facade for unlock, progress, query, save, and load operations
 AchievementPlatformBase     - ScriptableObject base for platform SDK adapters
 AchievementSaveFile         - SimpleCore save payload for unlocked platform IDs
 AchievementsSettings        - Resources-backed save settings
@@ -92,6 +93,36 @@ OperationResult result = AchievementAPI.Unlock(in context);
 ```
 
 Without `forceUnlock`, a conditional achievement unlock request fails with `AchievementOperations.ConditionNotMet()` until `EvaluateCondition()` returns `true`.
+
+## Progress Achievements
+
+Implement `IProgressibleAchievement` when gameplay should actively report progress instead of waiting for the registry tick. `AchievementAPI.NotifyProgress` invokes `UpdateProgress` once for each notification. Return `true` after applying the update when the achievement should unlock.
+
+```csharp
+using Systems.SimpleAchievements.Abstract;
+using Systems.SimpleAchievements.Utility;
+using UnityEngine;
+
+public sealed class DefeatOneThousandEnemiesAchievement : AchievementData, IProgressibleAchievement
+{
+    [SerializeField] private int _requiredEnemyKills = 1000;
+
+    private int _enemyKillCount;
+
+    public bool UpdateProgress()
+    {
+        _enemyKillCount++;
+        return _enemyKillCount >= _requiredEnemyKills;
+    }
+
+    public void NotifyEnemyDefeated()
+    {
+        AchievementAPI.NotifyProgress(this);
+    }
+}
+```
+
+`NotifyProgress` returns `AchievementOperations.ProgressUpdated()` until the goal is reached, then returns `AchievementOperations.Unlocked()`. Progress state belongs to the achievement implementation; store the source counter in the host game's save data when it must survive a restart.
 
 ## Validation Hooks
 
@@ -169,9 +200,11 @@ if (!ReferenceEquals(saveFile, null))
 | Result | Meaning |
 |---|---|
 | `AchievementOperations.Unlocked()` | Achievement transitioned to unlocked |
+| `AchievementOperations.ProgressUpdated()` | Progress notification was accepted and the achievement remains locked |
 | `AchievementOperations.AlreadyUnlocked()` | Achievement was already unlocked |
 | `AchievementOperations.InvalidAchievement()` | Achievement reference, destroyed state, or platform ID is invalid |
 | `AchievementOperations.ConditionNotMet()` | Conditional achievement was requested before its condition was met |
+| `AchievementOperations.NotProgressible()` | Achievement does not implement `IProgressibleAchievement` |
 
 ## Examples included
 

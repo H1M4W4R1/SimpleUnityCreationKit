@@ -131,5 +131,52 @@ namespace Systems.SimpleAchievements.Tests
             Assert.AreEqual(1, platform.UnlockedIds.Count);
             Assert.AreEqual(2, achievement.ConditionCheckCount);
         }
+
+        [Test]
+        public void NotifyProgress_WhenTargetIsProgressible_UpdatesThenUnlocksAtItsGoal()
+        {
+            TestProgressibleAchievement achievement =
+                CreateRegisteredProgressibleAchievement("ACH_KILL_ONE_THOUSAND", 2);
+            TestAchievementPlatform platform = CreateRegisteredPlatform();
+            CreateRegistry();
+
+            OperationResult firstResult = AchievementAPI.NotifyProgress(achievement);
+            OperationResult secondResult = AchievementAPI.NotifyProgress(achievement);
+
+            AssertSimilar(AchievementOperations.ProgressUpdated(), firstResult);
+            AssertSimilar(AchievementOperations.Unlocked(), secondResult);
+            Assert.AreEqual(2, achievement.ProgressCount);
+            Assert.AreEqual(1, achievement.UnlockNotificationCount);
+            Assert.IsTrue(AchievementAPI.IsUnlocked(achievement));
+            Assert.AreEqual(1, platform.UnlockedIds.Count);
+        }
+
+        [Test]
+        public void NotifyProgress_WhenAchievementIsNotProgressible_ReturnsNotProgressible()
+        {
+            TestAchievement achievement = CreateRegisteredAchievement("ACH_MANUAL");
+            CreateRegistry();
+
+            OperationResult result = AchievementAPI.NotifyProgress(achievement);
+
+            AssertSimilar(AchievementOperations.NotProgressible(), result);
+            Assert.AreEqual(0, achievement.UnlockNotificationCount);
+            Assert.IsFalse(AchievementAPI.IsUnlocked(achievement));
+        }
+
+        [Test]
+        public void NotifyProgress_WhenAlreadyUnlocked_DoesNotUpdateProgressAgain()
+        {
+            TestProgressibleAchievement achievement =
+                CreateRegisteredProgressibleAchievement("ACH_SINGLE_PROGRESS", 1);
+            CreateRegistry();
+
+            OperationResult firstResult = AchievementAPI.NotifyProgress(achievement);
+            OperationResult secondResult = AchievementAPI.NotifyProgress(achievement);
+
+            AssertSimilar(AchievementOperations.Unlocked(), firstResult);
+            AssertSimilar(AchievementOperations.AlreadyUnlocked(), secondResult);
+            Assert.AreEqual(1, achievement.ProgressCount);
+        }
     }
 }

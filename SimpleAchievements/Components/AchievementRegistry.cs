@@ -230,6 +230,24 @@ namespace Systems.SimpleAchievements.Components
             return AchievementOperations.Unlocked();
         }
 
+        internal OperationResult NotifyProgress([CanBeNull] AchievementData achievement)
+        {
+            if (ReferenceEquals(achievement, null) || !achievement)
+                return AchievementOperations.InvalidAchievement();
+
+            if (_unlockedIds.Contains(achievement.PlatformId))
+                return AchievementOperations.AlreadyUnlocked();
+
+            if (!(achievement is IProgressibleAchievement progressibleAchievement))
+                return AchievementOperations.NotProgressible();
+
+            if (!progressibleAchievement.UpdateProgress())
+                return AchievementOperations.ProgressUpdated();
+
+            AchievementUnlockContext context = new AchievementUnlockContext(achievement, true);
+            return Unlock(in context);
+        }
+
         private void UnlockInternal([NotNull] AchievementData achievement)
         {
             _unlockedIds.Add(achievement.PlatformId);

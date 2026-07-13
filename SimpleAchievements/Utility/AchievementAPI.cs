@@ -39,6 +39,23 @@ namespace Systems.SimpleAchievements.Utility
         public static OperationResult Unlock(in AchievementUnlockContext context)
             => AchievementRegistry.Instance.Unlock(in context);
 
+        /// <summary>
+        ///     Applies one gameplay progress notification to a progress-based achievement.
+        ///     When <paramref name="achievement"/> implements <see cref="IProgressibleAchievement"/> and its
+        ///     <see cref="IProgressibleAchievement.UpdateProgress"/> implementation returns <c>true</c>, the
+        ///     achievement is unlocked automatically.
+        /// </summary>
+        /// <param name="achievement">Progress-based achievement to update.</param>
+        /// <returns>
+        ///     <see cref="AchievementOperations.ProgressUpdated"/> while the achievement remains locked,
+        ///     <see cref="AchievementOperations.Unlocked"/> when the update completes it,
+        ///     <see cref="AchievementOperations.AlreadyUnlocked"/> when it was already unlocked, or
+        ///     <see cref="AchievementOperations.NotProgressible"/> when it does not implement the required interface,
+        ///     or <see cref="AchievementOperations.InvalidAchievement"/> when the reference is invalid.
+        /// </returns>
+        public static OperationResult NotifyProgress([CanBeNull] AchievementData achievement)
+            => AchievementRegistry.Instance.NotifyProgress(achievement);
+
         // ------------------------------------------------------------------ //
         //  Query                                                               //
         // ------------------------------------------------------------------ //

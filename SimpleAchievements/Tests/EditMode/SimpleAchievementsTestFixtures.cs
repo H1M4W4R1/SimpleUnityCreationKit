@@ -81,6 +81,18 @@ namespace Systems.SimpleAchievements.Tests
             return achievement;
         }
 
+        protected TestProgressibleAchievement CreateRegisteredProgressibleAchievement(
+            string platformId,
+            int requiredProgress)
+        {
+            TestProgressibleAchievement achievement = Track(ScriptableObject.CreateInstance<TestProgressibleAchievement>());
+            achievement.name = platformId;
+            achievement.RequiredProgress = requiredProgress;
+            SetAchievementText(achievement, platformId, platformId + " Name", platformId + " Description");
+            AchievementDatabase.RegisterForTests(achievement);
+            return achievement;
+        }
+
         protected TestAchievementPlatform CreateRegisteredPlatform()
         {
             TestAchievementPlatform platform = Track(ScriptableObject.CreateInstance<TestAchievementPlatform>());
@@ -206,6 +218,24 @@ namespace Systems.SimpleAchievements.Tests
             if (!baseResult) return baseResult;
             if (RejectUnlock) return AchievementOperations.InvalidAchievement();
             return baseResult;
+        }
+
+        protected override void OnUnlocked()
+        {
+            UnlockNotificationCount++;
+        }
+    }
+
+    public sealed class TestProgressibleAchievement : AchievementData, IProgressibleAchievement
+    {
+        public int RequiredProgress { get; set; }
+        public int ProgressCount { get; private set; }
+        public int UnlockNotificationCount { get; private set; }
+
+        public bool UpdateProgress()
+        {
+            ProgressCount++;
+            return ProgressCount >= RequiredProgress;
         }
 
         protected override void OnUnlocked()

@@ -19,6 +19,9 @@ namespace Systems.SimpleAchievements.Tests
                 AchievementOperations.SUCCESS_UNLOCKED,
                 AchievementOperations.Unlocked().resultCode);
             Assert.AreEqual(
+                AchievementOperations.SUCCESS_PROGRESS_UPDATED,
+                AchievementOperations.ProgressUpdated().resultCode);
+            Assert.AreEqual(
                 AchievementOperations.ERROR_ALREADY_UNLOCKED,
                 AchievementOperations.AlreadyUnlocked().resultCode);
             Assert.AreEqual(
@@ -27,7 +30,11 @@ namespace Systems.SimpleAchievements.Tests
             Assert.AreEqual(
                 AchievementOperations.ERROR_CONDITION_NOT_MET,
                 AchievementOperations.ConditionNotMet().resultCode);
+            Assert.AreEqual(
+                AchievementOperations.ERROR_NOT_PROGRESSIBLE,
+                AchievementOperations.NotProgressible().resultCode);
             Assert.IsFalse(AchievementOperations.ConditionNotMet());
+            Assert.IsFalse(AchievementOperations.NotProgressible());
         }
     }
 }
