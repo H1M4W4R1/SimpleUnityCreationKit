@@ -353,7 +353,7 @@ namespace Systems.SimpleLoading.Utility
             return ReferenceEquals(stage, null) ? 0f : Mathf.Max(0.0001f, stage.TimeWeight);
         }
 
-        private static LoadingRequest FindRequest(in LoadingHandle handle)
+        [CanBeNull] private static LoadingRequest FindRequest(in LoadingHandle handle)
         {
             if (!handle.IsValid) return null;
             for (int requestIndex = 0; requestIndex < Requests.Count; requestIndex++)
