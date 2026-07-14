@@ -61,6 +61,39 @@ namespace Systems.SimpleWorld.Tests
         }
 
         [Test]
+        public void CalculateMoonPhase_ReturnsEachNamedStageFromFullMoonReference()
+        {
+            DateTime fullMoon = new DateTime(2000, 1, 21, 4, 40, 0, DateTimeKind.Utc);
+
+            Assert.AreEqual(MoonPhase.Full, WorldAPI.CalculateMoonPhase(fullMoon));
+            Assert.AreEqual(MoonPhase.WaningGibbous, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS / 8d)));
+            Assert.AreEqual(MoonPhase.LastQuarter, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS / 4d)));
+            Assert.AreEqual(MoonPhase.WaningCrescent, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS * 3d / 8d)));
+            Assert.AreEqual(MoonPhase.New, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS / 2d)));
+            Assert.AreEqual(MoonPhase.WaxingCrescent, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS * 5d / 8d)));
+            Assert.AreEqual(MoonPhase.FirstQuarter, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS * 3d / 4d)));
+            Assert.AreEqual(MoonPhase.WaxingGibbous, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS * 7d / 8d)));
+        }
+
+        [Test]
+        public void CalculateMoonPhase_RepeatsAfterOneSynodicMonthAndUsesUniversalTime()
+        {
+            DateTime fullMoon = new DateTime(2000, 1, 21, 4, 40, 0, DateTimeKind.Utc);
+            DateTime localDate = fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS / 8d).ToLocalTime();
+
+            Assert.AreEqual(MoonPhase.Full, WorldAPI.CalculateMoonPhase(
+                fullMoon.AddDays(WorldAPI.SYNODIC_MONTH_DAYS)));
+            Assert.AreEqual(MoonPhase.WaningGibbous, WorldAPI.CalculateMoonPhase(localDate));
+        }
+
+        [Test]
         public void StellarLightIntensity_FadesSmoothlyAfterVisibleHorizon()
         {
             Assert.AreEqual(0f, WorldAPI.CalculateSunLightIntensity(WorldAPI.SUN_HIDDEN_ELEVATION));

@@ -20,7 +20,12 @@ namespace Systems.SimpleWorld.Utility
         public const float SUN_TINT_FULL_ELEVATION = 24f;
         public const float MOON_HIDDEN_ELEVATION = -4f;
         public const float MOON_FULL_INTENSITY_ELEVATION = 4f;
+        public const double SYNODIC_MONTH_DAYS = 29.530588853d;
+        public const int MOON_PHASE_COUNT = 8;
         public const string WORLD_TINT_SHADER_PROPERTY = "_SimpleWorldTint";
+
+        private static readonly DateTime _moonPhaseReferenceFullMoon =
+            new DateTime(2000, 1, 21, 4, 40, 0, DateTimeKind.Utc);
 
         private static readonly List<WeatherEffect> _activeWeatherEffects = new List<WeatherEffect>();
 
@@ -81,6 +86,17 @@ namespace Systems.SimpleWorld.Utility
             double hourAngle = DegreesToRadians(
                 WrapDegrees(solarTime * 15d - rightAscension + daysSinceReference * (360d / lunarCycle)));
             return CalculateBodyPosition(latitude, declinationRadians, hourAngle, distance);
+        }
+
+        /// <summary>
+        ///     Calculates the named moon phase for an instant using a fixed full-moon reference and the mean synodic month.
+        /// </summary>
+        public static MoonPhase CalculateMoonPhase(DateTime dateFor)
+        {
+            double daysSinceReference = (dateFor.ToUniversalTime() - _moonPhaseReferenceFullMoon).TotalDays;
+            double lunarCycleProgress = WrapUnitInterval(daysSinceReference / SYNODIC_MONTH_DAYS);
+            int phaseIndex = (int)Math.Floor(lunarCycleProgress * MOON_PHASE_COUNT + 4.5d) % MOON_PHASE_COUNT;
+            return (MoonPhase)phaseIndex;
         }
 
         public static Color CalculateStellarEffectColor(
@@ -250,6 +266,12 @@ namespace Systems.SimpleWorld.Utility
         {
             double wrapped = degrees % 360d;
             return wrapped < 0d ? wrapped + 360d : wrapped;
+        }
+
+        private static double WrapUnitInterval(double value)
+        {
+            double wrapped = value % 1d;
+            return wrapped < 0d ? wrapped + 1d : wrapped;
         }
     }
 }

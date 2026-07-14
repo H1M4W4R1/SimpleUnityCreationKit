@@ -36,6 +36,11 @@ namespace Systems.SimpleWorld.Components
         public DateTime CurrentDateTime => _currentDateTime;
 
         /// <summary>
+        ///     The moon phase for <see cref="CurrentDateTime" />.
+        /// </summary>
+        public MoonPhase CurrentMoonPhase => WorldAPI.CalculateMoonPhase(_currentDateTime);
+
+        /// <summary>
         ///     Assigns the stellar body components controlled by this instance.
         /// </summary>
         public void SetStellarBodies(WorldSun sun, WorldMoon moon)

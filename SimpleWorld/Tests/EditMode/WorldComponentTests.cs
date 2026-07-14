@@ -74,6 +74,18 @@ namespace Systems.SimpleWorld.Tests
         }
 
         [Test]
+        public void AutomaticStellarBodyController_ExposesCurrentMoonPhase()
+        {
+            AutomaticStellarBodyController controller =
+                _controllerObject.GetComponent<AutomaticStellarBodyController>();
+            DateTime fullMoon = new DateTime(2000, 1, 21, 4, 40, 0, DateTimeKind.Utc);
+
+            controller.SetDateTime(fullMoon);
+
+            Assert.AreEqual(MoonPhase.Full, controller.CurrentMoonPhase);
+        }
+
+        [Test]
         public void AutomaticStellarBodyController_ControlsRenderSettingsSun()
         {
             AutomaticStellarBodyController controller =
