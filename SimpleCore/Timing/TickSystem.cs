@@ -70,6 +70,8 @@ namespace Systems.SimpleCore.Timing
             HandleTick();
         }
         
+        public void Tick() => HandleTick();
+        
         internal void HandleTick()
         {
             float timePassedSeconds = Time.deltaTime;
