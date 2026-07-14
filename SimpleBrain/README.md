@@ -1,13 +1,13 @@
 # SimpleBrain
 
-`SimpleBrain` provides a lightweight, extensible AI foundation for actor GameObjects. A `BrainBase` component owns per-actor knowledge, short-lived decisions, and reusable long-running subprocesses. It integrates with SimpleCore's global tick system and exposes all operations through the brain component; there is no static API.
+`SimpleBrain` provides a lightweight, extensible AI foundation for actor GameObjects. A `BrainBase` component owns per-actor knowledge, cached decisions, and reusable long-running subprocesses. It integrates with SimpleCore's global tick system; `BrainBase` is the usual public entry point for runtime operations.
 
 ## About
 
 Use SimpleBrain when an actor needs to remember learned facts, make typed queries from that state, and run independent behaviours such as scanning, patrolling, or targeting. The system separates those responsibilities deliberately:
 
 - **Knowledge** is persistent, per-brain data or capability state.
-- **Decisions** are created for one query and return a value immediately.
+- **Decisions** are cached once per concrete type and return a value immediately.
 - **Subprocesses** are one-per-type, brain-owned state machines that can run, pause, resume, stop, or finish.
 - **Coma** suspends normal brain activity while preserving processes explicitly allowed to run.
 
@@ -106,15 +106,15 @@ Override these callbacks to customize the knowledge lifecycle:
 
 ## Decisions and assessments
 
-Decisions are short-lived queries. Each `TryDecide` or `TryAssess` call creates a new decision instance, evaluates `CanDecide`, then returns its result. Keep durable state in knowledge, the brain, or the actor—not on a decision instance.
+Decisions are cached queries. The first `TryDecide` or `TryAssess` call creates one instance for its concrete decision type; later calls reuse it, evaluate `CanDecide`, and return a result without allocating another decision object. Keep durable or per-brain state in knowledge, the brain, or the actor—not on a decision instance.
 
 ```csharp
 using Systems.SimpleBrain.Abstract;
 using Systems.SimpleBrain.Data.Context;
 
-public sealed class ShouldInvestigateDecision : DecisionBase<bool>
+public sealed class ShouldInvestigateDecision : DecisionBase<ShouldInvestigateDecision, bool>
 {
-    protected override bool DecideTyped(in BrainContext context)
+    protected override bool Decide(in BrainContext context)
     {
         return context.brain.TryGetKnowledge(out GuardKnowledge knowledge) &&
                knowledge.alertness > 0;
@@ -133,7 +133,7 @@ OperationResult assessmentResult = guardBrain.TryAssess<ShouldInvestigateDecisio
     out bool shouldAssess);
 ```
 
-`TryAssess` is an alias for `TryDecide`. Use the one-generic-argument overloads for `DecisionBase` implementations that return an `object`; use the two-generic-argument overloads for `DecisionBase<TDecisionResult>`.
+`TryAssess` is an alias for `TryDecide`. Use `DecisionBase<TSelf>` for decisions that return an `object`, and `DecisionBase<TSelf, TDecisionResult>` for strongly typed results. The self type must be the concrete decision type and must have a public parameterless constructor. `GetInstance()` exposes that one cached decision instance when custom orchestration needs it; ordinary callers should use the brain methods.
 
 Override `CanDecide`, `OnDecided`, and `OnDecisionFailed` to validate a decision and react to its outcome. If `CanDecide` returns an error, the decision result is the default value of its result type.
 

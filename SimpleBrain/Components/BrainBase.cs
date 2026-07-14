@@ -121,18 +121,18 @@ namespace Systems.SimpleBrain.Components
         ///     Executes an assessment, which is an alias for <see cref="TryDecide{TDecision}(out object)"/>.
         /// </summary>
         public OperationResult TryAssess<TAssessment>([CanBeNull] out object assessmentResult)
-            where TAssessment : DecisionBase, new()
+            where TAssessment : DecisionBase<TAssessment>, new()
         {
             return TryDecide<TAssessment>(out assessmentResult);
         }
 
         /// <summary>
-        ///     Creates and executes a decision.
+        ///     Executes the cached instance of a decision.
         /// </summary>
         public OperationResult TryDecide<TDecision>([CanBeNull] out object decisionResult)
-            where TDecision : DecisionBase, new()
+            where TDecision : DecisionBase<TDecision>, new()
         {
-            TDecision decision = new TDecision();
+            TDecision decision = DecisionBase<TDecision>.GetInstance();
             BrainContext context = new BrainContext(this);
             return decision.TryDecide(context, out decisionResult);
         }
@@ -141,18 +141,18 @@ namespace Systems.SimpleBrain.Components
         ///     Executes a strongly typed assessment.
         /// </summary>
         public OperationResult TryAssess<TAssessment, TAssessmentResult>([CanBeNull] out TAssessmentResult assessmentResult)
-            where TAssessment : DecisionBase<TAssessmentResult>, new()
+            where TAssessment : DecisionBase<TAssessment, TAssessmentResult>, new()
         {
             return TryDecide<TAssessment, TAssessmentResult>(out assessmentResult);
         }
 
         /// <summary>
-        ///     Creates and executes a strongly typed decision.
+        ///     Executes the cached instance of a strongly typed decision.
         /// </summary>
         public OperationResult TryDecide<TDecision, TDecisionResult>([CanBeNull] out TDecisionResult decisionResult)
-            where TDecision : DecisionBase<TDecisionResult>, new()
+            where TDecision : DecisionBase<TDecision, TDecisionResult>, new()
         {
-            TDecision decision = new TDecision();
+            TDecision decision = DecisionBase<TDecision, TDecisionResult>.GetInstance();
             BrainContext context = new BrainContext(this);
             OperationResult result = decision.TryDecide(context, out object untypedResult);
             if (untypedResult is TDecisionResult typedResult)

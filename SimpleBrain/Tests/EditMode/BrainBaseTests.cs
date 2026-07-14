@@ -129,6 +129,19 @@ namespace Systems.SimpleBrain.Tests
         }
 
         [Test]
+        public void Decisions_ReuseOneInstanceForEachConcreteType()
+        {
+            OperationResult firstResult = _brain.TryDecide<InstanceCountingDecision, int>(out int firstValue);
+            OperationResult secondResult = _brain.TryDecide<InstanceCountingDecision, int>(out int secondValue);
+
+            AssertResult(firstResult, BrainOperations.DecisionMade());
+            AssertResult(secondResult, BrainOperations.DecisionMade());
+            Assert.AreEqual(1, firstValue);
+            Assert.AreEqual(1, secondValue);
+            Assert.AreEqual(1, InstanceCountingDecision.instanceCount);
+        }
+
+        [Test]
         public void UntypedAssessments_ReturnTheirObjectValue()
         {
             OperationResult assessResult = _brain.TryAssess<UntypedDecision>(out object assessmentValue);
@@ -466,16 +479,16 @@ namespace Systems.SimpleBrain.Tests
             protected override bool IsKnown(in BrainContext context) => isAvailable;
         }
 
-        private sealed class TestDecision : DecisionBase<int>
+        private sealed class TestDecision : DecisionBase<TestDecision, int>
         {
-            protected override int DecideTyped(in BrainContext context)
+            protected override int Decide(in BrainContext context)
             {
                 bool hasKnowledge = context.brain.TryGetKnowledge(out TestKnowledge knowledge);
                 return hasKnowledge ? knowledge.alertness : 0;
             }
         }
 
-        private sealed class TrackingDecision : DecisionBase<int>
+        private sealed class TrackingDecision : DecisionBase<TrackingDecision, int>
         {
             public static int decidedCount;
             public static BrainBase lastBrain;
@@ -486,7 +499,7 @@ namespace Systems.SimpleBrain.Tests
                 lastBrain = null;
             }
 
-            protected override int DecideTyped(in BrainContext context) => 11;
+            protected override int Decide(in BrainContext context) => 11;
 
             protected override void OnDecided(in BrainContext context, object decisionResult, in OperationResult result)
             {
@@ -495,12 +508,12 @@ namespace Systems.SimpleBrain.Tests
             }
         }
 
-        private sealed class UntypedDecision : DecisionBase
+        private sealed class UntypedDecision : DecisionBase<UntypedDecision>
         {
-            protected override object Decide(in BrainContext context) => "observed";
+            protected override object DecideUnsafe(in BrainContext context) => "observed";
         }
 
-        private sealed class DeniedDecision : DecisionBase<int>
+        private sealed class DeniedDecision : DecisionBase<DeniedDecision, int>
         {
             public static int failedCount;
             public static BrainBase failedBrain;
@@ -513,13 +526,25 @@ namespace Systems.SimpleBrain.Tests
 
             protected override OperationResult CanDecide(in BrainContext context) => Denied();
 
-            protected override int DecideTyped(in BrainContext context) => 1;
+            protected override int Decide(in BrainContext context) => 1;
 
             protected override void OnDecisionFailed(in BrainContext context, in OperationResult result)
             {
                 failedCount++;
                 failedBrain = context.brain;
             }
+        }
+
+        private sealed class InstanceCountingDecision : DecisionBase<InstanceCountingDecision, int>
+        {
+            public static int instanceCount;
+
+            public InstanceCountingDecision()
+            {
+                instanceCount++;
+            }
+
+            protected override int Decide(in BrainContext context) => instanceCount;
         }
 
         private sealed class TrackingSubprocess : BrainSubprocessBase

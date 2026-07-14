@@ -22,7 +22,7 @@ namespace Systems.SimpleBrain.Abstract
                 return canDecideResult;
             }
 
-            decisionResult = Decide(context);
+            decisionResult = DecideUnsafe(context);
             OperationResult decidedResult = BrainOperations.DecisionMade();
             OnDecided(context, decisionResult, decidedResult);
             return decidedResult;
@@ -36,10 +36,10 @@ namespace Systems.SimpleBrain.Abstract
         /// <summary>
         ///     Produces this decision's value.
         /// </summary>
-        [CanBeNull] protected abstract object Decide(in BrainContext context);
+        [CanBeNull] protected abstract object DecideUnsafe(in BrainContext context);
 
         /// <summary>
-        ///     Called after <see cref="Decide"/> returns a value.
+        ///     Called after <see cref="DecideUnsafe"/> returns a value.
         /// </summary>
         protected virtual void OnDecided(
             in BrainContext context,
@@ -57,15 +57,40 @@ namespace Systems.SimpleBrain.Abstract
     }
 
     /// <summary>
-    ///     A strongly typed <see cref="DecisionBase"/> result.
+    ///     A cached decision implementation that returns an untyped result.
     /// </summary>
-    public abstract class DecisionBase<TDecisionResult> : DecisionBase
+    /// <remarks>
+    ///     The closed generic type owns one decision instance. Implementations must not store state that varies per
+    ///     brain or invocation; keep that state on the brain, its actor, or a knowledge instance instead.
+    /// </remarks>
+    public abstract class DecisionBase<TSelf> : DecisionBase
+        where TSelf : DecisionBase<TSelf>, new()
     {
-        [CanBeNull] protected sealed override object Decide(in BrainContext context) => DecideTyped(context);
+        private static TSelf _instance;
+
+        /// <summary>
+        ///     Retrieves the single cached instance for this concrete decision type.
+        /// </summary>
+        public static TSelf GetInstance()
+        {
+            if (!ReferenceEquals(_instance, null)) return _instance;
+
+            _instance = new TSelf();
+            return _instance;
+        }
+    }
+
+    /// <summary>
+    ///     A cached decision implementation that returns a strongly typed result.
+    /// </summary>
+    public abstract class DecisionBase<TSelf, TDecisionResult> : DecisionBase<TSelf>
+        where TSelf : DecisionBase<TSelf, TDecisionResult>, new()
+    {
+        [CanBeNull] protected sealed override object DecideUnsafe(in BrainContext context) => Decide(context);
 
         /// <summary>
         ///     Produces this decision's strongly typed value.
         /// </summary>
-        [CanBeNull] protected abstract TDecisionResult DecideTyped(in BrainContext context);
+        [CanBeNull] protected abstract TDecisionResult Decide(in BrainContext context);
     }
 }
