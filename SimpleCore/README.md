@@ -16,7 +16,7 @@ Input rebinding is provided by **SimpleInput**. Save-file abstractions and conve
 - `Automation/` – ScriptableObject and addressable generation automation.
 - `Identifiers/` – fixed-size IDs, `HashIdentifier`, and `Snowflake128`.
 - `Operations/` – allocation-free `OperationResult` values.
-- `Storage/` – addressable databases and pooled list-access wrappers.
+- `Storage/` – addressable and live runtime databases, plus pooled list-access wrappers.
 - `Timing/` – global tick scheduling.
 - `Utility/` – localization and math helpers.
 - `Examples/` – `ExampleRuntimePanel`, used by package example scenes.

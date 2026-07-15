@@ -44,7 +44,7 @@ namespace Systems.SimpleFactions.Tests
             Snowflake128 identifier = new Snowflake128(10L, 4UL);
             IdentifiedRelatable target = targetObject.AddComponent<IdentifiedRelatable>();
             target.Initialize(identifier);
-            Assert.IsTrue(FactionAPI.RegisterRuntimeTarget(target));
+            Assert.IsTrue(RelatableObjectDatabase.Register(target));
 
             FactionAPI.SetRelation<TestFactionRelation>(sourceFaction, target, 50);
             SaveFileBase memorySave = FactionAPI.SaveToMemory();

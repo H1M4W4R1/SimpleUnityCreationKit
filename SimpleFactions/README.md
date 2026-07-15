@@ -88,10 +88,11 @@ public static class ReputationActions
 
 `FactionAPI.SaveToMemory` saves all outgoing faction relations. Faction targets are resolved using their concrete type hash. Runtime targets are saved only when they implement `IIdentifiable<Snowflake128>` and expose a created identifier.
 
-Before loading, register every live runtime target that may receive a relation. Register it after the target restores its identifier and unregister it when the target is removed.
+Before loading, register every live runtime target that may receive a relation in `RelatableObjectDatabase`. Register it after the target restores its identifier and unregister it when the target is removed. The database is owned by SimpleRelations, so other systems can resolve the same identified relatable objects.
 
 ```csharp
-using Systems.SimpleFactions.Utility;
+using Systems.SimpleRelations.Data;
+using UnityEngine;
 
 public sealed class PlayerRelationsBootstrap : MonoBehaviour
 {
@@ -99,12 +100,12 @@ public sealed class PlayerRelationsBootstrap : MonoBehaviour
 
     private void OnEnable()
     {
-        FactionAPI.RegisterRuntimeTarget(_playerRelations);
+        RelatableObjectDatabase.Register(_playerRelations);
     }
 
     private void OnDisable()
     {
-        FactionAPI.UnregisterRuntimeTarget(_playerRelations);
+        RelatableObjectDatabase.Unregister(_playerRelations);
     }
 }
 ```
@@ -118,5 +119,4 @@ public sealed class PlayerRelationsBootstrap : MonoBehaviour
 | `Join` / `Leave` | Changes faction membership. |
 | `ChangeRelation` / `SetRelation` | Changes or assigns a one-way relation owned by a faction. |
 | `GetRelationValue` | Reads a relation value, including its relation type's initial value. |
-| `RegisterRuntimeTarget` / `UnregisterRuntimeTarget` | Makes identified runtime targets available during load. |
 | `SaveToMemory` / `Load` | Saves and restores faction-to-faction and faction-to-runtime-object relations. |

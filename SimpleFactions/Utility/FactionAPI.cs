@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Identifiers;
 using Systems.SimpleFactions.Abstract;
 using Systems.SimpleFactions.Data;
 using Systems.SimpleRelations.Abstract;
@@ -8,7 +7,6 @@ using Systems.SimpleRelations.Data;
 using Systems.SimpleRelations.Utility;
 using Systems.SimpleSaving.Abstract;
 using Systems.SimpleSaving.Utility;
-using UnityEngine;
 
 namespace Systems.SimpleFactions.Utility
 {
@@ -73,16 +71,6 @@ namespace Systems.SimpleFactions.Utility
             [NotNull] RelationTypeBase relationType)
             => RelationAPI.GetValue(sourceFaction, target, relationType);
 
-        /// <summary>Registers a runtime relation target so it can be resolved while loading faction relations.</summary>
-        public static bool RegisterRuntimeTarget<TTarget>([NotNull] TTarget target)
-            where TTarget : Object, IRelatable, IIdentifiable<Snowflake128>
-            => FactionRuntimeObjectRegistry.Register(target);
-
-        /// <summary>Unregisters a runtime relation target when it is no longer available to load into.</summary>
-        public static void UnregisterRuntimeTarget<TTarget>([CanBeNull] TTarget target)
-            where TTarget : Object, IRelatable, IIdentifiable<Snowflake128>
-            => FactionRuntimeObjectRegistry.Unregister(target);
-
         /// <summary>Saves faction-to-faction and identified faction-to-runtime-object relations through SimpleSaving.</summary>
         [CanBeNull]
         public static SaveFileBase SaveToMemory()
@@ -92,8 +80,8 @@ namespace Systems.SimpleFactions.Utility
         }
 
         /// <summary>
-        ///     Restores faction relations through the SimpleSaving API. Runtime targets must be registered with
-        ///     <see cref="RegisterRuntimeTarget{TTarget}"/> using their stable <see cref="Snowflake128"/> identifier.
+        ///     Restores faction relations through the SimpleSaving API. Runtime targets must be registered in
+        ///     <see cref="RelatableObjectDatabase"/> using their stable identifier.
         /// </summary>
         public static void Load([NotNull] SaveFileBase saveFile)
         {

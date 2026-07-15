@@ -139,14 +139,22 @@ Use `CanChangeRelation` and `CanSetRelation` for validation. Use `OnRelationChan
 
 ## Persistence
 
-`RelationEntry` stores Unity object references, which is appropriate for authored scene and asset data but insufficient by itself for a save file that survives a new session. The owning gameplay system must map runtime actors to stable IDs. SimpleFactions provides `FactionAPI.SaveToMemory` and `FactionAPI.Load` through SimpleSaving for faction-to-faction relations; see its README for the exact scope.
+`RelationEntry` stores Unity object references, which is appropriate for authored scene and asset data but insufficient by itself for a save file that survives a new session. Identified relatable objects can be registered in `RelatableObjectDatabase` for lookup during load. SimpleFactions uses this database for faction-to-runtime-object relations. Registrations are explicit: unregister an item when its wrapper or runtime object is no longer valid.
+
+```csharp
+using Systems.SimpleRelations.Data;
+
+RelatableObjectDatabase.Register(playerRelations);
+// Restore relations that target playerRelations.
+RelatableObjectDatabase.Unregister(playerRelations);
+```
 
 For a non-faction source, save `HashIdentifier.New(relationType.GetType()).Value`, your target's stable game ID, and the numeric value returned by each `RelationEntry`. On load, resolve the relation type and target, then call `RelationAPI.Set` to preserve its validation and callbacks. Type hash values are stable only while the type and assembly names remain unchanged.
 
 ## Architecture
 
 - **Abstract**: `RelationTypeBase` and `IRelatable` define relation ownership and behavior.
-- **Data**: `RelationEntry` serializes a type, target reference, and value; contexts describe operations.
+- **Data**: `RelationEntry` serializes a type, target reference, and value; `RelatableObjectDatabase` resolves identified live relatable objects.
 - **Utility**: `RelationAPI` is the static entry point for changes, assignments, and queries.
 - **Operations**: `RelationOperations` defines standard `OperationResult` codes.
 - **Examples**: the included scene demonstrates independent trust and fear values.

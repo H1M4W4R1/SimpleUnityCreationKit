@@ -20,7 +20,7 @@ namespace Systems.SimpleFactions.Tests
         {
             FactionDatabase.ClearForTests();
             RelationTypeDatabase.ClearForTests();
-            FactionRuntimeObjectRegistry.ClearForTests();
+            RelatableObjectDatabase.ClearForTests();
         }
 
         [TearDown]
@@ -35,7 +35,7 @@ namespace Systems.SimpleFactions.Tests
             _createdObjects.Clear();
             FactionDatabase.ClearForTests();
             RelationTypeDatabase.ClearForTests();
-            FactionRuntimeObjectRegistry.ClearForTests();
+            RelatableObjectDatabase.ClearForTests();
         }
 
         protected TestFactionMembership CreateMembership()

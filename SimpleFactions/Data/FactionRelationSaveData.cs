@@ -180,7 +180,7 @@ namespace Systems.SimpleFactions.Data
             {
                 target = FindFaction(entry.TargetFactionTypeHash);
             }
-            else if (!FactionRuntimeObjectRegistry.TryGet(entry.TargetRuntimeIdentifier, out target))
+            else if (!RelatableObjectDatabase.TryGet(entry.TargetRuntimeIdentifier, out target))
             {
                 Debug.LogWarning("Skipped saved faction relation because its runtime target is not registered.");
                 return;
