@@ -11,13 +11,7 @@ namespace Systems.SimpleFactions.Examples
     ///     <see cref="ExampleFactionHolder"/> to enable faction tracking for that object.
     /// </summary>
     /// <remarks>
-    ///     <para>
-    ///         Use <see cref="FactionAPI"/> to perform operations from external code:
-    ///         <code>
-    ///         FactionAPI.Join&lt;ExampleFaction, ExampleFactionHolder&gt;(membership);
-    ///         FactionAPI.ChangeReputation&lt;ExampleFaction, ExampleFactionHolder&gt;(membership, 200);
-    ///         </code>
-    ///     </para>
+    ///     Use <see cref="FactionAPI"/> to perform membership operations from external code.
     ///     <para>
     ///         Override <see cref="FactionMembershipBase{THolder}.GetHolder"/> if the holder component is on a different
     ///         <c>GameObject</c> or is not auto-discoverable via <c>GetComponent</c>.

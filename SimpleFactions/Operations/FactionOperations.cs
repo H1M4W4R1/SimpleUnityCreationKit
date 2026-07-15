@@ -22,18 +22,6 @@ namespace Systems.SimpleFactions.Operations
         /// <summary>An operation requiring membership was attempted on a non-member.</summary>
         public const ushort ERROR_NOT_A_MEMBER = 3;
 
-        /// <summary>A zero-amount reputation change was attempted.</summary>
-        public const ushort ERROR_INVALID_REPUTATION = 4;
-
-        /// <summary>The supplied <c>ReputationLevelBase</c> is not in the faction's level list.</summary>
-        public const ushort ERROR_LEVEL_NOT_IN_FACTION = 5;
-
-        /// <summary>An automatic or check-gated promotion was denied.</summary>
-        public const ushort ERROR_PROMOTION_DENIED = 6;
-
-        /// <summary>An automatic or check-gated demotion was denied.</summary>
-        public const ushort ERROR_DEMOTION_DENIED = 7;
-
         #endregion
 
         #region Success codes
@@ -43,15 +31,6 @@ namespace Systems.SimpleFactions.Operations
 
         /// <summary>The object successfully left the faction.</summary>
         public const ushort SUCCESS_LEFT = 2;
-
-        /// <summary>Reputation was modified successfully.</summary>
-        public const ushort SUCCESS_REPUTATION_CHANGED = 3;
-
-        /// <summary>A reputation level was assigned successfully.</summary>
-        public const ushort SUCCESS_LEVEL_ASSIGNED = 4;
-
-        /// <summary>The active reputation level was cleared (set to none).</summary>
-        public const ushort SUCCESS_LEVEL_CLEARED = 5;
 
         #endregion
 
@@ -77,22 +56,6 @@ namespace Systems.SimpleFactions.Operations
         public static OperationResult NotAMember()
             => OperationResult.Error(SYSTEM_FACTION, ERROR_NOT_A_MEMBER);
 
-        /// <summary>Returns an invalid-reputation-amount error.</summary>
-        public static OperationResult InvalidReputation()
-            => OperationResult.Error(SYSTEM_FACTION, ERROR_INVALID_REPUTATION);
-
-        /// <summary>Returns a level-not-in-faction error.</summary>
-        public static OperationResult LevelNotInFaction()
-            => OperationResult.Error(SYSTEM_FACTION, ERROR_LEVEL_NOT_IN_FACTION);
-
-        /// <summary>Returns a promotion-denied error.</summary>
-        public static OperationResult PromotionDenied()
-            => OperationResult.Error(SYSTEM_FACTION, ERROR_PROMOTION_DENIED);
-
-        /// <summary>Returns a demotion-denied error.</summary>
-        public static OperationResult DemotionDenied()
-            => OperationResult.Error(SYSTEM_FACTION, ERROR_DEMOTION_DENIED);
-
         /// <summary>Returns a successful join result.</summary>
         public static OperationResult Joined()
             => OperationResult.Success(SYSTEM_FACTION, SUCCESS_JOINED);
@@ -100,18 +63,6 @@ namespace Systems.SimpleFactions.Operations
         /// <summary>Returns a successful leave result.</summary>
         public static OperationResult Left()
             => OperationResult.Success(SYSTEM_FACTION, SUCCESS_LEFT);
-
-        /// <summary>Returns a successful reputation-changed result.</summary>
-        public static OperationResult ReputationChanged()
-            => OperationResult.Success(SYSTEM_FACTION, SUCCESS_REPUTATION_CHANGED);
-
-        /// <summary>Returns a successful level-assigned result.</summary>
-        public static OperationResult LevelAssigned()
-            => OperationResult.Success(SYSTEM_FACTION, SUCCESS_LEVEL_ASSIGNED);
-
-        /// <summary>Returns a successful level-cleared result.</summary>
-        public static OperationResult LevelCleared()
-            => OperationResult.Success(SYSTEM_FACTION, SUCCESS_LEVEL_CLEARED);
 
         #endregion
     }

@@ -19,6 +19,8 @@ namespace Systems.SimpleRelations.Data
         {
             internalDataStorage.Add(
                 new AddressableDatabaseEntry<RelationTypeBase>(HashIdentifier.New(relationType.GetType()), relationType));
+            internalDataStorage.Add(
+                new AddressableDatabaseEntry<RelationTypeBase>(HashIdentifier.New(typeof(RelationTypeBase)), relationType));
             internalDataStorage.Sort((left, right) => left.hashIdentifier.CompareTo(right.hashIdentifier));
         }
 

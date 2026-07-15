@@ -25,6 +25,8 @@ namespace Systems.SimpleFactions.Data
         {
             internalDataStorage.Add(
                 new AddressableDatabaseEntry<FactionBase>(HashIdentifier.New(faction.GetType()), faction));
+            internalDataStorage.Add(
+                new AddressableDatabaseEntry<FactionBase>(HashIdentifier.New(typeof(FactionBase)), faction));
             internalDataStorage.Sort((left, right) => left.hashIdentifier.CompareTo(right.hashIdentifier));
         }
 

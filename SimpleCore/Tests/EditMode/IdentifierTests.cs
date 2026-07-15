@@ -97,7 +97,7 @@ namespace Systems.SimpleCore.Tests
         }
 
         [Test]
-        public void HashIdentifier_IsStableForTypeWithinCurrentProcess()
+        public void HashIdentifier_IsStableForTypeAndDistinguishesTypeNames()
         {
             ulong firstHash = HashIdentifier.ComputeTypeHash(typeof(IdentifierTests));
             ulong secondHash = HashIdentifier.ComputeTypeHash(typeof(IdentifierTests));
@@ -109,6 +109,13 @@ namespace Systems.SimpleCore.Tests
             Assert.IsTrue(first.IsCreated);
             Assert.IsTrue(first.Equals(second));
             Assert.AreEqual(first.ToString(), second.ToString());
+
+            HashIdentifier other = HashIdentifier.New(typeof(OtherIdentifierTestType));
+            Assert.AreNotEqual(first, other);
+        }
+
+        private sealed class OtherIdentifierTestType
+        {
         }
 
         [Test]

@@ -5,6 +5,8 @@
         "SimpleCore",
         "SimpleFactions",
         "SimpleFactions.Editor",
+        "SimpleRelations",
+        "SimpleSaving",
         "Unity.Mathematics",
         "UnityEngine.TestRunner"
     ],

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Systems.SimpleCore.Identifiers.Abstract;
@@ -27,26 +26,39 @@ namespace Systems.SimpleCore.Identifiers
         }
  
         /// <summary>
-        /// Computes a deterministic (per process run) 64-bit hash for the given type.
-        /// Works across polymorphic instances (different subclasses should give different hashes).
+        /// Computes a deterministic 64-bit hash for the given type.
         /// </summary>
         /// <remarks>
-        /// WARNING: This hash is NOT deterministic across application sessions. It relies on
-        /// <see cref="Type.GetHashCode"/> and <see cref="Assembly.GetHashCode"/> which are
-        /// identity-based. HashIdentifier values must NOT be serialized or persisted to disk,
-        /// as they will not match after a restart. This is a runtime-only identifier.
+        /// The hash is derived from the fully qualified type name and simple assembly name, so it is
+        /// stable across application sessions as long as those names do not change. Rename or move a
+        /// persisted type only with an explicit save-data migration.
         /// </remarks>
         public static ulong ComputeTypeHash([NotNull] Type type)
         {
-            const ulong OFFSET = 14695981039346656037UL;
-            const ulong PRIME = 1099511628211UL;
+            string typeName = type.FullName;
+            string assemblyName = type.Assembly.GetName().Name;
+            ulong hash = ComputeTextHash(assemblyName);
+            hash ^= 0xFFUL;
+            hash *= 1099511628211UL;
+            return ComputeTextHash(typeName, hash);
+        }
 
-            ulong hash = OFFSET;
-            hash ^= (uint) type.GetHashCode();
-            hash *= PRIME;
-            hash ^= (uint) type.Assembly.GetHashCode();
-            hash *= PRIME;
-            
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong ComputeTextHash([NotNull] string value)
+        {
+            const ulong OFFSET = 14695981039346656037UL;
+            return ComputeTextHash(value, OFFSET);
+        }
+
+        private static ulong ComputeTextHash([NotNull] string value, ulong hash)
+        {
+            const ulong PRIME = 1099511628211UL;
+            for (int index = 0; index < value.Length; index++)
+            {
+                hash ^= value[index];
+                hash *= PRIME;
+            }
+
             return hash;
         }
 

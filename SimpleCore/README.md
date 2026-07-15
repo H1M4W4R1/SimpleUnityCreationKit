@@ -1,6 +1,6 @@
 # SimpleCore
 
-SimpleCore is the shared foundation for the Simple systems. It provides identifiers, operation results, addressable storage, timing, automation, localization helpers, math utilities, and the shared example UI helper.
+SimpleCore is the shared foundation for the Simple systems. It provides identifiers (including `IIdentifiable<TIdentifier>` for stable object IDs), operation results, addressable storage, timing, automation, localization helpers, math utilities, and the shared example UI helper.
 
 ## Dependencies
 

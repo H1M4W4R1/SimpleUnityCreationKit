@@ -1,102 +1,104 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Systems.SimpleCore.Operations;
+using Systems.SimpleCore.Identifiers;
 using Systems.SimpleFactions.Abstract;
+using Systems.SimpleFactions.Data;
+using Systems.SimpleRelations.Abstract;
+using Systems.SimpleRelations.Data;
+using Systems.SimpleRelations.Utility;
+using Systems.SimpleSaving.Abstract;
+using Systems.SimpleSaving.Utility;
 using UnityEngine;
 
 namespace Systems.SimpleFactions.Utility
 {
-    /// <summary>
-    ///     Static facade for the SimpleFactions system. All faction operations can be performed
-    ///     through this class without holding direct references to internal components.
-    /// </summary>
+    /// <summary>Static facade for faction membership, outgoing relations, and relation persistence.</summary>
     public static class FactionAPI
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStaticState() { }
-
-        /// <summary>
-        ///     Attempts to make the object tracked by <paramref name="membership"/> join
-        ///     <typeparamref name="TFaction"/>.
-        /// </summary>
-        /// <returns>
-        ///     <see cref="Operations.FactionOperations.Joined()"/> on success,
-        ///     or an error result describing the reason for failure.
-        /// </returns>
-        public static OperationResult Join<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership)
+        /// <summary>Attempts to make the object tracked by <paramref name="membership"/> join <typeparamref name="TFaction"/>.</summary>
+        public static OperationResult Join<TFaction, THolder>([NotNull] FactionMembershipBase<THolder> membership)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
             => membership.JoinFaction<TFaction>();
 
-        /// <summary>
-        ///     Attempts to make the object tracked by <paramref name="membership"/> leave
-        ///     <typeparamref name="TFaction"/>.
-        /// </summary>
-        /// <returns>
-        ///     <see cref="Operations.FactionOperations.Left()"/> on success,
-        ///     or an error result describing the reason for failure.
-        /// </returns>
-        public static OperationResult Leave<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership)
+        /// <summary>Attempts to make the object tracked by <paramref name="membership"/> leave <typeparamref name="TFaction"/>.</summary>
+        public static OperationResult Leave<TFaction, THolder>([NotNull] FactionMembershipBase<THolder> membership)
             where TFaction : FactionBase<THolder>, new()
             where THolder : class
             => membership.LeaveFaction<TFaction>();
 
-        /// <summary>
-        ///     Adds <paramref name="amount"/> to the object's reputation with
-        ///     <typeparamref name="TFaction"/>. Use a negative value to subtract reputation.
-        ///     Automatic promotion and demotion thresholds are evaluated after the change.
-        /// </summary>
-        /// <returns>
-        ///     <see cref="Operations.FactionOperations.ReputationChanged()"/> on success,
-        ///     or an error result describing the reason for failure.
-        /// </returns>
-        public static OperationResult ChangeReputation<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership,
-            long amount)
-            where TFaction : FactionBase<THolder>, new()
-            where THolder : class
-            => membership.ChangeReputation<TFaction>(amount);
+        /// <summary>Changes the one-way relation from <paramref name="sourceFaction"/> to <paramref name="target"/>.</summary>
+        public static OperationResult ChangeRelation<TRelationType>(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target,
+            int amount)
+            where TRelationType : RelationTypeBase, new()
+            => RelationAPI.Change<TRelationType>(sourceFaction, target, amount);
 
-        /// <summary>
-        ///     Returns the currently active <see cref="ReputationLevelBase"/> for
-        ///     <typeparamref name="TFaction"/>, or <c>null</c> if no level is assigned.
-        /// </summary>
+        /// <summary>Changes a faction relation with the supplied relation-type asset.</summary>
+        public static OperationResult ChangeRelation(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target,
+            [NotNull] RelationTypeBase relationType,
+            int amount)
+            => RelationAPI.Change(sourceFaction, target, relationType, amount);
+
+        /// <summary>Sets the one-way relation from <paramref name="sourceFaction"/> to <paramref name="target"/>.</summary>
+        public static OperationResult SetRelation<TRelationType>(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target,
+            int value)
+            where TRelationType : RelationTypeBase, new()
+            => RelationAPI.Set<TRelationType>(sourceFaction, target, value);
+
+        /// <summary>Sets a faction relation using the supplied relation-type asset.</summary>
+        public static OperationResult SetRelation(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target,
+            [NotNull] RelationTypeBase relationType,
+            int value)
+            => RelationAPI.Set(sourceFaction, target, relationType, value);
+
+        /// <summary>Returns the value, or the relation type's initial value when this relation is untracked.</summary>
+        public static int GetRelationValue<TRelationType>(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target)
+            where TRelationType : RelationTypeBase, new()
+            => RelationAPI.GetValue<TRelationType>(sourceFaction, target);
+
+        /// <summary>Returns the value, or the relation type's initial value when this relation is untracked.</summary>
+        public static int GetRelationValue(
+            [NotNull] FactionBase sourceFaction,
+            [NotNull] IRelatable target,
+            [NotNull] RelationTypeBase relationType)
+            => RelationAPI.GetValue(sourceFaction, target, relationType);
+
+        /// <summary>Registers a runtime relation target so it can be resolved while loading faction relations.</summary>
+        public static bool RegisterRuntimeTarget<TTarget>([NotNull] TTarget target)
+            where TTarget : Object, IRelatable, IIdentifiable<Snowflake128>
+            => FactionRuntimeObjectRegistry.Register(target);
+
+        /// <summary>Unregisters a runtime relation target when it is no longer available to load into.</summary>
+        public static void UnregisterRuntimeTarget<TTarget>([CanBeNull] TTarget target)
+            where TTarget : Object, IRelatable, IIdentifiable<Snowflake128>
+            => FactionRuntimeObjectRegistry.Unregister(target);
+
+        /// <summary>Saves faction-to-faction and identified faction-to-runtime-object relations through SimpleSaving.</summary>
         [CanBeNull]
-        public static ReputationLevelBase GetLevel<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership)
-            where TFaction : FactionBase<THolder>, new()
-            where THolder : class
-            => membership.GetCurrentLevel<TFaction>();
+        public static SaveFileBase SaveToMemory()
+        {
+            FactionRelationSaveData saveData = new FactionRelationSaveData();
+            return SaveAPI.Save(saveData);
+        }
 
         /// <summary>
-        ///     Returns <c>true</c> if the object's current reputation level for
-        ///     <typeparamref name="TFaction"/> is equal to or higher than <paramref name="level"/>
-        ///     (determined by index position in the faction's level list).
+        ///     Restores faction relations through the SimpleSaving API. Runtime targets must be registered with
+        ///     <see cref="RegisterRuntimeTarget{TTarget}"/> using their stable <see cref="Snowflake128"/> identifier.
         /// </summary>
-        public static bool IsAtLeastLevel<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership,
-            [NotNull] ReputationLevelBase level)
-            where TFaction : FactionBase<THolder>, new()
-            where THolder : class
-            => membership.IsAtLeastLevel<TFaction>(level);
-
-        /// <summary>
-        ///     Manually assigns <paramref name="level"/> as the active reputation level for
-        ///     <typeparamref name="TFaction"/>. Pass <c>null</c> to clear the current level.
-        ///     This bypasses automatic promotion/demotion checks and is intended for unconditional
-        ///     overrides such as a king granting knighthood.
-        /// </summary>
-        /// <returns>
-        ///     <see cref="Operations.FactionOperations.LevelAssigned()"/> or
-        ///     <see cref="Operations.FactionOperations.LevelCleared()"/> on success,
-        ///     or an error result describing the reason for failure.
-        /// </returns>
-        public static OperationResult AssignLevel<TFaction, THolder>(
-            [NotNull] FactionMembershipBase<THolder> membership,
-            [CanBeNull] ReputationLevelBase level)
-            where TFaction : FactionBase<THolder>, new()
-            where THolder : class
-            => membership.AssignLevel<TFaction>(level);
+        public static void Load([NotNull] SaveFileBase saveFile)
+        {
+            FactionRelationSaveData saveData = new FactionRelationSaveData();
+            SaveAPI.Load(saveData, saveFile);
+        }
     }
 }
