@@ -1,29 +1,30 @@
+using JetBrains.Annotations;
 using Systems.SimpleRelations.Abstract;
-using Systems.SimpleRelations.Components;
 using UnityEngine;
 
 namespace Systems.SimpleRelations.Data
 {
     /// <summary>
-    ///     Serialized state for one outgoing relationship. Its target is stored as a strongly typed
-    ///     relation component; arbitrary Unity objects are not valid.
+    ///     Serialized state for one outgoing relationship. Targets must be Unity objects that implement
+    ///     <see cref="IRelatable"/> so Unity can persist the object reference.
     /// </summary>
     [System.Serializable]
     public sealed class RelationEntry : IRelation
     {
         [SerializeField] private RelationTypeBase _relationType;
-        [SerializeField] private RelationComponentBase _target;
+        [SerializeField] private Object _target;
         [SerializeField] private int _value;
 
         /// <summary>Configured type of this relationship.</summary>
         public RelationTypeBase RelationType => _relationType;
 
-        /// <summary>Relation component targeted by this entry.</summary>
-        public IRelatable Target
+        /// <summary>Relatable Unity object targeted by this entry.</summary>
+        [CanBeNull] public IRelatable Target
         {
             get
             {
-                return !ReferenceEquals(_target, null) && _target ? _target : null;
+                if (ReferenceEquals(_target, null) || !_target) return null;
+                return _target as IRelatable;
             }
         }
 
@@ -33,7 +34,7 @@ namespace Systems.SimpleRelations.Data
         internal RelationEntry(RelationTypeBase relationType, IRelatable target, int value)
         {
             _relationType = relationType;
-            _target = target as RelationComponentBase;
+            _target = target as Object;
             _value = value;
         }
 
@@ -41,13 +42,14 @@ namespace Systems.SimpleRelations.Data
         {
             if (!ReferenceEquals(_relationType, relationType)) return false;
 
-            return target is RelationComponentBase componentTarget && ReferenceEquals(_target, componentTarget);
+            Object targetObject = target as Object;
+            return !ReferenceEquals(targetObject, null) && ReferenceEquals(_target, targetObject);
         }
 
         internal static bool IsSupportedRelatable(IRelatable relatable)
         {
-            return relatable is RelationComponentBase componentTarget &&
-                   !ReferenceEquals(componentTarget, null) && componentTarget;
+            Object relatableObject = relatable as Object;
+            return !ReferenceEquals(relatableObject, null) && relatableObject;
         }
 
         internal void SetValue(int value)

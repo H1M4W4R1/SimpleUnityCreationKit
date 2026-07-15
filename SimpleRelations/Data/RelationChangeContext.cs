@@ -11,6 +11,9 @@ namespace Systems.SimpleRelations.Data
         /// <summary>Object receiving the one-way relationship.</summary>
         public readonly IRelatable target;
 
+        /// <summary>Object that owns the one-way relationship. It is valid for relation-type callbacks only.</summary>
+        public readonly IRelatable source;
+
         /// <summary>Signed amount requested by the caller.</summary>
         public readonly int amountRequested;
 
@@ -25,6 +28,7 @@ namespace Systems.SimpleRelations.Data
         {
             this.relationType = relationType;
             this.target = target;
+            source = null;
             this.amountRequested = amountRequested;
             previousValue = 0;
             newValue = 0;
@@ -32,12 +36,14 @@ namespace Systems.SimpleRelations.Data
 
         internal RelationChangeContext(
             RelationTypeBase relationType,
+            IRelatable source,
             IRelatable target,
             int amountRequested,
             int previousValue,
             int newValue)
         {
             this.relationType = relationType;
+            this.source = source;
             this.target = target;
             this.amountRequested = amountRequested;
             this.previousValue = previousValue;
@@ -54,6 +60,9 @@ namespace Systems.SimpleRelations.Data
         /// <summary>Object receiving the one-way relationship.</summary>
         public readonly IRelatable target;
 
+        /// <summary>Object that owns the one-way relationship. It is valid for relation-type callbacks only.</summary>
+        public readonly IRelatable source;
+
         /// <summary>Value requested by the caller and stored after a successful operation.</summary>
         public readonly int value;
 
@@ -65,17 +74,20 @@ namespace Systems.SimpleRelations.Data
         {
             this.relationType = relationType;
             this.target = target;
+            source = null;
             this.value = value;
             previousValue = 0;
         }
 
         internal RelationSetContext(
             RelationTypeBase relationType,
+            IRelatable source,
             IRelatable target,
             int value,
             int previousValue)
         {
             this.relationType = relationType;
+            this.source = source;
             this.target = target;
             this.value = value;
             this.previousValue = previousValue;

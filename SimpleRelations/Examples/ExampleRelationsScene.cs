@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Systems.SimpleCore.Examples;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleRelations.Data;
+using Systems.SimpleRelations.Abstract;
 using Systems.SimpleRelations.Utility;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,10 +36,8 @@ namespace Systems.SimpleRelations.Examples
         {
             if (!HasActors()) return;
 
-            RelationChangeContext<ExampleTrustRelation> trustContext = new(_source, _target, _changeAmount);
-            RelationChangeContext<ExampleFearRelation> fearContext = new(_source, _target, _changeAmount / 2);
-            OperationResult trustResult = RelationAPI.Change<ExampleTrustRelation>(in trustContext);
-            OperationResult fearResult = RelationAPI.Change<ExampleFearRelation>(in fearContext);
+            OperationResult trustResult = RelationAPI.Change<ExampleTrustRelation>(_source, _target, _changeAmount);
+            OperationResult fearResult = RelationAPI.Change<ExampleFearRelation>(_source, _target, _changeAmount / 2);
             _lastResult = ExampleRuntimePanel.FormatResult(fearResult);
             Debug.Log("[SimpleRelations] Trust result: " + trustResult + ", fear result: " + fearResult + ".");
             RefreshStatus("Ran trust and fear changes from Source toward Target.");
@@ -49,8 +47,7 @@ namespace Systems.SimpleRelations.Examples
         {
             if (!HasActors()) return;
 
-            RelationChangeContext<ExampleTrustRelation> context = new(_source, _target, _changeAmount);
-            OperationResult result = RelationAPI.Change<ExampleTrustRelation>(in context);
+            OperationResult result = RelationAPI.Change<ExampleTrustRelation>(_source, _target, _changeAmount);
             _lastResult = ExampleRuntimePanel.FormatResult(result);
             RefreshStatus("Increased Source trust in Target.");
         }
@@ -59,8 +56,7 @@ namespace Systems.SimpleRelations.Examples
         {
             if (!HasActors()) return;
 
-            RelationChangeContext<ExampleTrustRelation> context = new(_source, _target, -_changeAmount);
-            OperationResult result = RelationAPI.Change<ExampleTrustRelation>(in context);
+            OperationResult result = RelationAPI.Change<ExampleTrustRelation>(_source, _target, -_changeAmount);
             _lastResult = ExampleRuntimePanel.FormatResult(result);
             RefreshStatus("Decreased Source trust in Target.");
         }
@@ -69,8 +65,7 @@ namespace Systems.SimpleRelations.Examples
         {
             if (!HasActors()) return;
 
-            RelationChangeContext<ExampleFearRelation> context = new(_source, _target, _changeAmount);
-            OperationResult result = RelationAPI.Change<ExampleFearRelation>(in context);
+            OperationResult result = RelationAPI.Change<ExampleFearRelation>(_source, _target, _changeAmount);
             _lastResult = ExampleRuntimePanel.FormatResult(result);
             RefreshStatus("Increased Source fear of Target.");
         }
@@ -79,8 +74,7 @@ namespace Systems.SimpleRelations.Examples
         {
             if (!HasActors()) return;
 
-            RelationSetContext<ExampleTrustRelation> context = new(_source, _target, 50);
-            OperationResult result = RelationAPI.Set<ExampleTrustRelation>(in context);
+            OperationResult result = RelationAPI.Set<ExampleTrustRelation>(_source, _target, 50);
             _lastResult = ExampleRuntimePanel.FormatResult(result);
             RefreshStatus("Set Source trust in Target to 50.");
         }
@@ -121,19 +115,17 @@ namespace Systems.SimpleRelations.Examples
         {
             if (ReferenceEquals(_panel, null)) return;
 
-            RelationQueryContext<ExampleTrustRelation> sourceTrustContext = new(_source, _target);
-            RelationQueryContext<ExampleFearRelation> sourceFearContext = new(_source, _target);
-            RelationQueryContext<ExampleTrustRelation> targetTrustContext = new(_target, _source);
-            int sourceTrust = RelationAPI.GetValue<ExampleTrustRelation>(in sourceTrustContext);
-            int sourceFear = RelationAPI.GetValue<ExampleFearRelation>(in sourceFearContext);
-            int targetTrust = RelationAPI.GetValue<ExampleTrustRelation>(in targetTrustContext);
+            int sourceTrust = RelationAPI.GetValue<ExampleTrustRelation>(_source, _target);
+            int sourceFear = RelationAPI.GetValue<ExampleFearRelation>(_source, _target);
+            int targetTrust = RelationAPI.GetValue<ExampleTrustRelation>(_target, _source);
 
+            IRelatable sourceRelatable = _source;
             _panel.SetStatus(
                 message +
                 "\nSource -> Target trust: " + sourceTrust +
                 " | fear: " + sourceFear +
                 "\nTarget -> Source trust: " + targetTrust +
-                "\nSource serialized entries: " + (_source ? _source.Relations.Count : 0) +
+                "\nSource serialized entries: " + (_source ? sourceRelatable.Relations.Count : 0) +
                 "\nLast result: " + _lastResult);
         }
     }

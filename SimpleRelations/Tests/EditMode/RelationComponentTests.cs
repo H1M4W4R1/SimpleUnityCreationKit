@@ -1,7 +1,7 @@
 using NUnit.Framework;
+using System.Collections.Generic;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleRelations.Abstract;
-using Systems.SimpleRelations.Components;
 using Systems.SimpleRelations.Data;
 using Systems.SimpleRelations.Operations;
 using Systems.SimpleRelations.Utility;
@@ -13,8 +13,8 @@ namespace Systems.SimpleRelations.Tests
     {
         private GameObject _sourceObject;
         private GameObject _targetObject;
-        private TestRelatable _source;
-        private TestRelatable _target;
+        private IRelatable _source;
+        private IRelatable _target;
         private TestRelationType _relationType;
 
         [SetUp]
@@ -97,14 +97,34 @@ namespace Systems.SimpleRelations.Tests
         [Test]
         public void API_ResolvesRegisteredTypeAndChangesRelation()
         {
-            RelationChangeContext<TestRelationType> changeContext = new(_source, _target, 4);
-            RelationQueryContext<TestRelationType> queryContext = new(_source, _target);
-            OperationResult result = RelationAPI.Change<TestRelationType>(in changeContext);
-            bool hasValue = RelationAPI.TryGetValue<TestRelationType>(in queryContext, out int value);
+            OperationResult result = RelationAPI.Change<TestRelationType>(_source, _target, 4);
+            bool hasValue = RelationAPI.TryGetValue<TestRelationType>(_source, _target, out int value);
 
             Assert.IsTrue(result);
             Assert.IsTrue(hasValue);
             Assert.AreEqual(9, value);
+        }
+
+        [Test]
+        public void RelationType_ControlsCallbacksAndOpenTypeAPI()
+        {
+            OperationResult changeResult = RelationAPI.Change(_source, _target, _relationType, 3);
+            OperationResult setResult = RelationAPI.Set(_source, _target, _relationType, 20);
+
+            Assert.IsTrue(changeResult);
+            Assert.IsTrue(setResult);
+            Assert.AreEqual(1, _relationType.ChangeCount);
+            Assert.AreEqual(1, _relationType.SetCount);
+            Assert.AreSame(_source, _relationType.LastSource);
+            Assert.AreEqual(5, _relationType.LastPreviousValue);
+            Assert.AreEqual(8, _relationType.LastNewValue);
+
+            _relationType.RejectChanges = true;
+            OperationResult rejectedResult = RelationAPI.Change(_source, _target, _relationType, 1);
+
+            AssertError(rejectedResult, RelationOperations.ERROR_INVALID_AMOUNT);
+            Assert.AreEqual(1, _relationType.ChangeFailedCount);
+            Assert.AreEqual(20, RelationAPI.GetValue(_source, _target, _relationType));
         }
 
         private static void AssertError(OperationResult result, ushort expectedResultCode)
@@ -114,11 +134,49 @@ namespace Systems.SimpleRelations.Tests
             Assert.AreEqual(expectedResultCode, result.resultCode);
         }
 
-        private sealed class TestRelatable : RelationComponentBase { }
+        private sealed class TestRelatable : MonoBehaviour, IRelatable
+        {
+            [SerializeField] private List<RelationEntry> _relationEntries = new();
+
+            List<RelationEntry> IRelatable.RelationEntries => _relationEntries;
+        }
 
         private sealed class TestRelationType : RelationTypeBase
         {
+            public int ChangeCount { get; private set; }
+            public int ChangeFailedCount { get; private set; }
+            public int SetCount { get; private set; }
+            public IRelatable LastSource { get; private set; }
+            public int LastPreviousValue { get; private set; }
+            public int LastNewValue { get; private set; }
+            public bool RejectChanges { get; set; }
+
             protected internal override int InitialValue => 5;
+
+            protected override OperationResult CanChangeRelation(in RelationChangeContext context)
+            {
+                return RejectChanges ? RelationOperations.InvalidAmount() : RelationOperations.Permitted();
+            }
+
+            protected override void OnRelationChanged(in RelationChangeContext context)
+            {
+                ChangeCount++;
+                LastSource = context.source;
+                LastPreviousValue = context.previousValue;
+                LastNewValue = context.newValue;
+            }
+
+            protected override void OnRelationChangeFailed(
+                in RelationChangeContext context,
+                in OperationResult result)
+            {
+                ChangeFailedCount++;
+            }
+
+            protected override void OnRelationSet(in RelationSetContext context)
+            {
+                SetCount++;
+            }
         }
     }
 }

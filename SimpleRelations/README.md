@@ -24,42 +24,48 @@ public sealed class TrustRelation : RelationTypeBase
 
 Relation types intentionally do not define levels or thresholds. Interpret values in game code, or connect them to SimpleProgression when a relationship needs progression-style level calculations.
 
-## Components and API
+## Relatables and API
 
-Derive a component from `RelationComponentBase` and add it to each actor that owns outgoing relations. The component serializes a `RelationStorage` collection of `RelationEntry` instances. Each entry contains only the relation type asset, a strongly typed target relation component, and current value.
+Implement `IRelatable` on each Unity object that owns outgoing relations. The only per-actor state is a serialized `List<RelationEntry>` backing field. Its explicit interface member is protected by the interface, so callers interact through the relation operations rather than the mutable entry list.
 
 ```csharp
-using Systems.SimpleRelations.Components;
+using System.Collections.Generic;
+using Systems.SimpleRelations.Abstract;
+using Systems.SimpleRelations.Data;
+using UnityEngine;
 
-public sealed class ActorRelations : RelationComponentBase { }
+public sealed class ActorRelations : MonoBehaviour, IRelatable
+{
+    [SerializeField] private List<RelationEntry> _relationEntries = new();
+
+    List<RelationEntry> IRelatable.RelationEntries => _relationEntries;
+}
 ```
 
-Use `RelationAPI` with a typed context. `Change` creates an entry at the type's initial value when necessary, then applies the amount. `Set` writes an exact value. Both return `OperationResult`.
+Use the open generic `RelationAPI` methods directly. `Change` creates an entry at the type's initial value when necessary, then applies the amount. `Set` writes an exact value. Both return `OperationResult`. When the relation type is only known at runtime, pass its `RelationTypeBase` asset to the non-generic overloads.
 
 ```csharp
 using Systems.SimpleCore.Operations;
-using Systems.SimpleRelations.Data;
 using Systems.SimpleRelations.Utility;
 
 public static class RelationExample
 {
     public static OperationResult RewardTrust(ActorRelations source, ActorRelations target)
     {
-        RelationChangeContext<TrustRelation> context = new(source, target, 10);
-        return RelationAPI.Change<TrustRelation>(in context);
+        return RelationAPI.Change<TrustRelation>(source, target, 10);
     }
 }
 ```
 
 Relations are unidirectional. Changing `source`'s trust in `target` does not create or modify `target`'s trust in `source`. A source cannot create a relation to itself. One component stores at most one entry for each `(relation type, target)` pair.
 
-`IRelatable` is a storage-agnostic domain contract used by the API. Serialization is an implementation detail of `RelationEntry`; the contract does not expose Unity objects or relation components.
+`IRelatable` supplies the relation handling, lookup, and mutation implementation through default interface methods. `RelationEntry` serializes each target as a Unity object that implements `IRelatable`.
 
-`RelationComponentBase` additionally offers `TryGetRelation` and `TryGetRelationValue` in both forms: pass a `RelationTypeBase` asset directly, or use the generic overload when the type asset is available through `RelationTypeDatabase`. The `Try` methods return `false` for an untracked relation instead of returning the type's initial value.
+`IRelatable` offers `TryGetRelation` and `TryGetRelationValue` in both forms: pass a `RelationTypeBase` asset directly, or use the generic overload when the type asset is available through `RelationTypeDatabase`. The `Try` methods return `false` for an untracked relation instead of returning the type's initial value.
 
 ## Callbacks
 
-Override `CanChangeRelation`, `OnRelationChanged`, or `OnRelationChangeFailed` on a relation component to apply actor-specific rules and reactions. `RelationChangeContext` provides the type, target, previous value, and new value. Callbacks are virtual methods rather than events.
+Override `CanChangeRelation`, `OnRelationChanged`, or `OnRelationChangeFailed` on a relation type to apply type-specific rules and reactions. `RelationChangeContext` provides the source, target, previous value, and new value. Callbacks are virtual methods rather than events.
 
 ## Example scene
 
