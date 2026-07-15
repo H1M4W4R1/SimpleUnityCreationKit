@@ -4,6 +4,7 @@
     "references": [
         "SimpleCore",
         "SimpleAchievements",
+        "SimpleIntegration",
         "SimpleSaving",
         "UnityEngine.TestRunner"
     ],

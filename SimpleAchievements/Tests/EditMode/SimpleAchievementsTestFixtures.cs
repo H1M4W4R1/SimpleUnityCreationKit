@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Systems.SimpleAchievements.Abstract;
-using Systems.SimpleAchievements.Abstract.Platforms;
+using Systems.SimpleIntegration.Abstract;
+using Systems.SimpleIntegration.Abstract.Features;
+using Systems.SimpleIntegration.Data.Databases;
+using Systems.SimpleIntegration.Utility;
 using Systems.SimpleAchievements.Components;
 using Systems.SimpleAchievements.Data.Databases;
 using Systems.SimpleAchievements.Data.Settings;
@@ -29,7 +32,8 @@ namespace Systems.SimpleAchievements.Tests
         {
             DestroyRegistriesAndTickSystems();
             AchievementDatabase.ClearForTests();
-            AchievementPlatformDatabase.ClearForTests();
+            IntegrationAPI.ResetForTests();
+            IntegratedPlatformDatabase.ClearForTests();
             StoreAndConfigureSettings(false, CreateAchievementFileName("setup"));
         }
 
@@ -38,7 +42,8 @@ namespace Systems.SimpleAchievements.Tests
         {
             DestroyRegistriesAndTickSystems();
             AchievementDatabase.ClearForTests();
-            AchievementPlatformDatabase.ClearForTests();
+            IntegrationAPI.ResetForTests();
+            IntegratedPlatformDatabase.ClearForTests();
             RestoreSettings();
 
             for (int objectIndex = _createdObjects.Count - 1; objectIndex >= 0; objectIndex--)
@@ -96,7 +101,15 @@ namespace Systems.SimpleAchievements.Tests
         protected TestAchievementPlatform CreateRegisteredPlatform()
         {
             TestAchievementPlatform platform = Track(ScriptableObject.CreateInstance<TestAchievementPlatform>());
-            AchievementPlatformDatabase.RegisterForTests(platform);
+            IntegratedPlatformDatabase.RegisterForTests(platform);
+            return platform;
+        }
+
+        protected TestUnavailableAchievementPlatform CreateRegisteredUnavailablePlatform()
+        {
+            TestUnavailableAchievementPlatform platform =
+                Track(ScriptableObject.CreateInstance<TestUnavailableAchievementPlatform>());
+            IntegratedPlatformDatabase.RegisterForTests(platform);
             return platform;
         }
 
@@ -244,7 +257,7 @@ namespace Systems.SimpleAchievements.Tests
         }
     }
 
-    public sealed class TestAchievementPlatform : AchievementPlatformBase
+    public sealed class TestAchievementPlatform : IntegratedPlatformBase, IAchievementPlatform
     {
         private readonly List<string> _unlockedIds = new List<string>();
 
@@ -254,19 +267,46 @@ namespace Systems.SimpleAchievements.Tests
         public int ShutdownCount { get; private set; }
         public IReadOnlyList<string> UnlockedIds => _unlockedIds;
 
-        public override void Initialise()
+        public override void Initialize()
         {
+            base.Initialize();
             InitialiseCount++;
         }
 
         public override void Shutdown()
         {
+            base.Shutdown();
             ShutdownCount++;
         }
 
-        public override void UnlockAchievement(string platformId)
+        public void UnlockAchievement(string platformId)
         {
             _unlockedIds.Add(platformId);
+        }
+
+#if UNITY_EDITOR
+        public override void DrawSettings(SerializedObject serializedObject)
+        {
+        }
+#endif
+    }
+
+    public sealed class TestUnavailableAchievementPlatform : IntegratedPlatformBase, IAchievementPlatform
+    {
+        public override string PlatformName => "Unavailable Test Platform";
+
+        public int InitializeCount { get; private set; }
+        public int UnlockCount { get; private set; }
+
+        public override void Initialize()
+        {
+            InitializeCount++;
+            IsInitialized = false;
+        }
+
+        public void UnlockAchievement(string platformId)
+        {
+            UnlockCount++;
         }
 
 #if UNITY_EDITOR

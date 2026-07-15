@@ -1,13 +1,7 @@
 {
-    "name": "SimpleAchievements",
-    "rootNamespace": "",
-    "references": [
-        "Unity.Addressables",
-        "Unity.ResourceManager",
-        "SimpleCore",
-        "SimpleSaving",
-        "SimpleIntegration"
-    ],
+    "name": "SimpleIntegration",
+    "rootNamespace": "Systems.SimpleIntegration",
+    "references": ["Unity.Addressables", "Unity.ResourceManager", "SimpleCore"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

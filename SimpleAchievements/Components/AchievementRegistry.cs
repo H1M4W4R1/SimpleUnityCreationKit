@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using JetBrains.Annotations;
 using Systems.SimpleAchievements.Abstract;
-using Systems.SimpleAchievements.Abstract.Platforms;
 using Systems.SimpleAchievements.Data.Databases;
 using Systems.SimpleAchievements.Data.SaveFiles;
 using Systems.SimpleAchievements.Data.Settings;
@@ -14,6 +13,8 @@ using Systems.SimpleCore.Operations;
 using Systems.SimpleSaving.Abstract;
 using Systems.SimpleCore.Storage.Lists;
 using Systems.SimpleCore.Timing;
+using Systems.SimpleIntegration.Abstract.Features;
+using Systems.SimpleIntegration.Utility;
 using UnityEngine;
 
 namespace Systems.SimpleAchievements.Components
@@ -61,7 +62,6 @@ namespace Systems.SimpleAchievements.Components
 
         private HashSet<string> _unlockedIds;
         private AchievementData[] _conditionalAchievements;
-        private AchievementPlatformBase[] _platforms;
         private TickSystem.TickHandler _tickDelegate;
 
         private void Awake()
@@ -78,8 +78,7 @@ namespace Systems.SimpleAchievements.Components
             if (Application.isPlaying) DontDestroyOnLoad(gameObject);
 
             BuildConditionalCache();
-            BuildPlatformCache();
-            InitialisePlatforms();
+            IntegrationAPI.IsAvailable<IAchievementPlatform>();
             LoadFromDisk();
 
             if (Application.isPlaying)
@@ -97,12 +96,6 @@ namespace Systems.SimpleAchievements.Components
 
         internal void ShutdownForTests()
         {
-            if (!ReferenceEquals(_platforms, null))
-            {
-                ShutdownPlatforms();
-                _platforms = null;
-            }
-
             if (ReferenceEquals(_instance, this))
                 _instance = null;
         }
@@ -115,9 +108,6 @@ namespace Systems.SimpleAchievements.Components
                 TickSystem.UnregisterHandler(_tickDelegate);
                 _tickDelegate = null;
             }
-
-            if (!ReferenceEquals(_platforms, null))
-                ShutdownPlatforms();
 
             if (ReferenceEquals(_instance, this))
                 _instance = null;
@@ -150,40 +140,6 @@ namespace Systems.SimpleAchievements.Components
             }
 
             access.Release();
-        }
-
-        private void BuildPlatformCache()
-        {
-            ROListAccess<AchievementPlatformBase> access =
-                AchievementPlatformDatabase.GetAllPlatforms();
-            IReadOnlyList<AchievementPlatformBase> list = access.List;
-
-            _platforms = new AchievementPlatformBase[list.Count];
-            for (int i = 0; i < list.Count; i++) _platforms[i] = list[i];
-
-            access.Release();
-        }
-
-        // ------------------------------------------------------------------ //
-        //  Platform lifecycle                                                  //
-        // ------------------------------------------------------------------ //
-
-        private void InitialisePlatforms()
-        {
-            for (int i = 0; i < _platforms.Length; i++)
-            {
-                AchievementPlatformBase platform = _platforms[i];
-                if (platform) platform.Initialise();
-            }
-        }
-
-        private void ShutdownPlatforms()
-        {
-            for (int i = 0; i < _platforms.Length; i++)
-            {
-                AchievementPlatformBase platform = _platforms[i];
-                if (platform) platform.Shutdown();
-            }
         }
 
         // ------------------------------------------------------------------ //
@@ -253,11 +209,15 @@ namespace Systems.SimpleAchievements.Components
             _unlockedIds.Add(achievement.PlatformId);
             achievement.NotifyUnlocked();
 
-            for (int i = 0; i < _platforms.Length; i++)
+            ROListAccess<IAchievementPlatform> platforms =
+                IntegrationAPI.GetAvailable<IAchievementPlatform>();
+            for (int i = 0; i < platforms.List.Count; i++)
             {
-                AchievementPlatformBase platform = _platforms[i];
-                if (platform) platform.UnlockAchievement(achievement.PlatformId);
+                IAchievementPlatform platform = platforms.List[i];
+                platform.UnlockAchievement(achievement.PlatformId);
             }
+
+            platforms.Release();
 
             if (AchievementsSettings.Instance.AutoSaveOnUnlock)
                 PersistToDisk();

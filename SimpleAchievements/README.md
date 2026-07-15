@@ -1,11 +1,12 @@
 # SimpleAchievements
 
-SimpleAchievements is a lightweight achievement system for Unity projects. It stores achievement definitions as ScriptableObjects, polls conditional achievements through `TickSystem`, propagates unlocks to platform integrations, and can save unlock state either directly to disk or through SimpleSaving's save pipeline.
+SimpleAchievements is a lightweight achievement system for Unity projects. It stores achievement definitions as ScriptableObjects, polls conditional achievements through `TickSystem`, broadcasts unlocks through SimpleIntegration's achievement contract, and can save unlock state either directly to disk or through SimpleSaving's save pipeline.
 
 ## Requirements
 
 - Unity 6000.5+
 - SimpleCore assembly
+- SimpleIntegration assembly
 - Unity Addressables package
 - Unity ResourceManager package
 
@@ -20,18 +21,18 @@ AchievementData             - ScriptableObject definition and unlock callbacks
 IProgressibleAchievement    - opt-in contract for active progress updates
 AchievementRegistry         - runtime singleton that tracks unlock state
 AchievementAPI              - static facade for unlock, progress, query, save, and load operations
-AchievementPlatformBase     - ScriptableObject base for platform SDK adapters
+IAchievementPlatform        - SimpleIntegration contract for external platform unlocks
 AchievementSaveFile         - SimpleSaving save payload for unlocked platform IDs
 AchievementsSettings        - Resources-backed save settings
 ```
 
-Achievement definitions are discovered through `AchievementDatabase` using the `SimpleAchievements.Achievements` Addressables label. Platform adapters are discovered through `AchievementPlatformDatabase` using the `SimpleAchievements.Platforms` label.
+Achievement definitions are discovered through `AchievementDatabase` using the `SimpleAchievements.Achievements` Addressables label. External platform support is supplied by SimpleIntegration implementations of `IAchievementPlatform`.
 
 ## Setup
 
 Create concrete `AchievementData` assets for each achievement. Concrete subclasses inherit `[AutoCreate("Achievements", AchievementDatabase.LABEL)]`, so generated assets are placed under `Assets/Generated/Achievements/` and registered with the achievement label.
 
-Create one or more concrete `AchievementPlatformBase` assets for external platform integration. Generated platform assets are placed under `Assets/Generated/AchievementPlatforms/` and registered with the platform label.
+To forward unlocks to Steam, Epic, or another external platform, configure an `IAchievementPlatform` implementation in SimpleIntegration. See the SimpleIntegration README for setup.
 
 Configure save behavior in `Edit > Project Settings > Achievements`:
 
@@ -154,17 +155,18 @@ Override `OnUnlocked` for one-time side effects. It is called when an achievemen
 
 ## Platform Integrations
 
-Create a concrete `AchievementPlatformBase` for each SDK. The registry calls `Initialise()` during startup, `UnlockAchievement(string platformId)` when an achievement unlocks, and `Shutdown()` when the registry is destroyed.
+SimpleAchievements broadcasts every unlock to all initialized `IAchievementPlatform` implementations configured by SimpleIntegration. Platform initialization, shutdown, SDK configuration, and availability checks belong to SimpleIntegration.
 
 ```csharp
-using Systems.SimpleAchievements.Abstract.Platforms;
+using Systems.SimpleIntegration.Abstract;
+using Systems.SimpleIntegration.Abstract.Features;
 using UnityEngine;
 
-public sealed class ConsoleAchievementPlatform : AchievementPlatformBase
+public sealed class ConsolePlatform : IntegratedPlatformBase, IAchievementPlatform
 {
     public override string PlatformName => "Console";
 
-    public override void UnlockAchievement(string platformId)
+    public void UnlockAchievement(string platformId)
     {
         Debug.Log($"Unlock platform achievement: {platformId}");
     }
@@ -219,7 +221,7 @@ if (!ReferenceEquals(saveFile, null))
 - `Scene - Achievements.unity`: exposes runtime Unity UI for manual, conditional, blocked, forced, and reset unlock cases.
 - `ExampleAchievementsScene`: scene driver with runtime buttons and context menu actions for replaying the examples.
 - `ExampleManualAchievement` and `ExampleConditionalAchievement`: configured example assets used by the scene.
-- `SteamAchievementPlatform` and `EpicAchievementPlatform`: mocked platform adapters for replacing with SDK integrations.
+- `SteamPlatform` and `EpicPlatform` are supplied by SimpleIntegration as mocked platform integrations.
 
 ## Notes
 

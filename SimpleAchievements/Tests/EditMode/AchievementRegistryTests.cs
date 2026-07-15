@@ -11,21 +11,6 @@ namespace Systems.SimpleAchievements.Tests
     public sealed class AchievementRegistryTests : SimpleAchievementsTestBase
     {
         [Test]
-        public void Registry_WhenCreated_InitialisesRegisteredPlatforms()
-        {
-            TestAchievementPlatform platform = CreateRegisteredPlatform();
-
-            AchievementRegistry registry = CreateRegistry();
-
-            Assert.IsTrue(registry);
-            Assert.AreEqual(1, platform.InitialiseCount);
-
-            registry.ShutdownForTests();
-            Assert.AreEqual(1, platform.ShutdownCount);
-            Object.DestroyImmediate(registry.gameObject);
-        }
-
-        [Test]
         public void Unlock_WithManualAchievement_RecordsUnlockNotifiesAchievementAndPlatform()
         {
             TestAchievement achievement = CreateRegisteredAchievement("ACH_MANUAL");
@@ -41,6 +26,43 @@ namespace Systems.SimpleAchievements.Tests
             Assert.AreEqual(1, achievement.UnlockNotificationCount);
             Assert.AreEqual(1, platform.UnlockedIds.Count);
             Assert.AreEqual("ACH_MANUAL", platform.UnlockedIds[0]);
+        }
+
+        [Test]
+        public void Unlock_WithMultipleAchievementPlatforms_NotifiesEveryInitializedPlatform()
+        {
+            TestAchievement achievement = CreateRegisteredAchievement("ACH_BROADCAST");
+            TestAchievementPlatform steamPlatform = CreateRegisteredPlatform();
+            TestAchievementPlatform epicPlatform = CreateRegisteredPlatform();
+            CreateRegistry();
+
+            AchievementUnlockContext context = new AchievementUnlockContext(achievement);
+            OperationResult result = AchievementAPI.Unlock(in context);
+
+            AssertSimilar(AchievementOperations.Unlocked(), result);
+            Assert.AreEqual(1, steamPlatform.InitialiseCount);
+            Assert.AreEqual(1, epicPlatform.InitialiseCount);
+            Assert.AreEqual(1, steamPlatform.UnlockedIds.Count);
+            Assert.AreEqual(1, epicPlatform.UnlockedIds.Count);
+            Assert.AreEqual("ACH_BROADCAST", steamPlatform.UnlockedIds[0]);
+            Assert.AreEqual("ACH_BROADCAST", epicPlatform.UnlockedIds[0]);
+        }
+
+        [Test]
+        public void Unlock_WhenAchievementPlatformIsUnavailable_DoesNotNotifyIt()
+        {
+            TestAchievement achievement = CreateRegisteredAchievement("ACH_UNAVAILABLE");
+            TestAchievementPlatform availablePlatform = CreateRegisteredPlatform();
+            TestUnavailableAchievementPlatform unavailablePlatform = CreateRegisteredUnavailablePlatform();
+            CreateRegistry();
+
+            AchievementUnlockContext context = new AchievementUnlockContext(achievement);
+            OperationResult result = AchievementAPI.Unlock(in context);
+
+            AssertSimilar(AchievementOperations.Unlocked(), result);
+            Assert.AreEqual(1, availablePlatform.UnlockedIds.Count);
+            Assert.AreEqual(1, unavailablePlatform.InitializeCount);
+            Assert.AreEqual(0, unavailablePlatform.UnlockCount);
         }
 
         [Test]
