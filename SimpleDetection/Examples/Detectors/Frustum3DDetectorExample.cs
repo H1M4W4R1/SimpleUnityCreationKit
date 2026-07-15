@@ -2,7 +2,7 @@
 
 namespace Systems.SimpleDetection.Examples.Detectors
 {
-    public sealed class Frustum3DDetectorExample : Frustum3DDetector
+    public sealed class Frustum3DDetectorExample : RaycastingFrustum3DDetector
     {
         
     }

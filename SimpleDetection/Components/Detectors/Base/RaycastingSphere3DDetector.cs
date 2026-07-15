@@ -1,19 +1,19 @@
-using Systems.SimpleDetection.Components.Detectors.Abstract;
+﻿using Systems.SimpleDetection.Components.Detectors.Abstract;
 using Systems.SimpleDetection.Components.Detectors.Zones;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Systems.SimpleDetection.Components.Detectors.Base
 {
-    /// <summary> A circle detector that detects every eligible object inside its zone. </summary>
-    public abstract class Circle2DDetector : ObjectDetectorBase
+    // ReSharper disable once ClassCanBeSealed.Global
+    public abstract class RaycastingSphere3DDetector : ObjectDetectorBase
     {
         [SerializeField] [Min(0.01f)] private float radius = 2f;
 
         protected override IDetectionZone GetDetectionZone()
         {
             float3 position = CachedTransform.position;
-            return new Circle2DDetectionZone(position.xy, radius);
+            return new RaycastingSphere3DDetectionZone(position, radius);
         }
     }
 }

@@ -1,23 +1,25 @@
-using Systems.SimpleDetection.Components.Detectors.Abstract;
+﻿using Systems.SimpleDetection.Components.Detectors.Abstract;
 using Systems.SimpleDetection.Components.Detectors.Zones;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Systems.SimpleDetection.Components.Detectors.Base
 {
-    /// <summary> A perspective-frustum detector that ignores line of sight. </summary>
-    public abstract class Frustum3DDetector : ObjectDetectorBase
+    public abstract class RaycastingFrustum3DDetector : ObjectDetectorBase
     {
         [SerializeField] [Min(0.01f)] private float angle = 45f;
         [SerializeField] [Min(0.01f)] private float aspectRatio = 16f / 9f;
         [SerializeField] [Min(0.01f)] private float nearPlaneDistance = 1f;
         [SerializeField] [Min(0.02f)] private float farPlaneDistance = 10f;
-
+        
         protected override IDetectionZone GetDetectionZone()
         {
-            Transform detectorTransform = CachedTransform;
-            return new Frustum3DDetectionZone(detectorTransform.position, detectorTransform.rotation,
-                farPlaneDistance, nearPlaneDistance, angle, aspectRatio);
+            Transform objTransform = CachedTransform;
+            float3 position = objTransform.position;
+            quaternion rotation = objTransform.rotation;
+
+            return new RaycastingFrustum3DDetectionZone(position, rotation, farPlaneDistance, nearPlaneDistance, angle,
+                aspectRatio);
         }
     }
 }

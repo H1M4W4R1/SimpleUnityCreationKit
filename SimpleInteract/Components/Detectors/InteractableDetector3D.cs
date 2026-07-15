@@ -6,7 +6,7 @@ using Systems.SimpleInteract.Components.Detectors.Abstract;
 
 namespace Systems.SimpleInteract.Components.Detectors
 {
-    public sealed class InteractableDetector3D : Sphere3DDetector, IInteractableDetector
+    public sealed class InteractableDetector3D : RaycastingSphere3DDetector, IInteractableDetector
     {
 
 #region Internal events

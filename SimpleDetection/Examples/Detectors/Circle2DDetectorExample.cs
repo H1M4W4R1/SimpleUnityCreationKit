@@ -2,7 +2,7 @@
 
 namespace Systems.SimpleDetection.Examples.Detectors
 {
-    public sealed class Circle2DDetectorExample : Circle2DDetector
+    public sealed class Circle2DDetectorExample : RaycastingCircle2DDetector
     {
         
     }

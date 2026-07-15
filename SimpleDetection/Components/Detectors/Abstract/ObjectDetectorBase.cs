@@ -20,6 +20,7 @@ namespace Systems.SimpleDetection.Components.Detectors.Abstract
     public abstract class ObjectDetectorBase : MonoBehaviour
     {
         private readonly List<DetectableObjectBase> _detectedObjects = new();
+        private Transform _cachedTransform;
 
         [SerializeField]
         [Tooltip("Layer mask used to perform raycasts for this detector, should contain obstacle layers")]
@@ -34,6 +35,16 @@ namespace Systems.SimpleDetection.Components.Detectors.Abstract
         ///     List of all detected objects
         /// </summary>
         public IReadOnlyList<DetectableObjectBase> DetectedObjects => _detectedObjects;
+
+        /// <summary> Cached transform of this detector. </summary>
+        protected Transform CachedTransform
+        {
+            get
+            {
+                if (!_cachedTransform) _cachedTransform = transform;
+                return _cachedTransform;
+            }
+        }
 
         /// <summary>
         ///     Checks if this detector supports ghost detection

@@ -5,7 +5,7 @@ SimpleInteract is a lightweight, performant interaction detection system for Uni
 
 - **Unity 2022.3+**
 - **SimpleCore** - Dependency for operation result handling
-- **SimpleDetection** - Dependency for object detection (Circle2D and Sphere3D detectors)
+- **SimpleDetection** - Dependency for object detection (`RaycastingCircle2DDetector` and `RaycastingSphere3DDetector` preserve line-of-sight interaction checks)
 
 ## References
 

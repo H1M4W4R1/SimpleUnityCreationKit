@@ -2,7 +2,7 @@
 
 namespace Systems.SimpleDetection.Examples.Detectors
 {
-    public sealed class Sphere3DDetectorExample : Sphere3DDetector
+    public sealed class Sphere3DDetectorExample : RaycastingSphere3DDetector
     {
         
     }
