@@ -89,7 +89,7 @@ namespace Systems.SimpleFactions.Tests
         {
             [SerializeField] private List<RelationEntry> _relationEntries = new List<RelationEntry>();
 
-            public Snowflake128 Identifier { get; private set; }
+            public Snowflake128 Identifier { get; set; }
 
             List<RelationEntry> IRelatable.RelationEntries => _relationEntries;
 

@@ -210,7 +210,7 @@ namespace Systems.SimpleCore.Tests
 
         private sealed class RuntimeDatabaseObject : ScriptableObject, IRuntimeDatabaseContract, IIdentifiable<Snowflake128>
         {
-            public Snowflake128 Identifier { get; private set; }
+            public Snowflake128 Identifier { get; set; }
 
             public void Initialize(Snowflake128 identifier)
             {
@@ -220,7 +220,7 @@ namespace Systems.SimpleCore.Tests
 
         private sealed class RuntimeDatabaseWrapper : IRuntimeDatabaseContract, IIdentifiable<Snowflake128>
         {
-            public Snowflake128 Identifier { get; }
+            public Snowflake128 Identifier { get; set; }
 
             public RuntimeDatabaseWrapper(Snowflake128 identifier)
             {

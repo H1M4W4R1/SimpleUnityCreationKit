@@ -3,12 +3,14 @@ using Systems.SimpleSpawn.Operations;
 using Systems.SimpleSpawn.Utility;
 using UnityEngine;
 
+using Systems.SimpleCore.Behaviours;
+
 namespace Systems.SimpleSpawn.Abstract
 {
     /// <summary>
     ///     Controls custom validation and cleanup before an entity is destroyed.
     /// </summary>
-    public abstract class DespawnControlBase : MonoBehaviour
+    public abstract class DespawnControlBase : SimpleBehaviour
     {
         /// <summary>
         ///     Attempts to despawn the GameObject containing this component.

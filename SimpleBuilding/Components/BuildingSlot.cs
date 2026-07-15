@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
 using Systems.SimpleBuilding.Utility;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Components
@@ -7,7 +9,7 @@ namespace Systems.SimpleBuilding.Components
     /// <summary>
     ///     An optional reserved world position for buildings that implement <c>ISlotBuilding</c>.
     /// </summary>
-    public sealed class BuildingSlot : MonoBehaviour
+    public sealed class BuildingSlot : SimpleBehaviour, IEnableBehaviour, IDisableBehaviour
     {
         [SerializeField] private string _saveIdentifier;
         [CanBeNull] private BuildingBase _occupyingBuilding;
@@ -58,12 +60,12 @@ namespace Systems.SimpleBuilding.Components
 
         public bool IsOccupied => !ReferenceEquals(OccupyingBuilding, null);
 
-        private void OnEnable()
+        protected override void OnBehaviourEnabled()
         {
             BuildingRegistry.RegisterSlot(this);
         }
 
-        private void OnDisable()
+        protected override void OnBehaviourDisabled()
         {
             BuildingRegistry.UnregisterSlot(this);
         }

@@ -1,43 +1,13 @@
 ﻿using Systems.SimpleCore.Timing;
 
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
+
 namespace Systems.SimpleEntities.Components
 {
-    public abstract class TickingEntityBase : EntityBase
+    public abstract class TickingEntityBase : EntityBase, ITickableBehaviour
     {
-        private bool _startCompleted;
-        private bool _pendingTickSubscription;
-
-        protected override void OnEntitySetupComplete()
-        {
-            base.OnEntitySetupComplete();
-            _startCompleted = true;
-
-            // If OnEnable fired before Start, subscribe now
-            if (_pendingTickSubscription)
-            {
-                _pendingTickSubscription = false;
-                TickSystem.RegisterHandler(OnTick);
-            }
-        }
-
-        protected override void OnEntityActivated()
-        {
-            base.OnEntityActivated();
-
-            if (_startCompleted)
-                TickSystem.RegisterHandler(OnTick);
-            else
-                _pendingTickSubscription = true;
-        }
-
-        protected override void OnEntityDeactivated()
-        {
-            base.OnEntityDeactivated();
-            _pendingTickSubscription = false;
-            TickSystem.UnregisterHandler(OnTick);
-        }
-
-        protected virtual void OnTick(float deltaTime)
+        protected override void OnTick(float deltaTime)
         {
         }
     }

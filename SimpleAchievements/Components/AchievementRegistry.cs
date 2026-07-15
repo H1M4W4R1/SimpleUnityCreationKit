@@ -9,10 +9,11 @@ using Systems.SimpleAchievements.Data.Settings;
 using Systems.SimpleAchievements.Operations;
 using Systems.SimpleAchievements.Structs;
 using Systems.SimpleAchievements.Utility;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleSaving.Abstract;
 using Systems.SimpleCore.Storage.Lists;
-using Systems.SimpleCore.Timing;
 using Systems.SimpleIntegration.Abstract.Features;
 using Systems.SimpleIntegration.Utility;
 using UnityEngine;
@@ -28,7 +29,8 @@ namespace Systems.SimpleAchievements.Components
     ///     Do not add this component manually. Use <see cref="AchievementAPI"/> for all
     ///     external interactions.
     /// </remarks>
-    public sealed class AchievementRegistry : MonoBehaviour, ISaveData<AchievementSaveFile>
+    public sealed class AchievementRegistry : SimpleBehaviour, ISaveData<AchievementSaveFile>, IUniqueBehaviour,
+        IPersistentBehaviour, IAwakeBehaviour, ITickableBehaviour, IDestroyBehaviour
     {
         private static AchievementRegistry _instance;
 
@@ -57,58 +59,39 @@ namespace Systems.SimpleAchievements.Components
             _instance = null;
             GameObject gameObject = new GameObject("[AchievementRegistry]");
             _instance = gameObject.AddComponent<AchievementRegistry>();
-            if (Application.isPlaying) DontDestroyOnLoad(gameObject);
         }
 
         private HashSet<string> _unlockedIds;
         private AchievementData[] _conditionalAchievements;
-        private TickSystem.TickHandler _tickDelegate;
+        private bool _isInitialized;
 
-        private void Awake()
+        protected override void OnBehaviourAwake()
         {
-            // Guard against duplicate instances (e.g. loaded from a scene)
-            if (!ReferenceEquals(_instance, null) && !ReferenceEquals(_instance, this) && _instance)
-            {
-                Destroy(gameObject);
-                return;
-            }
+            if (_isInitialized) return;
+            _isInitialized = true;
 
             _instance    = this;
             _unlockedIds = new HashSet<string>();
-            if (Application.isPlaying) DontDestroyOnLoad(gameObject);
 
             BuildConditionalCache();
             IntegrationAPI.IsAvailable<IAchievementPlatform>();
             LoadFromDisk();
-
-            if (Application.isPlaying)
-            {
-                _tickDelegate = OnTick;
-                TickSystem.RegisterHandler(_tickDelegate);
-            }
         }
 
 #if UNITY_INCLUDE_TESTS
         internal void AwakeForTests()
         {
-            Awake();
+            OnBehaviourAwake();
         }
 
         internal void ShutdownForTests()
         {
-            if (ReferenceEquals(_instance, this))
-                _instance = null;
+            OnBehaviourDestroyed();
         }
 #endif
 
-        private void OnDestroy()
+        protected override void OnBehaviourDestroyed()
         {
-            if (!ReferenceEquals(_tickDelegate, null))
-            {
-                TickSystem.UnregisterHandler(_tickDelegate);
-                _tickDelegate = null;
-            }
-
             if (ReferenceEquals(_instance, this))
                 _instance = null;
         }
@@ -146,7 +129,7 @@ namespace Systems.SimpleAchievements.Components
         //  Tick - condition monitoring                                         //
         // ------------------------------------------------------------------ //
 
-        private void OnTick(float deltaTimeSeconds)
+        protected override void OnTick(float deltaTimeSeconds)
         {
             if (ReferenceEquals(_conditionalAchievements, null)) return;
 

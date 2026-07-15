@@ -4,6 +4,13 @@ using Systems.SimpleCore.Identifiers;
 
 namespace Systems.SimpleCore.Storage.Databases
 {
+    /// <summary>Non-generic runtime database operations used by behaviour registration contracts.</summary>
+    public interface IRuntimeDatabase
+    {
+        bool Register(object item);
+        void Unregister(object item);
+    }
+
     /// <summary>
     ///     Stores runtime objects by <see cref="Snowflake128"/> for one runtime contract.
     ///     Static storage is isolated by <typeparamref name="TSelf"/>, allowing multiple databases to use the same
@@ -11,7 +18,7 @@ namespace Systems.SimpleCore.Storage.Databases
     /// </summary>
     /// <typeparam name="TSelf">Concrete database type.</typeparam>
     /// <typeparam name="TContract">Contract exposed when a registered object is resolved.</typeparam>
-    public abstract class RuntimeDatabase<TSelf, TContract>
+    public abstract class RuntimeDatabase<TSelf, TContract> : IRuntimeDatabase
         where TSelf : RuntimeDatabase<TSelf, TContract>, new()
         where TContract : class
     {
@@ -24,8 +31,33 @@ namespace Systems.SimpleCore.Storage.Databases
             where TItem : class, TContract, IIdentifiable<Snowflake128>
         {
             if (ReferenceEquals(item, null)) return false;
+            return Register(item, item);
+        }
 
-            Snowflake128 identifier = item.Identifier;
+        /// <summary>Removes an object only when it is still the registration for its identifier.</summary>
+        public static void Unregister<TItem>([CanBeNull] TItem item)
+            where TItem : class, TContract, IIdentifiable<Snowflake128>
+        {
+            if (ReferenceEquals(item, null)) return;
+
+            Unregister(item, item);
+        }
+
+        bool IRuntimeDatabase.Register(object item)
+        {
+            if (!(item is TContract contract) || !(item is IIdentifiable<Snowflake128> identifiable)) return false;
+            return Register(contract, identifiable);
+        }
+
+        void IRuntimeDatabase.Unregister(object item)
+        {
+            if (!(item is TContract contract) || !(item is IIdentifiable<Snowflake128> identifiable)) return;
+            Unregister(contract, identifiable);
+        }
+
+        private static bool Register([NotNull] TContract item, IIdentifiable<Snowflake128> identifiable)
+        {
+            Snowflake128 identifier = identifiable.Identifier;
             if (!identifier.IsCreated) return false;
 
             int index = FindIndex(identifier);
@@ -38,13 +70,10 @@ namespace Systems.SimpleCore.Storage.Databases
             return true;
         }
 
-        /// <summary>Removes an object only when it is still the registration for its identifier.</summary>
-        public static void Unregister<TItem>([CanBeNull] TItem item)
-            where TItem : class, TContract, IIdentifiable<Snowflake128>
+        private static void Unregister([NotNull] TContract item, IIdentifiable<Snowflake128> identifiable)
         {
-            if (ReferenceEquals(item, null)) return;
 
-            Snowflake128 identifier = item.Identifier;
+            Snowflake128 identifier = identifiable.Identifier;
             if (!identifier.IsCreated) return;
             int index = FindIndex(identifier);
             if (index < 0) return;

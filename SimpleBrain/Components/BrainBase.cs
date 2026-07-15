@@ -3,7 +3,8 @@ using Systems.SimpleBrain.Abstract;
 using Systems.SimpleBrain.Data.Context;
 using Systems.SimpleBrain.Operations;
 using Systems.SimpleCore.Operations;
-using Systems.SimpleCore.Timing;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using UnityEngine;
 
 namespace Systems.SimpleBrain.Components
@@ -15,7 +16,7 @@ namespace Systems.SimpleBrain.Components
     ///     This is the entry point for all SimpleBrain operations. It intentionally does not cache another actor
     ///     component: a brain belongs on the actor that it controls.
     /// </remarks>
-    public abstract class BrainBase : MonoBehaviour
+    public abstract class BrainBase : SimpleBehaviour, IAwakeBehaviour, ITickableBehaviour
     {
         [SerializeField, HideInInspector] private BrainKnowledgeStorage _knowledgeStorage = new BrainKnowledgeStorage();
         [SerializeField, HideInInspector] private BrainSubprocessStorage _subprocessStorage = new BrainSubprocessStorage();
@@ -254,22 +255,12 @@ namespace Systems.SimpleBrain.Components
         {
         }
 
-        private void Awake()
+        protected override void OnBehaviourAwake()
         {
             OnBrainBorn();
         }
 
-        private void OnEnable()
-        {
-            TickSystem.RegisterHandler(HandleTick);
-        }
-
-        private void OnDisable()
-        {
-            TickSystem.UnregisterHandler(HandleTick);
-        }
-
-        private void HandleTick(float deltaTimeSeconds)
+        protected override void OnTick(float deltaTimeSeconds)
         {
             if (IsInComa)
             {

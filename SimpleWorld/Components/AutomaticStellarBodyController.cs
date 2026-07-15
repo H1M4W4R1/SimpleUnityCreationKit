@@ -1,5 +1,6 @@
 using System;
-using Systems.SimpleCore.Timing;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using Systems.SimpleWorld.Data;
 using Systems.SimpleWorld.Utility;
 using UnityEngine;
@@ -9,7 +10,8 @@ namespace Systems.SimpleWorld.Components
     /// <summary>
     ///     Advances a simulated day and applies calculated sun and moon positions.
     /// </summary>
-    public sealed class AutomaticStellarBodyController : MonoBehaviour
+    public sealed class AutomaticStellarBodyController : SimpleBehaviour, IAwakeBehaviour, IEnableBehaviour,
+        IDisableBehaviour, ITickableBehaviour
     {
         [SerializeField] private WorldSun _sun;
         [SerializeField] private WorldMoon _moon;
@@ -52,21 +54,19 @@ namespace Systems.SimpleWorld.Components
             UpdateWorld(0f);
         }
 
-        private void Awake()
+        protected override void OnBehaviourAwake()
         {
             _currentDateTime = DateTime.UtcNow;
             _hasDateTime = true;
         }
 
-        private void OnEnable()
+        protected override void OnBehaviourEnabled()
         {
-            TickSystem.RegisterHandler(OnTick);
             UpdateWorld(0f);
         }
 
-        private void OnDisable()
+        protected override void OnBehaviourDisabled()
         {
-            TickSystem.UnregisterHandler(OnTick);
             RestoreRenderSettingsSun();
         }
 
@@ -105,7 +105,7 @@ namespace Systems.SimpleWorld.Components
             Shader.SetGlobalColor(WorldAPI.WORLD_TINT_SHADER_PROPERTY, stellarColor);
         }
 
-        private void OnTick(float deltaTimeSeconds)
+        protected override void OnTick(float deltaTimeSeconds)
         {
             UpdateWorld(deltaTimeSeconds);
         }

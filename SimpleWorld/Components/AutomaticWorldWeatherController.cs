@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using Systems.SimpleCore.Timing;
+using JetBrains.Annotations;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using Systems.SimpleWorld.Data;
 using Systems.SimpleWorld.Utility;
 using UnityEngine;
@@ -9,7 +11,8 @@ namespace Systems.SimpleWorld.Components
     /// <summary>
     ///     Cycles through configured weather effects using each effect's duration.
     /// </summary>
-    public sealed class AutomaticWorldWeatherController : MonoBehaviour
+    public sealed class AutomaticWorldWeatherController : SimpleBehaviour, IAwakeBehaviour, IEnableBehaviour,
+        ITickableBehaviour
     {
         [SerializeField] private List<WeatherEffect> _weatherEffects = new List<WeatherEffect>();
         [SerializeField] private bool _randomizeOrder;
@@ -21,7 +24,7 @@ namespace Systems.SimpleWorld.Components
         private int _currentIndex = -1;
 
         public IReadOnlyList<WeatherEffect> WeatherEffects => _weatherEffects;
-        public WeatherEffect CurrentWeatherEffect => WorldAPI.ActiveWeatherEffect;
+        [CanBeNull] public WeatherEffect CurrentWeatherEffect => WorldAPI.ActiveWeatherEffect;
         public float ElapsedSeconds => _elapsedSeconds;
         public float DurationSeconds => _durationSeconds;
 
@@ -73,20 +76,14 @@ namespace Systems.SimpleWorld.Components
             }
         }
 
-        private void Awake()
+        protected override void OnBehaviourAwake()
         {
             _random = new System.Random(_randomSeed);
         }
 
-        private void OnEnable()
+        protected override void OnBehaviourEnabled()
         {
-            TickSystem.RegisterHandler(OnTick);
             SelectNextWeather();
-        }
-
-        private void OnDisable()
-        {
-            TickSystem.UnregisterHandler(OnTick);
         }
 
         public void SelectNextWeather()
@@ -115,7 +112,7 @@ namespace Systems.SimpleWorld.Components
             return _currentIndex;
         }
 
-        private void OnTick(float deltaTimeSeconds)
+        protected override void OnTick(float deltaTimeSeconds)
         {
             Advance(deltaTimeSeconds);
         }

@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
+
 namespace Systems.SimpleEntities.Components
 {
     /// <summary>
     ///     Simple entity that is used to represent in-game objects
     /// </summary>
-    public abstract class EntityBase : MonoBehaviour
+    public abstract class EntityBase : SimpleBehaviour, IStartBehaviour, IEnableBehaviour,
+        IDisableBehaviour, IDestroyBehaviour
     {
         protected virtual void AssignComponents()
         {
@@ -40,28 +44,32 @@ namespace Systems.SimpleEntities.Components
         ///     Declaring Awake/Start/OnEnable/OnDisable in a subclass will produce a compiler warning
         ///     about hiding the base member, which is the intended safeguard.
         /// </summary>
-        protected void Awake()
+        protected override void SetupAndValidateComponents()
         {
             AssignComponents();
+        }
+
+        protected override void Initialize()
+        {
             OnInitialized();
         }
 
-        protected void Start()
+        protected override void OnBehaviourStarted()
         {
             OnEntitySetupComplete();
         }
 
-        protected void OnEnable()
+        protected override void OnBehaviourEnabled()
         {
             OnEntityActivated();
         }
 
-        protected void OnDisable()
+        protected override void OnBehaviourDisabled()
         {
             OnEntityDeactivated();
         }
 
-        private void OnDestroy()
+        protected override void OnBehaviourDestroyed()
         {
             OnTeardown();
         }

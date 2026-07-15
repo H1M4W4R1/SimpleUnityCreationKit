@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 using Systems.SimpleCore.Operations;
 using Systems.SimpleRelations.Data;
 using Systems.SimpleRelations.Operations;
@@ -7,7 +9,7 @@ using Systems.SimpleRelations.Operations;
 namespace Systems.SimpleRelations.Abstract
 {
     /// <summary>Domain contract for a Unity object that owns outgoing relationships.</summary>
-    public interface IRelatable
+    public interface IRelatable : IRegisterInDatabase<RelatableObjectDatabase>
     {
         /// <summary>
         ///     Serialized backing entries owned by this relatable. Implement this member explicitly so entry

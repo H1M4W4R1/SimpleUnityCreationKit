@@ -2,7 +2,8 @@
     "name": "SimpleBuilding.Editor",
     "rootNamespace": "",
     "references": [
-        "SimpleBuilding"
+        "SimpleBuilding",
+        "SimpleCore"
     ],
     "includePlatforms": [
         "Editor"

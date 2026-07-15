@@ -1,12 +1,15 @@
 ﻿using JetBrains.Annotations;
 using UnityEngine;
+using Systems.SimpleCore.Behaviours;
+using Systems.SimpleCore.Behaviours.Markers;
 
 namespace Systems.SimpleCore.Timing
 {
     /// <summary>
     ///     Global tick system
     /// </summary>
-    public sealed class TickSystem : MonoBehaviour
+    public sealed class TickSystem : SimpleBehaviour, IUniqueBehaviour, IPersistentBehaviour, IAwakeBehaviour,
+        IActiveUpdate, IDestroyBehaviour
     {
         private static TickSystem _instance;
         
@@ -35,41 +38,37 @@ namespace Systems.SimpleCore.Timing
         /// <summary>
         ///     Registered handlers will be called every frame or every turn.
         /// </summary>
-        internal static event TickHandler OnTick;
+        internal static event TickHandler OnTickExecuted;
 
         public static void RegisterHandler([CanBeNull] TickHandler handler)
         {
             if (handler == null) return;
             EnsureExists();
-            OnTick += handler;
+            OnTickExecuted += handler;
         }
 
         public static void UnregisterHandler(TickHandler handler)
         {
-            EnsureExists();
-            OnTick -= handler;
+            if (!_instance) return;
+            OnTickExecuted -= handler;
         }
 
-        private void Awake()
+        protected override void OnBehaviourAwake()
         {
-            // If instance already exists (bool conversion) and is not this we shall destroy this instance
-            if (_instance && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            // Prevent from being destroyed on scene change
-            DontDestroyOnLoad(gameObject);
             _instance = this;
         }
 
-        private void Update()
+        protected override void OnBehaviourActiveUpdated()
         {
             if (!AutomaticTick) return;
             HandleTick();
         }
-        
+
+        protected override void OnBehaviourDestroyed()
+        {
+            if (ReferenceEquals(_instance, this)) _instance = null;
+        }
+
         public void Tick() => HandleTick();
         
         internal void HandleTick()
@@ -80,7 +79,7 @@ namespace Systems.SimpleCore.Timing
             if (!CanTimePass) return;
 
             if (TickInterval <= 0f) // Prevents infinite loops
-                OnTick?.Invoke(timePassedSeconds);
+                OnTickExecuted?.Invoke(timePassedSeconds);
             else
             {
                 _tickTimer += timePassedSeconds;
@@ -90,7 +89,7 @@ namespace Systems.SimpleCore.Timing
                 while (_tickTimer >= TickInterval)
                 {
                     _tickTimer -= TickInterval;
-                    OnTick?.Invoke(TickInterval);
+                    OnTickExecuted?.Invoke(TickInterval);
                 }
             }
         }
