@@ -2,6 +2,22 @@ using Systems.SimpleRelations.Abstract;
 
 namespace Systems.SimpleRelations.Data
 {
+    /// <summary>Context used to resolve the initial value for an untracked outgoing relation.</summary>
+    public readonly ref struct RelationInitialValueContext
+    {
+        /// <summary>Relatable that would own the outgoing relationship.</summary>
+        public readonly IRelatable source;
+
+        /// <summary>Relatable that would receive the outgoing relationship.</summary>
+        public readonly IRelatable target;
+
+        internal RelationInitialValueContext(IRelatable source, IRelatable target)
+        {
+            this.source = source;
+            this.target = target;
+        }
+    }
+
     /// <summary>Resolved request to add a signed amount to an outgoing relation.</summary>
     public readonly ref struct RelationChangeContext
     {

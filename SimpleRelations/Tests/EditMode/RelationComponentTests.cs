@@ -106,6 +106,20 @@ namespace Systems.SimpleRelations.Tests
         }
 
         [Test]
+        public void GetRelationValue_ResolvesInitialValueFromSourceAndTargetContext()
+        {
+            _relationType.ContextualTarget = _target;
+            _relationType.ContextualInitialValue = 17;
+
+            int contextualValue = _source.GetRelationValue(_relationType, _target);
+
+            Assert.AreEqual(17, contextualValue);
+            Assert.AreSame(_source, _relationType.LastInitialValueSource);
+            Assert.AreSame(_target, _relationType.LastInitialValueTarget);
+            Assert.AreEqual(0, _source.Relations.Count);
+        }
+
+        [Test]
         public void RelationType_ControlsCallbacksAndOpenTypeAPI()
         {
             OperationResult changeResult = RelationAPI.Change(_source, _target, _relationType, 3);
@@ -150,8 +164,17 @@ namespace Systems.SimpleRelations.Tests
             public int LastPreviousValue { get; private set; }
             public int LastNewValue { get; private set; }
             public bool RejectChanges { get; set; }
+            public IRelatable ContextualTarget { get; set; }
+            public int ContextualInitialValue { get; set; }
+            public IRelatable LastInitialValueSource { get; private set; }
+            public IRelatable LastInitialValueTarget { get; private set; }
 
-            protected internal override int InitialValue => 5;
+            protected override int GetInitialValue(in RelationInitialValueContext context)
+            {
+                LastInitialValueSource = context.source;
+                LastInitialValueTarget = context.target;
+                return ReferenceEquals(context.target, ContextualTarget) ? ContextualInitialValue : 5;
+            }
 
             protected override OperationResult CanChangeRelation(in RelationChangeContext context)
             {

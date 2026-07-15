@@ -23,7 +23,7 @@ namespace Systems.SimpleRelations.Abstract
         {
             if (ReferenceEquals(relationType, null) || !relationType) return 0;
             if (!TryGetRelation(relationType, target, out RelationEntry relation))
-                return relationType.InitialValue;
+                return relationType.GetInitialValue(this, target);
 
             return relation!.Value;
         }

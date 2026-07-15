@@ -11,15 +11,24 @@ namespace Systems.SimpleRelations.Abstract
     ///     affinity, fear, friendship, rivalry, or hostility.
     /// </summary>
     /// <remarks>
-    ///     Each concrete relation type is generated as an addressable asset. The asset supplies only
-    ///     the value used when a relation is first created; interpretation of the resulting value is
-    ///     deliberately left to game logic or a progression system.
+    ///     Each concrete relation type is generated as an addressable asset. The asset resolves the value
+    ///     used when a relation is first created; interpretation of the resulting value is deliberately left
+    ///     to game logic or a progression system.
     /// </remarks>
     [AutoCreate("Relations", RelationTypeDatabase.LABEL)]
     public abstract class RelationTypeBase : ScriptableObject
     {
-        /// <summary>Value assigned to a newly created relation of this type.</summary>
-        protected internal virtual int InitialValue => 0;
+        /// <summary>Resolves the value assigned when this relation type is first created for a source and target.</summary>
+        protected virtual int GetInitialValue(in RelationInitialValueContext context)
+        {
+            return 0;
+        }
+
+        internal int GetInitialValue(IRelatable source, IRelatable target)
+        {
+            RelationInitialValueContext context = new(source, target);
+            return GetInitialValue(in context);
+        }
 
         /// <summary>Executes a validated change to a relation of this type.</summary>
         internal OperationResult ChangeRelation(IRelatable source, in RelationChangeContext context)

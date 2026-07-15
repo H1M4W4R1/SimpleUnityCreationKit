@@ -11,14 +11,18 @@ The runtime assembly is `SimpleRelations`. Edit-mode tests are in `SimpleRelatio
 
 ## Relation types
 
-Create a sealed `RelationTypeBase` subclass for each independently tracked score. The base class automatically creates an asset in `Assets/Generated/Relations/` and registers it with the `SimpleRelations.Types` Addressables label. Override `InitialValue` only when a relation should begin at a non-zero score.
+Create a sealed `RelationTypeBase` subclass for each independently tracked score. The base class automatically creates an asset in `Assets/Generated/Relations/` and registers it with the `SimpleRelations.Types` Addressables label. Override `GetInitialValue` when a relation should begin at a non-zero value or that value depends on its source or target.
 
 ```csharp
 using Systems.SimpleRelations.Abstract;
+using Systems.SimpleRelations.Data;
 
 public sealed class TrustRelation : RelationTypeBase
 {
-    protected internal override int InitialValue => 25;
+    protected override int GetInitialValue(in RelationInitialValueContext context)
+    {
+        return 25;
+    }
 }
 ```
 
