@@ -1,6 +1,6 @@
 using System;
 using JetBrains.Annotations;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 
 namespace Systems.SimpleAchievements.Data.SaveFiles
 {

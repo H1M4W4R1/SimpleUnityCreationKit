@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 using UnityEngine;
 
 namespace Systems.SimpleSettings.Saving

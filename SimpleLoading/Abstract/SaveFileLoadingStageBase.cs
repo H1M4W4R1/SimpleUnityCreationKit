@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 using Systems.SimpleLoading.Data;
 
 namespace Systems.SimpleLoading.Abstract

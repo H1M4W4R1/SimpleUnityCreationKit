@@ -1,7 +1,6 @@
 using Systems.SimpleCore.Operations;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Systems.SimpleCore.Examples
@@ -178,8 +177,7 @@ namespace Systems.SimpleCore.Examples
 
             GameObject eventSystemObject = new GameObject("EventSystem");
             eventSystemObject.AddComponent<EventSystem>();
-            InputSystemUIInputModule inputModule = eventSystemObject.AddComponent<InputSystemUIInputModule>();
-            inputModule.AssignDefaultActions();
+            eventSystemObject.AddComponent<StandaloneInputModule>();
         }
 
         private static RectTransform CreateRect(string name, Transform parent)

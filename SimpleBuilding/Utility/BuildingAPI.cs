@@ -4,8 +4,8 @@ using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Components;
 using Systems.SimpleBuilding.Data;
 using Systems.SimpleBuilding.Data.SaveFiles;
-using Systems.SimpleCore.Saving.Abstract;
-using Systems.SimpleCore.Saving.Utility;
+using Systems.SimpleSaving.Abstract;
+using Systems.SimpleSaving.Utility;
 using Systems.SimpleCore.Storage.Lists;
 
 namespace Systems.SimpleBuilding.Utility
@@ -61,7 +61,7 @@ namespace Systems.SimpleBuilding.Utility
         }
 
         /// <summary>
-        ///     Saves all placed buildings through the SimpleCore save API.
+        ///     Saves all placed buildings through the SimpleSaving API.
         /// </summary>
         /// <returns>An in-memory building save file, or <c>null</c> if serialization fails.</returns>
         [CanBeNull]
@@ -72,7 +72,7 @@ namespace Systems.SimpleBuilding.Utility
         }
 
         /// <summary>
-        ///     Restores placed buildings from a SimpleCore save file.
+        ///     Restores placed buildings from a SimpleSaving save file.
         /// </summary>
         /// <remarks>
         ///     Register all available entries with <see cref="RegisterEntry"/> or <see cref="RegisterEntries"/>

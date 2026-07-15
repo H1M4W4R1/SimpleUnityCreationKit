@@ -59,7 +59,7 @@ Resource consumption and refunds should be atomic. `TryRefundResources` is invok
 
 ## Saving placed buildings
 
-SimpleBuilding saves the buildings created through `BuildingBase` with the SimpleCore save pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
+SimpleBuilding saves the buildings created through `BuildingBase` with the SimpleSaving pipeline. It stores each entry's `SaveIdentifier`, world transform, local scale, and any reserved slot identifiers. Give every entry and scene slot a unique, stable identifier before shipping. When no identifier is assigned, the asset or GameObject name is used as a compatibility fallback.
 
 Before loading, register every entry that can appear in the save; active `BuildingSlot` components register themselves. Loading replaces the currently API-placed buildings without consuming resources or issuing refunds, while still invoking placement and demolition callbacks. Save-driven placement and removal contexts set `isSaveSystemRequest` to `true`, so custom rules can recognize the source explicitly.
 
@@ -68,7 +68,7 @@ using System.Collections.Generic;
 using Systems.SimpleBuilding.Abstract;
 using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleBuilding.Utility;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 
 namespace Game.Buildings
 {
@@ -95,7 +95,7 @@ namespace Game.Buildings
 }
 ```
 
-`SaveToMemory` returns a `SaveFileBase` so it can be embedded in a host game's larger save file. The host owns disk serialization and versioning, while `BuildingAPI.Load` accepts the same SimpleCore save-file base type.
+`SaveToMemory` returns a `SaveFileBase` so it can be embedded in a host game's larger save file. The host owns disk serialization and versioning, while `BuildingAPI.Load` accepts the same SimpleSaving save-file base type.
 
 ## Finding placed buildings
 

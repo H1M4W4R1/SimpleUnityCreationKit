@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 #endif
 using JetBrains.Annotations;
-using Systems.SimpleCore.Saving.Utility;
+using Systems.SimpleSaving.Utility;
 using Systems.SimpleSettings.Abstract;
 using Systems.SimpleSettings.Groups;
 using Systems.SimpleSettings.Saving;

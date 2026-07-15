@@ -6,13 +6,13 @@ using Systems.SimpleBuilding.Components;
 using Systems.SimpleBuilding.Data.Context;
 using Systems.SimpleBuilding.Data.SaveFiles;
 using Systems.SimpleBuilding.Utility;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 using UnityEngine;
 
 namespace Systems.SimpleBuilding.Data
 {
     /// <summary>
-    ///     Transient SimpleCore save adapter for the static SimpleBuilding runtime registry.
+    ///     Transient SimpleSaving adapter for the static SimpleBuilding runtime registry.
     /// </summary>
     public sealed class BuildingSaveData : ISaveData<BuildingSaveFile>
     {

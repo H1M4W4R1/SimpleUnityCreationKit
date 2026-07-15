@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "SimpleCore",
+        "SimpleSaving",
         "Unity.Addressables",
         "Unity.ResourceManager",
         "Unity.ugui"

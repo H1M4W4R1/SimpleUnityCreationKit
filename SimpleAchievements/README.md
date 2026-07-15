@@ -1,6 +1,6 @@
 # SimpleAchievements
 
-SimpleAchievements is a lightweight achievement system for Unity projects. It stores achievement definitions as ScriptableObjects, polls conditional achievements through `TickSystem`, propagates unlocks to platform integrations, and can save unlock state either directly to disk or through SimpleCore's save pipeline.
+SimpleAchievements is a lightweight achievement system for Unity projects. It stores achievement definitions as ScriptableObjects, polls conditional achievements through `TickSystem`, propagates unlocks to platform integrations, and can save unlock state either directly to disk or through SimpleSaving's save pipeline.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ IProgressibleAchievement    - opt-in contract for active progress updates
 AchievementRegistry         - runtime singleton that tracks unlock state
 AchievementAPI              - static facade for unlock, progress, query, save, and load operations
 AchievementPlatformBase     - ScriptableObject base for platform SDK adapters
-AchievementSaveFile         - SimpleCore save payload for unlocked platform IDs
+AchievementSaveFile         - SimpleSaving save payload for unlocked platform IDs
 AchievementsSettings        - Resources-backed save settings
 ```
 
@@ -192,7 +192,7 @@ AchievementAPI.Load();
 Use the host save-system integration when achievement data should be embedded in a larger save file:
 
 ```csharp
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 
 SaveFileBase saveFile = AchievementAPI.SaveToMemory();
 if (!ReferenceEquals(saveFile, null))

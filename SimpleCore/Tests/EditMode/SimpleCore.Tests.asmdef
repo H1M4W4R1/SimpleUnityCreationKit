@@ -4,7 +4,6 @@
     "references": [
         "SimpleCore",
         "Unity.Collections",
-        "Unity.InputSystem",
         "Unity.Mathematics",
         "UnityEngine.TestRunner"
     ],

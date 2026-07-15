@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Systems.SimpleCore.Saving.Abstract;
+using Systems.SimpleSaving.Abstract;
 using Systems.SimpleSettings.Saving;
 using Systems.SimpleSettings.Utility;
 
@@ -17,7 +17,7 @@ namespace Systems.SimpleSettings.Abstract
     ///     </para>
     ///     <para>
     ///         Implements <see cref="ISaveData{SettingsSaveFile}"/> so it participates
-    ///         in the SimpleCore save pipeline. Each setting's value is serialized as a
+    ///         in the SimpleSaving pipeline. Each setting's value is serialized as a
     ///         string via <see cref="ISetting.SerializeCurrentValue"/>.
     ///     </para>
     ///     <para>

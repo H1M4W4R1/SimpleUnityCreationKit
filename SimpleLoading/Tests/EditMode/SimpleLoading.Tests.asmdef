@@ -3,6 +3,7 @@
     "rootNamespace": "Systems.SimpleLoading.Tests",
     "references": [
         "SimpleCore",
+        "SimpleSaving",
         "SimpleLoading",
         "UnityEngine.TestRunner"
     ],

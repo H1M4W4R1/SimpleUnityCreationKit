@@ -1,6 +1,6 @@
 # SimpleSettings
 
-A comprehensive, extensible runtime settings system for Unity games. SimpleSettings provides apply/revert/undo/default operations at per-setting, per-group, and global scope, with built-in support for graphics, audio, input bindings, and localization. Integrates with SimpleCore's save pipeline and SimpleUI's component system.
+A comprehensive, extensible runtime settings system for Unity games. SimpleSettings provides apply/revert/undo/default operations at per-setting, per-group, and global scope, with built-in support for graphics, audio, input bindings, and localization. Integrates with SimpleSaving's save pipeline and SimpleUI's component system.
 
 ## Requirements
 

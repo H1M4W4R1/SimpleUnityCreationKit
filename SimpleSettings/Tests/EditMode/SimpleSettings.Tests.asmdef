@@ -3,6 +3,8 @@
     "rootNamespace": "Systems.SimpleSettings.Tests",
     "references": [
         "SimpleCore",
+        "SimpleInput",
+        "SimpleSaving",
         "SimpleSettings",
         "SimpleUserInterface",
         "Unity.InputSystem",

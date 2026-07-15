@@ -4,6 +4,7 @@
     "references": [
         "SimpleBuilding",
         "SimpleCore",
+        "SimpleSaving",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [

@@ -3,6 +3,8 @@
     "rootNamespace": "",
     "references": [
         "SimpleCore",
+        "SimpleInput",
+        "SimpleSaving",
         "SimpleUserInterface",
         "Unity.InputSystem",
         "Unity.Localization",

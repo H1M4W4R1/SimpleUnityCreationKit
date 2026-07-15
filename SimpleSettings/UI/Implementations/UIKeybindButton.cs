@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Systems.SimpleCore.Input;
+using Systems.SimpleInput;
 using Systems.SimpleSettings.Abstract;
 using Systems.SimpleSettings.Settings.Controls;
 using Systems.SimpleUI.Components.Abstract.Markers.Context;
