@@ -1,0 +1,17 @@
+{
+    "name": "SimplePermissions.Examples",
+    "rootNamespace": "Systems.SimplePermissions.Examples",
+    "references": [
+        "SimplePermissions",
+        "SimpleCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
