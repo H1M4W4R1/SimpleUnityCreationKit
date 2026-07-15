@@ -53,6 +53,7 @@ namespace Systems.SimpleCrafting.Data
         internal static void RegisterForTests([NotNull] CraftingRecipeBase recipe)
         {
             _isUsingTestStorage = true;
+            UseTestStorage();
             internalDataStorage.Add(
                 new AddressableDatabaseEntry<CraftingRecipeBase>(HashIdentifier.New(recipe.GetType()), recipe));
             internalDataStorage.Sort((left, right) => left.hashIdentifier.CompareTo(right.hashIdentifier));

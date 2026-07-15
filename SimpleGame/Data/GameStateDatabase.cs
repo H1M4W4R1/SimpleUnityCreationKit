@@ -19,6 +19,7 @@ namespace Systems.SimpleGame.Data
 #if UNITY_INCLUDE_TESTS
         internal static void RegisterForTests([NotNull] GameStateBase gameState)
         {
+            UseTestStorage();
             internalDataStorage.Add(new AddressableDatabaseEntry<GameStateBase>(
                 HashIdentifier.New(gameState.GetType()), gameState));
             internalDataStorage.Sort((left, right) => left.hashIdentifier.CompareTo(right.hashIdentifier));

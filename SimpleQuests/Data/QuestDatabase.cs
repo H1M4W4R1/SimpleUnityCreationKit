@@ -24,6 +24,7 @@ namespace Systems.SimpleQuests.Data
 #if UNITY_INCLUDE_TESTS
         internal static void RegisterForTests([NotNull] Quest quest)
         {
+            UseTestStorage();
             internalDataStorage.Add(
                 new AddressableDatabaseEntry<Quest>(HashIdentifier.New(quest.GetType()), quest));
             internalDataStorage.Sort((left, right) => left.hashIdentifier.CompareTo(right.hashIdentifier));

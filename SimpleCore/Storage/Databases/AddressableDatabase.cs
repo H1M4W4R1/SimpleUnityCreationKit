@@ -110,6 +110,19 @@ namespace Systems.SimpleCore.Storage.Databases
             if (!_isLoaded) LoadSynchronously();
         }
 
+#if UNITY_INCLUDE_TESTS
+        /// <summary>
+        ///     Marks the database as loaded after a concrete database has populated its test storage.
+        ///     This prevents a subsequent lookup from replacing the registered test entries with Addressables data.
+        /// </summary>
+        protected static void UseTestStorage()
+        {
+            _instance._isLoaded = true;
+            _instance._isLoading = false;
+            _instance._isLoadingComplete = true;
+        }
+#endif
+
         /// <summary>Starts the Addressables request without synchronously waiting for it to finish.</summary>
         public void BeginLoading()
         {

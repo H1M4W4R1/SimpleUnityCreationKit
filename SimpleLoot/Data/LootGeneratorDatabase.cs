@@ -20,6 +20,7 @@ namespace Systems.SimpleLoot.Data
 #if UNITY_INCLUDE_TESTS
         internal static void RegisterForTests([NotNull] LootDropGeneratorBase generator)
         {
+            UseTestStorage();
             internalDataStorage.Add(
                 new AddressableDatabaseEntry<LootDropGeneratorBase>(
                     HashIdentifier.New(generator.GetType()), generator));
